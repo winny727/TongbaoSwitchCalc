@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace TongbaoSwitchCalc.DataModel
 {
@@ -8,7 +9,7 @@ namespace TongbaoSwitchCalc.DataModel
         private readonly IRandomGenerator mRandom;
         private readonly Dictionary<ResType, int> mResValues = new Dictionary<ResType, int>(); // 资源数值
 
-        private Tongbao[] mTongbao;
+        public Tongbao[] TongbaoBox { get; private set; }
         public SquadType SquadType { get; private set; }
         private SquadAttribute mSquadAttribute;
         public int SwitchCount { get; set; } // 已交换次数
@@ -26,7 +27,7 @@ namespace TongbaoSwitchCalc.DataModel
             mSquadAttribute = Define.SquadAttributeDefines[squadType];
             SwitchCount = 0;
             MaxTongbaoCount = mSquadAttribute.MaxTongbaoCount;
-            mTongbao = new Tongbao[MaxTongbaoCount];
+            TongbaoBox = new Tongbao[MaxTongbaoCount];
 
             mResValues.Clear();
             if (resValues != null)
@@ -45,9 +46,9 @@ namespace TongbaoSwitchCalc.DataModel
 
         public bool IsTongbaoFull()
         {
-            for (int i = 0; i < mTongbao.Length; i++)
+            for (int i = 0; i < TongbaoBox.Length; i++)
             {
-                if (mTongbao[i] == null)
+                if (TongbaoBox[i] == null)
                 {
                     return false;
                 }
@@ -57,59 +58,62 @@ namespace TongbaoSwitchCalc.DataModel
 
         public Tongbao GetTongbao(int posIndex)
         {
-            if (posIndex >= 0 && posIndex < mTongbao.Length)
+            if (posIndex >= 0 && posIndex < TongbaoBox.Length)
             {
-                return mTongbao[posIndex];
+                return TongbaoBox[posIndex];
             }
             return null;
         }
 
-        public void AddTongbao(Tongbao tongbao)
+        public bool AddTongbao(Tongbao tongbao)
         {
             if (IsTongbaoFull())
             {
-                return;
+                return false;
             }
 
             int posIndex = -1;
-            for (int i = 0; i < mTongbao.Length; i++)
+            for (int i = 0; i < TongbaoBox.Length; i++)
             {
-                if (mTongbao[i] == null)
+                if (TongbaoBox[i] == null)
                 {
                     posIndex = i;
                     break;
                 }
             }
 
-            InsertTongbao(tongbao, posIndex);
+            return InsertTongbao(tongbao, posIndex);
         }
 
-        public void InsertTongbao(Tongbao tongbao, int posIndex)
+        public bool InsertTongbao(Tongbao tongbao, int posIndex)
         {
             if (tongbao == null)
             {
-                return;
+                return false;
             }
 
-            if (posIndex >= 0 && posIndex < mTongbao.Length)
+            if (posIndex >= 0 && posIndex < TongbaoBox.Length)
             {
-                mTongbao[posIndex] = null;
-                if (!IsTongbaoExist(tongbao))
+                TongbaoBox[posIndex] = null;
+                if (CanInsertTongbao(tongbao))
                 {
-                    mTongbao[posIndex] = tongbao;
+                    TongbaoBox[posIndex] = tongbao;
                     if (tongbao.ExtraResType != ResType.None && tongbao.ExtraResCount > 0)
                     {
                         AddResValue(tongbao.ExtraResType, tongbao.ExtraResCount);
                     }
+                    return true;
                 }
             }
+
+            return false;
         }
 
         public void RemoveTongbaoAt(int posIndex)
         {
-            if (posIndex >= 0 && posIndex < mTongbao.Length)
+            if (posIndex >= 0 && posIndex < TongbaoBox.Length)
             {
-                mTongbao[posIndex] = null;
+                TongbaoBox[posIndex] = null;
             }
         }
 
@@ -120,11 +124,11 @@ namespace TongbaoSwitchCalc.DataModel
                 return;
             }
 
-            for (int i = 0; i < mTongbao.Length; i++)
+            for (int i = 0; i < TongbaoBox.Length; i++)
             {
-                if (mTongbao[i].Id == tongbao.Id)
+                if (TongbaoBox[i] != null && TongbaoBox[i].Id == tongbao.Id)
                 {
-                    mTongbao[i] = null;
+                    TongbaoBox[i] = null;
                     return;
                 }
             }
@@ -132,9 +136,9 @@ namespace TongbaoSwitchCalc.DataModel
 
         public bool IsTongbaoExist(int id)
         {
-            for (int i = 0; i < mTongbao.Length; i++)
+            for (int i = 0; i < TongbaoBox.Length; i++)
             {
-                if (mTongbao[i].Id == id)
+                if (TongbaoBox[i] != null && TongbaoBox[i].Id == id)
                 {
                     return true;
                 }
@@ -142,16 +146,34 @@ namespace TongbaoSwitchCalc.DataModel
             return false;
         }
 
-        public bool IsTongbaoExist(Tongbao tongbao)
+        public bool CanInsertTongbao(Tongbao tongbao)
         {
-            return tongbao != null && IsTongbaoExist(tongbao.Id);
+            if (tongbao == null)
+            {
+                return false;
+            }
+
+            if (tongbao.MaxDuplicates < 0)
+            {
+                return true; // 不限制数量
+            }
+
+            int count = 0;
+            for (int i = 0; i < TongbaoBox.Length; i++)
+            {
+                if (TongbaoBox[i] != null && TongbaoBox[i].Id == tongbao.Id)
+                {
+                    count++;
+                }
+            }
+            return count < tongbao.MaxDuplicates;
         }
 
         public void ClearTongbao()
         {
-            for (int i = 0; i < mTongbao.Length; i++)
+            for (int i = 0; i < TongbaoBox.Length; i++)
             {
-                mTongbao[i] = null;
+                TongbaoBox[i] = null;
             }
         }
 
@@ -194,25 +216,31 @@ namespace TongbaoSwitchCalc.DataModel
             return 0;
         }
 
-        public void SwitchTongbao(int posIndex, bool force = false)
+        public bool HasEnoughSwitchLife()
+        {
+            int costLifePoint = mSquadAttribute.GetCostLifePoint(SwitchCount);
+            return GetResValue(ResType.LifePoint) > costLifePoint;
+        }
+
+        public bool SwitchTongbao(int posIndex, bool force = false)
         {
             if (mSquadAttribute == null)
             {
-                return;
+                return false;
             }
 
             Tongbao tongbao = GetTongbao(posIndex);
             if (tongbao == null || !tongbao.CanSwitch())
             {
                 // 当前通宝不可交换
-                return;
+                return false;
             }
 
             int costLifePoint = mSquadAttribute.GetCostLifePoint(SwitchCount);
             if (GetResValue(ResType.LifePoint) > costLifePoint || force)
             {
                 int newTongbaoId = SwitchPool.SwitchTongbao(mRandom, this, tongbao);
-                Tongbao newTongbao = Tongbao.CreateTongbao(mRandom, newTongbaoId);
+                Tongbao newTongbao = Tongbao.CreateTongbao(newTongbaoId, mRandom);
                 if (newTongbao != null)
                 {
                     InsertTongbao(newTongbao, posIndex);
@@ -228,8 +256,11 @@ namespace TongbaoSwitchCalc.DataModel
                             AddResValue(ResType.Coupon, 1);
                         }
                     }
+                    return true;
                 }
             }
+
+            return false;
         }
     }
 }
