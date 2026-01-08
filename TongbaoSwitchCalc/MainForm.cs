@@ -88,14 +88,7 @@ namespace TongbaoSwitchCalc
         private void OnSelectNewTongbao(int id, int posIndex)
         {
             Tongbao tongbao = Tongbao.CreateTongbao(id);
-            if (tongbao != null && !mPlayerData.InsertTongbao(tongbao, posIndex))
-            {
-                if (!mPlayerData.CanInsertTongbao(tongbao))
-                {
-                    MessageBox.Show($"通宝添加失败，当前通宝[{Helper.GetTongbaoName(tongbao.Id)}]最多只能同时存在{tongbao.MaxDuplicates}个。",
-                        "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
+            mPlayerData.InsertTongbao(tongbao, posIndex);
         }
 
         private void SelectTongbaoPos(int posIndex)

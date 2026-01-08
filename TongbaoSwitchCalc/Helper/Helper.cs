@@ -118,7 +118,6 @@ namespace TongbaoSwitchCalc
                 string name = line.GetValue("Name");
                 string description = line.GetValue("Description");
                 TongbaoType type = line.GetValue<TongbaoType>("Type");
-                int maxDuplicates = line.GetValue<int>("MaxDuplicates");
                 int switchInPool = line.GetValue<int>("SwitchInPool");
                 List<int> switchOutPools = ParseList<int>(line.GetValue("SwitchOutPools"));
                 ResType extraResType = line.GetValue<ResType>("ExtraResType");
@@ -130,7 +129,6 @@ namespace TongbaoSwitchCalc
                     Name = name,
                     Description = description,
                     Type = type,
-                    MaxDuplicates = maxDuplicates,
                     SwitchInPool = switchInPool,
                     SwitchOutPools = switchOutPools,
                     ExtraResType = extraResType,

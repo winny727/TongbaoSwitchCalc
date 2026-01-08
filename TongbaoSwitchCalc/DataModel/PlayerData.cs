@@ -65,11 +65,11 @@ namespace TongbaoSwitchCalc.DataModel
             return null;
         }
 
-        public bool AddTongbao(Tongbao tongbao)
+        public void AddTongbao(Tongbao tongbao)
         {
             if (IsTongbaoFull())
             {
-                return false;
+                return;
             }
 
             int posIndex = -1;
@@ -82,31 +82,24 @@ namespace TongbaoSwitchCalc.DataModel
                 }
             }
 
-            return InsertTongbao(tongbao, posIndex);
+            InsertTongbao(tongbao, posIndex);
         }
 
-        public bool InsertTongbao(Tongbao tongbao, int posIndex)
+        public void InsertTongbao(Tongbao tongbao, int posIndex)
         {
             if (tongbao == null)
             {
-                return false;
+                return;
             }
 
             if (posIndex >= 0 && posIndex < TongbaoBox.Length)
             {
-                TongbaoBox[posIndex] = null;
-                if (CanInsertTongbao(tongbao))
+                TongbaoBox[posIndex] = tongbao;
+                if (tongbao.ExtraResType != ResType.None && tongbao.ExtraResCount > 0)
                 {
-                    TongbaoBox[posIndex] = tongbao;
-                    if (tongbao.ExtraResType != ResType.None && tongbao.ExtraResCount > 0)
-                    {
-                        AddResValue(tongbao.ExtraResType, tongbao.ExtraResCount);
-                    }
-                    return true;
+                    AddResValue(tongbao.ExtraResType, tongbao.ExtraResCount);
                 }
             }
-
-            return false;
         }
 
         public void RemoveTongbaoAt(int posIndex)
@@ -144,29 +137,6 @@ namespace TongbaoSwitchCalc.DataModel
                 }
             }
             return false;
-        }
-
-        public bool CanInsertTongbao(Tongbao tongbao)
-        {
-            if (tongbao == null)
-            {
-                return false;
-            }
-
-            if (tongbao.MaxDuplicates < 0)
-            {
-                return true; // 不限制数量
-            }
-
-            int count = 0;
-            for (int i = 0; i < TongbaoBox.Length; i++)
-            {
-                if (TongbaoBox[i] != null && TongbaoBox[i].Id == tongbao.Id)
-                {
-                    count++;
-                }
-            }
-            return count < tongbao.MaxDuplicates;
         }
 
         public void ClearTongbao()

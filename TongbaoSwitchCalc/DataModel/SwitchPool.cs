@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TongbaoSwitchCalc.DataModel
 {
-    public static class SwitchPool
+    internal static class SwitchPool
     {
         private static readonly Dictionary<int, List<int>> mSwitchOutPools = new Dictionary<int, List<int>>(); // <poolId, <tongbaoId>>
 

@@ -1,77 +1,77 @@
-Id	Name	Description	Type	MaxDuplicates	SwitchInPool	SwitchOutPools	ExtraResType	ExtraResCount		备注
-1001	大炎通宝		Balance	-1	1	0				
-1002	奇土生金		Balance	1	1	1				
-1003	水生木护		Balance	1	1	1				
-1004	金寒水衍		Balance	1	1	1				
-1005	投木炎延		Balance	1	1	1				
-1006	苦寒		Balance	1	1	1				
-1007	匪风		Balance	1	1	1				
-1008	霖雨		Balance	1	1	1				
-1009	霹雳		Balance	1	1	1				
-1010	旱热		Balance	1	1	1				
-1011	虹霓		Balance	1	1	1				
-1012	雾凇		Balance	1	1	1				
-1013	霜雪		Balance	1	1	1				
-1014	志欲遂		Balance	1	1	2				
-1015	慧避灾		Balance	1	1	2				
-1016	挪移		Balance	1	1	1				
-1017	迅步		Balance	1	1	1				
-1018	重铠		Balance	1	1	1				
-1019	庆丰收		Balance	1	2	2	LifePoint	2		
-1020	塞上月		Balance	1	2	2				
-1021	军屯垦		Balance	1	2	2				
-1022	诡意代币		Balance	1	2	0	OriginiumIngots	10		
-1023	债难偿		Balance	1	2	2	LifePoint	2		
-1024	触锁代币		Balance	1	2	2|3				
-1025	移山繁		Balance	1	2	4				
-1026	天下先		Balance	1	2	5				
-1027	初有文		Balance	1	6	2				
-1028	勤运体		Balance	1	7	2				
-1029	鸿蒙开荒		Balance	1	3	3	Candles	2		
-2001	火灼土沃		Flower	1	1	1				
-2002	驰道长		Flower	1	1	2				
-2003	武人之争		Flower	1	1	3				
-2004	百业俱兴		Flower	1	1	3				
-2005	聚力则强		Flower	1	3	3				
-2006	茧成绢		Flower	1	3	3				
-2007	平沙之盾		Flower	1	3	2|3				
-2008	火上之灶		Flower	1	3	3				
-2009	界园行		Flower	1	2	2				
-2010	延识镇木		Flower	1	2	2|3				
-2011	载道远		Flower	1	2	6				
-2012	修性情		Flower	1	2	2|7				
-2013	心无患		Flower	1	2	2|7				
-2014	鸭爵金币		Flower	1	3	3				
-2015	己任重		Flower	1	2	2				
-2016	圣诏封神		Flower	2	3	0				
-2017	神秘商贾		Flower	1	3	3	Coupon	30		
-2018	孜孜不倦		Flower	1	3	3				
-3001	西廉贞		Risk	1	1	0				
-3002	北刺面		Risk	1	1	0				
-3003	南见山		Risk	1	1	0				
-3004	东缺角		Risk	1	1	0				
-3005	寒窗志		Risk	1	1	2				
-3006	战血流		Risk	1	2	2				
-3007	遇良弈		Risk	1	2	2				
-3008	隐市忧		Risk	1	2	2				
-3009	法与律		Risk	1	2	2				
-3010	两江春		Risk	1	2	2				
-3011	凡物变		Risk	1	2	2				
-3012	人间长存		Risk	1	3	3				
-3013	神农守		Risk	1	2	2				
-3014	梦奇物		Risk	1	2	2				
-3015	一字落		Risk	1	2	2				
-3016	待机缘		Risk	1	2	2				
-3017	画人间		Risk	1	2	2				
-3018	恣狂情		Risk	1	2	2				
-3019	生材百相		Risk	1	2	2				
-3020	火机		Risk	1	1	1				
-3021	岁醒天时		Risk	1	0	0				
-3022	无皎之昧		Risk	1	0	0				
-3023	安硕鼷		Risk	1	2	2				
-3024	合乎礼		Risk	1	2	2	OriginiumIngots	30		
-3025	黑子伏		Risk	1	2	2|3				
-3026	移山难		Risk	1	4	2				
-3027	朝闻道		Risk	1	5	0				
-3028	诛邪雷法		Risk	1	3	3				
-3029	商路难行		Risk	1	3	3				
+Id	Name	Description	Type	SwitchInPool	SwitchOutPools	ExtraResType	ExtraResCount		备注
+1001	大炎通宝		Balance	1	0				
+1002	奇土生金		Balance	1	1				
+1003	水生木护		Balance	1	1				
+1004	金寒水衍		Balance	1	1				
+1005	投木炎延		Balance	1	1				
+1006	苦寒		Balance	1	1				
+1007	匪风		Balance	1	1				
+1008	霖雨		Balance	1	1				
+1009	霹雳		Balance	1	1				
+1010	旱热		Balance	1	1				
+1011	虹霓		Balance	1	1				
+1012	雾凇		Balance	1	1				
+1013	霜雪		Balance	1	1				
+1014	志欲遂		Balance	1	2				
+1015	慧避灾		Balance	1	2				
+1016	挪移		Balance	1	1				
+1017	迅步		Balance	1	1				
+1018	重铠		Balance	1	1				
+1019	庆丰收		Balance	2	2	LifePoint	2		
+1020	塞上月		Balance	2	2				
+1021	军屯垦		Balance	2	2				
+1022	诡意代币		Balance	2	0	OriginiumIngots	10		
+1023	债难偿		Balance	2	2	LifePoint	2		
+1024	触锁代币		Balance	2	2|3				
+1025	移山繁		Balance	2	4				
+1026	天下先		Balance	2	5				
+1027	初有文		Balance	6	2				
+1028	勤运体		Balance	7	2				
+1029	鸿蒙开荒		Balance	3	3	Candles	2		
+2001	火灼土沃		Flower	1	1				
+2002	驰道长		Flower	1	2				
+2003	武人之争		Flower	1	3				
+2004	百业俱兴		Flower	1	3				
+2005	聚力则强		Flower	3	3				
+2006	茧成绢		Flower	3	3				
+2007	平沙之盾		Flower	3	2|3				
+2008	火上之灶		Flower	3	3				
+2009	界园行		Flower	2	2				
+2010	延识镇木		Flower	2	2|3				
+2011	载道远		Flower	2	6				
+2012	修性情		Flower	2	2|7				
+2013	心无患		Flower	2	2|7				
+2014	鸭爵金币		Flower	3	3				
+2015	己任重		Flower	2	2				
+2016	圣诏封神		Flower	3	0				
+2017	神秘商贾		Flower	3	3	Coupon	30		
+2018	孜孜不倦		Flower	3	3				
+3001	西廉贞		Risk	1	0				
+3002	北刺面		Risk	1	0				
+3003	南见山		Risk	1	0				
+3004	东缺角		Risk	1	0				
+3005	寒窗志		Risk	1	2				
+3006	战血流		Risk	2	2				
+3007	遇良弈		Risk	2	2				
+3008	隐市忧		Risk	2	2				
+3009	法与律		Risk	2	2				
+3010	两江春		Risk	2	2				
+3011	凡物变		Risk	2	2				
+3012	人间长存		Risk	3	3				
+3013	神农守		Risk	2	2				
+3014	梦奇物		Risk	2	2				
+3015	一字落		Risk	2	2				
+3016	待机缘		Risk	2	2				
+3017	画人间		Risk	2	2				
+3018	恣狂情		Risk	2	2				
+3019	生材百相		Risk	2	2				
+3020	火机		Risk	1	1				
+3021	岁醒天时		Risk	0	0				
+3022	无皎之昧		Risk	0	0				
+3023	安硕鼷		Risk	2	2				
+3024	合乎礼		Risk	2	2	OriginiumIngots	30		
+3025	黑子伏		Risk	2	2|3				
+3026	移山难		Risk	4	2				
+3027	朝闻道		Risk	5	0				
+3028	诛邪雷法		Risk	3	3				
+3029	商路难行		Risk	3	3				
