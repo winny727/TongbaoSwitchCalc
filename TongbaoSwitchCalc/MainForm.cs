@@ -46,13 +46,15 @@ namespace TongbaoSwitchCalc
         {
             mPlayerData.Init(mSelectedSquadType, new Dictionary<ResType, int>()
             {
-                { ResType.LifePoint, 1 },
-                { ResType.OriginiumIngots, 0 },
-                { ResType.Coupon, 0 },
-                { ResType.Candles, 0 },
-                { ResType.Shield, 0 },
-                { ResType.Hope, 0 },
+                { ResType.LifePoint, (int)numHp.Value },
+                { ResType.OriginiumIngots, (int)numIngots.Value },
+                { ResType.Coupon, (int)numCoupon.Value },
+                { ResType.Candles, (int)numCandle.Value },
+                { ResType.Shield, (int)numShield.Value },
+                { ResType.Hope, (int)numHope.Value },
             });
+            mPlayerData.OnResValueChanged -= OnResValueChanged;
+            mPlayerData.OnResValueChanged += OnResValueChanged;
         }
 
         private void DataModelTest()
@@ -104,10 +106,16 @@ namespace TongbaoSwitchCalc
             {
                 comboBoxSquad.Items.Add(new SquadComboBoxItem(type));
             }
-
             comboBoxSquad.SelectedIndex = 0;
 
             checkBoxFortune.Checked = false;
+
+            Helper.SetupResNumberic(mPlayerData, numHp, ResType.LifePoint);
+            Helper.SetupResNumberic(mPlayerData, numIngots, ResType.OriginiumIngots);
+            Helper.SetupResNumberic(mPlayerData, numCoupon, ResType.Coupon);
+            Helper.SetupResNumberic(mPlayerData, numCandle, ResType.Candles);
+            Helper.SetupResNumberic(mPlayerData, numShield, ResType.Shield);
+            Helper.SetupResNumberic(mPlayerData, numHope, ResType.Hope);
 
             InitTongbaoView();
         }
@@ -116,25 +124,8 @@ namespace TongbaoSwitchCalc
         {
             // InitImageList
             listViewTongbao.LargeImageList?.Dispose();
-            ImageList imageList = new ImageList
-            {
-                ImageSize = new Size(48, 48),
-            };
-
-            if (Helper.TongbaoSlotImage != null)
-            {
-                imageList.Images.Add("Empty", Helper.TongbaoSlotImage);
-            }
-            foreach (var item in TongbaoConfig.GetAllTongbaoConfigs())
-            {
-                TongbaoConfig config = item.Value;
-                Image image = Helper.GetTongbaoImage(config.Id);
-                if (image != null)
-                {
-                    imageList.Images.Add(config.Id.ToString(), image);
-                }
-            }
-            listViewTongbao.LargeImageList = imageList;
+            listViewTongbao.LargeImageList = Helper.CreateTongbaoImageList(new Size(54, 54));
+            listViewTongbao.SmallImageList = Helper.CreateTongbaoImageList(new Size(24, 24));
 
             // InitSlot
             InitTongbaoSlot();
@@ -150,7 +141,7 @@ namespace TongbaoSwitchCalc
                 {
                     Name = "TongbaoSlot_" + (i + 1),
                     Text = $"[{i + 1}] (空)",
-                    ToolTipText = "双击添加/修改通宝",
+                    ToolTipText = "双击添加/更改通宝",
                     ImageKey = "Empty",
                 };
                 listViewTongbao.Items.Add(item);
@@ -172,9 +163,9 @@ namespace TongbaoSwitchCalc
                 string name = Helper.GetTongbaoName(tongbao.Id);
                 if (tongbao.RandomResType != ResType.None)
                 {
-                    name += $"(品相：{Helper.GetResName(tongbao.RandomResType)}+{tongbao.RandomResCount})";
+                    name += $"\n({Helper.GetResName(tongbao.RandomResType)}+{tongbao.RandomResCount})";
                 }
-                item.Text = $"[{posIndex + 1}] {name}";
+                item.Text = $"[{posIndex + 1}]{name}";
                 item.ImageKey = tongbao.Id.ToString();
             }
             else
@@ -187,6 +178,11 @@ namespace TongbaoSwitchCalc
         private void UpdateView()
         {
 
+        }
+
+        private void OnResValueChanged(ResType type, int newValue)
+        {
+            // TODO 更新UI，除非是多次模拟
         }
 
         private void OnSelectNewRandomTongbao(int id, int posIndex)
@@ -285,6 +281,15 @@ namespace TongbaoSwitchCalc
             {
                 ListViewItem selectedItem = listViewTongbao.SelectedItems[0];
                 int posIndex = listViewTongbao.Items.IndexOf(selectedItem);
+
+                if (mPlayerData.SwitchCount > 0)
+                {
+                    var result = MessageBox.Show("添加/更改通宝会重置当前交换次数，是否继续？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (result == DialogResult.No)
+                    {
+                        return;
+                    }
+                }
 
                 // 测试，随机添加通宝
                 var configs = TongbaoConfig.GetAllTongbaoConfigs();

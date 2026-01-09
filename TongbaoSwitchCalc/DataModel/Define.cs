@@ -28,8 +28,9 @@ namespace TongbaoSwitchCalc.DataModel
         OriginiumIngots = 2, //源石锭
         Coupon = 3, //票券
         Candles = 4, //烛火
-        Hope = 5, //希望
-        Shield = 6, //护盾
+        TongbaoCandles = 5, //鸿蒙开荒烛火
+        Hope = 6, //希望
+        Shield = 7, //护盾
     }
 
     public enum SquadType

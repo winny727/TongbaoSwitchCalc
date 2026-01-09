@@ -16,6 +16,8 @@ namespace TongbaoSwitchCalc.DataModel
         public int MaxTongbaoCount { get; private set; } // 最大通宝数量
         public SpecialConditionFlag SpecialConditionFlag { get; set; } // 福祸相依（交换后的通宝如果是厉钱，则获得票券+1）
 
+        public event Action<ResType, int> OnResValueChanged;
+
         public PlayerData(IRandomGenerator random)
         {
             mRandom = random ?? throw new ArgumentNullException(nameof(random));
@@ -36,6 +38,7 @@ namespace TongbaoSwitchCalc.DataModel
                 foreach (var item in resValues)
                 {
                     mResValues.Add(item.Key, item.Value);
+                    OnResValueChanged?.Invoke(item.Key, item.Value);
                 }
             }
 
@@ -175,6 +178,7 @@ namespace TongbaoSwitchCalc.DataModel
                     mResValues.Add(type, 0);
                 }
                 mResValues[type] += value;
+                OnResValueChanged?.Invoke(type, mResValues[type]);
             }
         }
 
@@ -187,6 +191,7 @@ namespace TongbaoSwitchCalc.DataModel
                     mResValues.Add(type, 0);
                 }
                 mResValues[type] = value;
+                OnResValueChanged?.Invoke(type, value);
             }
         }
 

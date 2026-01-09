@@ -12,7 +12,8 @@ namespace TongbaoSwitchCalc
     {
         public static readonly Dictionary<string, TongbaoConfig> TongbaoNameDict = new Dictionary<string, TongbaoConfig>();
         public static readonly Dictionary<int, Image> TongbaoImageDict = new Dictionary<int, Image>();
-        public static Image TongbaoSlotImage { get; private set; }
+        private static Image mTongbaoSlotImage;
+        private static Dictionary<string, Image> mTongbaoImageCache = new Dictionary<string, Image>();
 
         public static TongbaoConfig GetTongbaoConfigByName(string name)
         {
@@ -110,6 +111,7 @@ namespace TongbaoSwitchCalc
         {
             InitTongbaoImage();
             InitTongbaoSlotImage();
+            InitTongbaoImageCache();
         }
 
         private static void InitTongbaoNameDict()
@@ -146,13 +148,13 @@ namespace TongbaoSwitchCalc
 
         private static void InitTongbaoSlotImage()
         {
-            TongbaoSlotImage?.Dispose();
+            mTongbaoSlotImage?.Dispose();
             string path = Environment.CurrentDirectory + "/Resources/Image/Empty.png";
             if (File.Exists(path))
             {
                 try
                 {
-                    TongbaoSlotImage = Image.FromFile(path);
+                    mTongbaoSlotImage = Image.FromFile(path);
                 }
                 catch (Exception ex)
                 {
@@ -238,6 +240,58 @@ namespace TongbaoSwitchCalc
             }
 
             return null;
+        }
+
+        private static void InitTongbaoImageCache()
+        {
+            mTongbaoImageCache.Clear();
+
+            if (mTongbaoSlotImage != null)
+            {
+                mTongbaoImageCache.Add("Empty", mTongbaoSlotImage);
+            }
+            foreach (var item in TongbaoConfig.GetAllTongbaoConfigs())
+            {
+                TongbaoConfig config = item.Value;
+                Image image = GetTongbaoImage(config.Id);
+                if (image != null)
+                {
+                    mTongbaoImageCache.Add(config.Id.ToString(), image);
+                }
+            }
+        }
+
+        public static ImageList CreateTongbaoImageList(Size imageSize)
+        {
+            ImageList imageList = new ImageList
+            {
+                ImageSize = imageSize,
+            };
+
+            foreach (var item in mTongbaoImageCache)
+            {
+                imageList.Images.Add(item.Key, item.Value);
+            }
+
+            return imageList;
+        }
+
+        public static void SetupResNumberic(PlayerData playerData, NumericUpDown numeric, ResType type)
+        {
+            if (playerData == null || numeric == null)
+            {
+                return;
+            }
+
+            decimal lastValue = numeric.Value;
+            void OnValueChanged(object sender, EventArgs e)
+            {
+                playerData.AddResValue(type, (int)(numeric.Value - lastValue));
+                lastValue = numeric.Value;
+            }
+
+            numeric.ValueChanged -= OnValueChanged;
+            numeric.ValueChanged += OnValueChanged;
         }
 
         public static void Log(string msg)
