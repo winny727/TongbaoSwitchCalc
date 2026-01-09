@@ -49,6 +49,8 @@
             this.numIngots = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
             this.numHp = new System.Windows.Forms.NumericUpDown();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.textBoxResult = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numSimCnt)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -58,6 +60,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numCoupon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numIngots)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numHp)).BeginInit();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // comboBoxSquad
@@ -313,11 +316,33 @@
             0,
             0});
             // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.textBoxResult);
+            this.groupBox3.Location = new System.Drawing.Point(518, 288);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(270, 150);
+            this.groupBox3.TabIndex = 6;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "交换记录";
+            // 
+            // textBoxResult
+            // 
+            this.textBoxResult.BackColor = System.Drawing.SystemColors.Window;
+            this.textBoxResult.Location = new System.Drawing.Point(6, 20);
+            this.textBoxResult.Multiline = true;
+            this.textBoxResult.Name = "textBoxResult";
+            this.textBoxResult.ReadOnly = true;
+            this.textBoxResult.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBoxResult.Size = new System.Drawing.Size(258, 124);
+            this.textBoxResult.TabIndex = 0;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.listViewTongbao);
             this.Controls.Add(this.groupBox1);
@@ -339,6 +364,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.numCoupon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numIngots)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numHp)).EndInit();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -365,5 +392,7 @@
         private System.Windows.Forms.NumericUpDown numHope;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.NumericUpDown numCandle;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.TextBox textBoxResult;
     }
 }
