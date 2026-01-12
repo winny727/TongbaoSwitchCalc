@@ -20,6 +20,7 @@ namespace TongbaoSwitchCalc
         private int mSelectedTongbaoPosIndex = -1;
 
         private string mOutputResult;
+        private bool mOutputResultChanged = false;
         private readonly RecordForm mRecordForm = new RecordForm();
         private readonly StringBuilder mTempStringBuilder = new StringBuilder();
 
@@ -281,7 +282,11 @@ namespace TongbaoSwitchCalc
             lblCurrent.Text = sb.ToString();
             sb.Clear();
 
-            mRecordForm.Content = mOutputResult ?? string.Empty;
+            if (mRecordForm.Visible && mOutputResultChanged)
+            {
+                mRecordForm.Content = mOutputResult ?? string.Empty;
+                mOutputResultChanged = false;
+            }
         }
 
         private void OnSelectNewRandomTongbao(int id, int posIndex)
@@ -315,6 +320,7 @@ namespace TongbaoSwitchCalc
             mSwitchSimulator.ForceSwitch = checkBoxForceSwitch.Checked;
             mSwitchSimulator.Simulate();
             mOutputResult = mSwitchSimulator.OutputResult;
+            mOutputResultChanged = true;
             for (int i = 0; i < mPlayerData.MaxTongbaoCount; i++)
             {
                 UpdateTongbaoView(i);
@@ -354,6 +360,8 @@ namespace TongbaoSwitchCalc
                 mOutputResult += "\n";
             }
             mOutputResult = $"({mPlayerData.SwitchCount}) {mPlayerData.LastSwitchResult}";
+            mOutputResultChanged = true;
+            UpdateTongbaoView(posIndex);
             UpdateView();
         }
 
@@ -433,7 +441,7 @@ namespace TongbaoSwitchCalc
 
         private void btnSwitch_Click(object sender, EventArgs e)
         {
-            SwitchOnce();
+            SwitchOnce(checkBoxForceSwitch.Checked);
         }
 
         private void btnSimulation_Click(object sender, EventArgs e)
@@ -476,6 +484,11 @@ namespace TongbaoSwitchCalc
 
         private void btnRecord_Click(object sender, EventArgs e)
         {
+            if (mOutputResultChanged)
+            {
+                mRecordForm.Content = mOutputResult ?? string.Empty;
+                mOutputResultChanged = false;
+            }
             mRecordForm.Show();
             mRecordForm.Activate();
         }
@@ -485,6 +498,7 @@ namespace TongbaoSwitchCalc
             mSwitchSimulator.ClearOutputResult();
             mOutputResult = string.Empty;
             mRecordForm.Content = string.Empty;
+            mOutputResultChanged = false;
         }
     }
 }
