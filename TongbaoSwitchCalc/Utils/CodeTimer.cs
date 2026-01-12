@@ -1,23 +1,38 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 public sealed class CodeTimer : IDisposable
 {
     private readonly Stopwatch mStopWatch;
-    private readonly string mName;
+    public string Name { get; private set; }
+    public float ElapsedMilliseconds => (float)mStopWatch.Elapsed.TotalMilliseconds;
+
+    private static readonly Stack<CodeTimer> mPool = new Stack<CodeTimer>();
+
+    public static CodeTimer StartNew(string name = "")
+    {
+        if (mPool.Count > 0)
+        {
+            CodeTimer timer = mPool.Pop();
+            timer.Name = name;
+            timer.mStopWatch.Restart();
+            return timer;
+        }
+        return new CodeTimer(name);
+    }
 
     public CodeTimer(string name = "")
     {
-        mName = string.IsNullOrEmpty(name) ? "CodeTimer" : name;
+        Name = string.IsNullOrEmpty(name) ? "CodeTimer" : name;
         mStopWatch = Stopwatch.StartNew();
     }
 
     public void Dispose()
     {
         mStopWatch.Stop();
+        mPool.Push(this);
         //Console.WriteLine($"{mName} 耗时: {mStopWatch.Elapsed.TotalMilliseconds:F3} ms");
-        Debug.WriteLine($"{mName} 耗时: {mStopWatch.Elapsed.TotalMilliseconds:F3} ms");
+        Debug.WriteLine($"{Name} 耗时: {mStopWatch.Elapsed.TotalMilliseconds:F3} ms");
     }
-
-    public float ElapsedMilliseconds => (float)mStopWatch.Elapsed.TotalMilliseconds;
 }

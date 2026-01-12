@@ -64,6 +64,21 @@ namespace TongbaoSwitchCalc.DataModel
         public ResType RandomResType { get; private set; } //品相效果
         public int RandomResCount { get; private set; }
 
+        private static readonly Stack<Tongbao> mPool = new Stack<Tongbao>();
+        public static Tongbao Allocate()
+        {
+            if (mPool.Count > 0)
+            {
+                return mPool.Pop();
+            }
+            return new Tongbao();
+        }
+
+        public void Recycle()
+        {
+            mPool.Push(this);
+        }
+
         public bool CanSwitch()
         {
             return SwitchInPool > 0;
@@ -78,23 +93,18 @@ namespace TongbaoSwitchCalc.DataModel
                 return null;
             }
 
-            Tongbao tongbao = new Tongbao
-            {
-                Id = config.Id,
-                Name = config.Name,
-                Description = config.Description,
-                ImgPath = config.ImgPath,
-                Type = config.Type,
-                SwitchInPool = config.SwitchInPool,
-                SwitchOutPools = config.SwitchOutPools,
-                ExtraResType = config.ExtraResType,
-                ExtraResCount = config.ExtraResCount,
-            };
+            Tongbao tongbao = Allocate();
 
-            if (random != null)
-            {
-                tongbao.SetupRandomRes(random);
-            }
+            tongbao.Id = config.Id;
+            tongbao.Name = config.Name;
+            tongbao.Description = config.Description;
+            tongbao.ImgPath = config.ImgPath;
+            tongbao.Type = config.Type;
+            tongbao.SwitchInPool = config.SwitchInPool;
+            tongbao.SwitchOutPools = config.SwitchOutPools;
+            tongbao.ExtraResType = config.ExtraResType;
+            tongbao.ExtraResCount = config.ExtraResCount;
+            tongbao.SetupRandomRes(random);
 
             return tongbao;
         }
@@ -107,6 +117,7 @@ namespace TongbaoSwitchCalc.DataModel
 
         private void SetupRandomRes(IRandomGenerator random)
         {
+            ApplyRandomRes(ResType.None, 0);
             if (random == null)
             {
                 return;

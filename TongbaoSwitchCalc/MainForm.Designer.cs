@@ -373,7 +373,7 @@
             this.btnReset.Name = "btnReset";
             this.btnReset.Size = new System.Drawing.Size(132, 23);
             this.btnReset.TabIndex = 10;
-            this.btnReset.Text = "重置交换次数";
+            this.btnReset.Text = "重置交换次数/资源";
             this.btnReset.UseVisualStyleBackColor = true;
             this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
             // 

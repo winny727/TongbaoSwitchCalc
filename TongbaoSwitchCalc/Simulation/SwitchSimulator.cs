@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using TongbaoSwitchCalc.DataModel;
 
 namespace TongbaoSwitchCalc.Simulation
@@ -13,7 +14,8 @@ namespace TongbaoSwitchCalc.Simulation
         public int NextSwitchPosIndex { get; set; } = -1;
         public bool ForceSwitch { get; set; } = false;
 
-        public string OutputResult { get; set; } = string.Empty;
+        private StringBuilder mOutputResult = new StringBuilder();
+        public string OutputResult => mOutputResult.ToString();
 
         private bool mIsSimulateBreak = false;
         private bool mIsSimulating = false;
@@ -38,8 +40,7 @@ namespace TongbaoSwitchCalc.Simulation
             mIsSimulateBreak = false;
             CurrentSimulateCount = 0;
             mIsSimulating = true;
-            OutputResult = string.Empty;
-            using (CodeTimer ct = new CodeTimer("Simulate"))
+            using (CodeTimer ct = CodeTimer.StartNew("Simulate"))
             {
                 while (CurrentSimulateCount < MaxSimulateCount)
                 {
@@ -56,7 +57,11 @@ namespace TongbaoSwitchCalc.Simulation
                     SimulateStep();
                     CurrentSimulateCount++;
                 }
-                OutputResult += $"\n模拟完成，模拟次数: {CurrentSimulateCount}, 模拟耗时: {ct.ElapsedMilliseconds}ms";
+                mOutputResult.Append("\r\n模拟完成，模拟次数: ")
+                             .Append(CurrentSimulateCount)
+                             .Append(", 模拟耗时: ")
+                             .Append(ct.ElapsedMilliseconds)
+                             .Append("ms");
             }
             mIsSimulating = false;
         }
@@ -64,14 +69,14 @@ namespace TongbaoSwitchCalc.Simulation
         public void SimulateStep()
         {
             PlayerData.SwitchTongbao(NextSwitchPosIndex, ForceSwitch);
-            if (string.IsNullOrEmpty(OutputResult))
+            if (mOutputResult.Length > 0)
             {
-                OutputResult = $"({CurrentSimulateCount}) {PlayerData.LastSwitchResult}";
+                mOutputResult.Append("\r\n");
             }
-            else
-            {
-                OutputResult += $"\n({CurrentSimulateCount}) {PlayerData.LastSwitchResult}";
-            }
+            mOutputResult.Append('(')
+                         .Append(PlayerData.SwitchCount)
+                         .Append(") ")
+                         .Append(PlayerData.LastSwitchResult);
             if (!ForceSwitch && !PlayerData.HasEnoughSwitchLife())
             {
                 BreakSimulation();
@@ -93,7 +98,12 @@ namespace TongbaoSwitchCalc.Simulation
                 return;
             }
             mIsSimulateBreak = true;
-            OutputResult += "\n模拟中止";
+            mOutputResult.Append("\r\n模拟中止");
+        }
+
+        public void ClearOutputResult()
+        {
+            mOutputResult.Clear();
         }
     }
 }

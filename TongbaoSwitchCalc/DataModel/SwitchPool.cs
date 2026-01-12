@@ -6,6 +6,7 @@ namespace TongbaoSwitchCalc.DataModel
     internal static class SwitchPool
     {
         private static readonly Dictionary<int, List<int>> mSwitchOutPools = new Dictionary<int, List<int>>(); // <poolId, <tongbaoId>>
+        private static readonly List<int> mValidTongbaoTempList = new List<int>();
 
         internal static void SetupTongbaoSwitchPool(TongbaoConfig config)
         {
@@ -38,18 +39,18 @@ namespace TongbaoSwitchCalc.DataModel
                 return -1; // 不可交换
             }
 
-            List<int> validTongbaoList = new List<int>();
+            mValidTongbaoTempList.Clear();
             foreach (int tongbaoId in mSwitchOutPools[poolId])
             {
                 if (!playerData.IsTongbaoExist(tongbaoId))
                 {
-                    validTongbaoList.Add(tongbaoId);
+                    mValidTongbaoTempList.Add(tongbaoId);
                 }
             }
 
             // 随机
-            int index = random.Next(0, validTongbaoList.Count);
-            return validTongbaoList[index];
+            int index = random.Next(0, mValidTongbaoTempList.Count);
+            return mValidTongbaoTempList[index];
         }
     }
 }

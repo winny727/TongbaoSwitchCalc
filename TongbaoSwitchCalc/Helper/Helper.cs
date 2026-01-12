@@ -44,6 +44,18 @@ namespace TongbaoSwitchCalc
             return string.Empty;
         }
 
+        public static void AppendTongbaoFullName(StringBuilder sb, int id)
+        {
+            TongbaoConfig config = TongbaoConfig.GetTongbaoConfigById(id);
+            if (config != null)
+            {
+                string typeName = Define.GetTongbaoTypeName(config.Type);
+                sb.Append(typeName)
+                  .Append('-')
+                  .Append(config.Name);
+            }
+        }
+
         public static void InitConfig()
         {
             TongbaoConfig.ClearTongbaoConfig();

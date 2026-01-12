@@ -30,6 +30,7 @@
         {
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.btnClose = new System.Windows.Forms.Button();
+            this.btnClear = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // textBox1
@@ -54,12 +55,24 @@
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
+            // btnClear
+            // 
+            this.btnClear.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.btnClear.Location = new System.Drawing.Point(382, 315);
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new System.Drawing.Size(100, 23);
+            this.btnClear.TabIndex = 3;
+            this.btnClear.Text = "清除";
+            this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
+            // 
             // RecordForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnClose;
             this.ClientSize = new System.Drawing.Size(600, 350);
+            this.Controls.Add(this.btnClear);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.textBox1);
             this.DoubleBuffered = true;
@@ -69,7 +82,7 @@
             this.MaximizeBox = false;
             this.Name = "RecordForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "交换信息";
+            this.Text = "交换记录";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.RecordForm_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -80,5 +93,6 @@
 
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button btnClose;
+        private System.Windows.Forms.Button btnClear;
     }
 }

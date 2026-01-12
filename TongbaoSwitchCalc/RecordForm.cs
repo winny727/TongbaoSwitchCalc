@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace ArknightsRoguelikeRec
 {
@@ -26,13 +27,25 @@ namespace ArknightsRoguelikeRec
             }
             set
             {
-                textBox1.Text = value;
+                textBox1.Text = value ?? string.Empty;
+                if (textBox1.Text.Length > 0)
+                {
+                    textBox1.SelectionLength = textBox1.Text.Length - 1;
+                    textBox1.ScrollToCaret();
+                }
             }
         }
+
+        private Action mOnClearClick;
 
         public RecordForm()
         {
             InitializeComponent();
+        }
+
+        public void SetClearCallback(Action callback)
+        {
+            mOnClearClick = callback;
         }
 
         private void RecordForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -47,6 +60,11 @@ namespace ArknightsRoguelikeRec
         private void btnClose_Click(object sender, EventArgs e)
         {
             this.Hide();
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            mOnClearClick?.Invoke();
         }
     }
 }
