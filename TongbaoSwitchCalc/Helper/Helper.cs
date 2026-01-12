@@ -33,69 +33,13 @@ namespace TongbaoSwitchCalc
             return null;
         }
 
-        public static string GetTongbaoName(int id)
+        public static string GetTongbaoFullName(int id)
         {
             TongbaoConfig config = TongbaoConfig.GetTongbaoConfigById(id);
             if (config!=null)
             {
-                string typeName = GetTongbaoTypeName(config.Type);
+                string typeName = Define.GetTongbaoTypeName(config.Type);
                 return $"{typeName}-{config.Name}";
-            }
-            return string.Empty;
-        }
-
-        public static string GetTongbaoTypeName(TongbaoType type)
-        {
-            switch (type)
-            {
-                case TongbaoType.Balance:
-                    return "衡";
-                case TongbaoType.Flower:
-                    return "花";
-                case TongbaoType.Risk:
-                    return "厉";
-                default:
-                    break;
-            }
-            return string.Empty;
-        }
-
-        public static string GetResName(ResType type)
-        {
-            switch (type)
-            {
-                case ResType.None:
-                    return "无";
-                case ResType.LifePoint:
-                    return "生命值";
-                case ResType.OriginiumIngots:
-                    return "源石锭";
-                case ResType.Coupon:
-                    return "票券";
-                case ResType.Candles:
-                    return "烛火";
-                case ResType.Shield:
-                    return "护盾";
-                case ResType.Hope:
-                    return "希望";
-                default:
-                    break;
-            }
-            return string.Empty;
-        }
-
-        public static string GetSquadName(SquadType type)
-        {
-            switch (type)
-            {
-                case SquadType.Flower:
-                    return "花团锦簇分队";
-                case SquadType.Tourist:
-                    return "游客分队";
-                case SquadType.Other:
-                    return "其它分队";
-                default:
-                    break;
             }
             return string.Empty;
         }

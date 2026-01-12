@@ -19,6 +19,67 @@ namespace TongbaoSwitchCalc.DataModel
             { SquadType.Tourist, new SquadDefine(13, new int[]{ 1, 1, 2, 2, 3 }) },
             { SquadType.Other, new SquadDefine(10, new int[]{ 1, 1, 2, 2, 3 }) },
         };
+
+        public static readonly Dictionary<ResType, ResType> ParentResType = new Dictionary<ResType, ResType>()
+        {
+            { ResType.PrimalFarmingCandles, ResType.Candles },
+        };
+
+        public static string GetTongbaoTypeName(TongbaoType type)
+        {
+            switch (type)
+            {
+                case TongbaoType.Balance:
+                    return "衡";
+                case TongbaoType.Flower:
+                    return "花";
+                case TongbaoType.Risk:
+                    return "厉";
+                default:
+                    break;
+            }
+            return string.Empty;
+        }
+
+        public static string GetResName(ResType type)
+        {
+            switch (type)
+            {
+                case ResType.None:
+                    return "无";
+                case ResType.LifePoint:
+                    return "生命值";
+                case ResType.OriginiumIngots:
+                    return "源石锭";
+                case ResType.Coupon:
+                    return "票券";
+                case ResType.Candles:
+                    return "烛火";
+                case ResType.Shield:
+                    return "护盾";
+                case ResType.Hope:
+                    return "希望";
+                default:
+                    break;
+            }
+            return string.Empty;
+        }
+
+        public static string GetSquadName(SquadType type)
+        {
+            switch (type)
+            {
+                case SquadType.Flower:
+                    return "花团锦簇分队";
+                case SquadType.Tourist:
+                    return "游客分队";
+                case SquadType.Other:
+                    return "其它分队";
+                default:
+                    break;
+            }
+            return string.Empty;
+        }
     }
 
     public enum ResType
@@ -28,7 +89,7 @@ namespace TongbaoSwitchCalc.DataModel
         OriginiumIngots = 2, //源石锭
         Coupon = 3, //票券
         Candles = 4, //烛火
-        TongbaoCandles = 5, //鸿蒙开荒烛火
+        PrimalFarmingCandles = 5, //鸿蒙开荒烛火
         Hope = 6, //希望
         Shield = 7, //护盾
     }

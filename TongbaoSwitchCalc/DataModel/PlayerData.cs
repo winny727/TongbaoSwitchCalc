@@ -16,7 +16,7 @@ namespace TongbaoSwitchCalc.DataModel
         public int MaxTongbaoCount { get; private set; } // 最大通宝数量
         public SpecialConditionFlag SpecialConditionFlag { get; set; } // 福祸相依（交换后的通宝如果是厉钱，则获得票券+1）
 
-        public event Action<ResType, int> OnResValueChanged;
+        public string LastSwitchResult { get; private set; }
 
         public PlayerData(IRandomGenerator random)
         {
@@ -31,6 +31,7 @@ namespace TongbaoSwitchCalc.DataModel
             SwitchCount = 0;
             MaxTongbaoCount = mSquadDefine.MaxTongbaoCount;
             TongbaoBox = new Tongbao[MaxTongbaoCount];
+            LastSwitchResult = string.Empty;
 
             mResValues.Clear();
             if (resValues != null)
@@ -38,7 +39,6 @@ namespace TongbaoSwitchCalc.DataModel
                 foreach (var item in resValues)
                 {
                     mResValues.Add(item.Key, item.Value);
-                    OnResValueChanged?.Invoke(item.Key, item.Value);
                 }
             }
 
@@ -177,7 +177,10 @@ namespace TongbaoSwitchCalc.DataModel
                     mResValues.Add(type, 0);
                 }
                 mResValues[type] += value;
-                OnResValueChanged?.Invoke(type, mResValues[type]);
+                if (Define.ParentResType.TryGetValue(type, out var parentResType))
+                {
+                    AddResValue(parentResType, value);
+                }
             }
         }
 
@@ -190,7 +193,10 @@ namespace TongbaoSwitchCalc.DataModel
                     mResValues.Add(type, 0);
                 }
                 mResValues[type] = value;
-                OnResValueChanged?.Invoke(type, value);
+                if (Define.ParentResType.TryGetValue(type, out var parentResType))
+                {
+                    SetResValue(parentResType, value);
+                }
             }
         }
 
@@ -223,48 +229,88 @@ namespace TongbaoSwitchCalc.DataModel
 
         public bool HasEnoughSwitchLife()
         {
+            if (mSquadDefine == null)
+            {
+                return true;
+            }
             int costLifePoint = mSquadDefine.GetCostLifePoint(SwitchCount);
             return GetResValue(ResType.LifePoint) > costLifePoint;
         }
 
-        public bool SwitchTongbao(int posIndex, bool force = false)
+        public int GetNextSwitchCostLifePoint()
         {
             if (mSquadDefine == null)
             {
-                return false;
+                return 0;
             }
+            return mSquadDefine.GetCostLifePoint(SwitchCount);
+        }
 
+        public bool SwitchTongbao(int posIndex, bool force = false)
+        {
             Tongbao tongbao = GetTongbao(posIndex);
-            if (tongbao == null || !tongbao.CanSwitch())
+            if (tongbao == null)
             {
-                // 当前通宝不可交换
+                LastSwitchResult = $"交换失败，选中的位置[{posIndex}]上的通宝为空";
                 return false;
             }
 
-            int costLifePoint = mSquadDefine.GetCostLifePoint(SwitchCount);
-            if (GetResValue(ResType.LifePoint) > costLifePoint || force)
+            if (!tongbao.CanSwitch())
+            {
+                LastSwitchResult = $"交换失败，通宝[{tongbao.Name}]不可交换";
+                return false;
+            }
+
+            int costLifePoint = GetNextSwitchCostLifePoint();
+            int lifePoint = GetResValue(ResType.LifePoint);
+            if (lifePoint > costLifePoint || force)
             {
                 int newTongbaoId = SwitchPool.SwitchTongbao(mRandom, this, tongbao);
                 Tongbao newTongbao = Tongbao.CreateTongbao(newTongbaoId, mRandom);
                 if (newTongbao != null)
                 {
-                    InsertTongbao(newTongbao, posIndex);
+                    string resChanged = string.Empty;
+
+                    string GetSigned(int value) => value > 0 ? $"+{value}" : value.ToString();
+
+                    void ResValueChanged(ResType type, int value)
+                    {
+                        if (type == ResType.None)
+                        {
+                            return;
+                        }
+
+                        if (!string.IsNullOrEmpty(resChanged))
+                        {
+                            resChanged += "，";
+                        }
+
+                        int oldValue = GetResValue(type);
+                        AddResValue(type, value);
+                        int newValue = GetResValue(type);
+                        resChanged += $"{Define.GetResName(type)}{GetSigned(value)}: {oldValue}->{newValue}";
+                    }
+
+                    InsertTongbao(newTongbao, posIndex); // TODO 获取新通宝的品相效果和自带效果记录 // TODO 10w次交换频繁GC问题
                     SwitchCount++;
-                    AddResValue(ResType.LifePoint, -costLifePoint);
-                    AddResValue(newTongbao.RandomResType, newTongbao.RandomResCount);
+                    ResValueChanged(ResType.LifePoint, -costLifePoint);
+                    ResValueChanged(newTongbao.RandomResType, newTongbao.RandomResCount);
 
                     // 福祸相依
                     if (HasSpecialCondition(SpecialConditionFlag.Collectible_Fortune))
                     {
                         if (newTongbao.Type == TongbaoType.Risk)
                         {
-                            AddResValue(ResType.Coupon, 1);
+                            ResValueChanged(ResType.Coupon, 1);
                         }
                     }
+                    LastSwitchResult = $"将位置[{posIndex}]上的[{tongbao.Name}]交换为[{newTongbao.Name}] " +
+                        $"({resChanged})";
                     return true;
                 }
             }
 
+            LastSwitchResult = $"交换失败，交换所需生命值不足 ({costLifePoint})";
             return false;
         }
     }

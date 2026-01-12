@@ -27,7 +27,7 @@ Id	Name	Description	ImgPath	Type	SwitchInPool	SwitchOutPools	ExtraResType	ExtraR
 1026	天下先		rogue_5_copper_U_4$0.png	Balance	2	5				
 1027	初有文		rogue_5_copper_U_5$0.png	Balance	6	2				
 1028	勤运体		rogue_5_copper_U_7$0.png	Balance	7	2				
-1029	鸿蒙开荒		rogue_5_copper_S_2$0.png	Balance	3	3	TongbaoCandles	2		
+1029	鸿蒙开荒		rogue_5_copper_S_2$0.png	Balance	3	3	PrimalFarmingCandles	2		
 2001	火灼土沃		rogue_5_copper_B_09$0.png	Flower	1	1				
 2002	驰道长		rogue_5_copper_F_09$0.png	Flower	1	2				
 2003	武人之争		rogue_5_copper_F_10$0.png	Flower	1	3				

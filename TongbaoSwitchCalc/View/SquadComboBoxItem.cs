@@ -11,7 +11,7 @@ namespace TongbaoSwitchCalc
 
         public SquadComboBoxItem(SquadType type)
         {
-            Key = Helper.GetSquadName(type);
+            Key = Define.GetSquadName(type);
             Value = type;
         }
     }

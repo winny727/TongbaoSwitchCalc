@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using TongbaoSwitchCalc.DataModel;
 
-namespace TongbaoSwitchCalc
+namespace TongbaoSwitchCalc.Simulation
 {
     public abstract class Rule
     {
+        public string Name { get; set; }
         public bool Enabled { get; set; } = true;
-        public abstract void ExecuteRule(PlayerData playerData);
+        public abstract void ExecuteRule(SwitchSimulator simulator, PlayerData playerData);
     }
 
     public class TongbaoPickRule : Rule
@@ -16,10 +17,11 @@ namespace TongbaoSwitchCalc
 
         public TongbaoPickRule(int targetPosIndex)
         {
+            Name = $"优先交换钱盒槽位{targetPosIndex}里的通宝";
             TargetPosIndex = targetPosIndex;
         }
 
-        public override void ExecuteRule(PlayerData playerData)
+        public override void ExecuteRule(SwitchSimulator simulator, PlayerData playerData)
         {
             throw new NotImplementedException();
         }
@@ -31,10 +33,19 @@ namespace TongbaoSwitchCalc
 
         public AutoStopRule(int targetTongbaoId)
         {
+            TongbaoConfig config = TongbaoConfig.GetTongbaoConfigById(targetTongbaoId);
+            if (config != null)
+            {
+                Name = $"交换出[{config.Name}]就停止";
+            }
+            else
+            {
+                Name = $"交换出通宝[ID={targetTongbaoId}]就停止";
+            }
             TargetTongbaoId = targetTongbaoId;
         }
 
-        public override void ExecuteRule(PlayerData playerData)
+        public override void ExecuteRule(SwitchSimulator simulator, PlayerData playerData)
         {
             throw new NotImplementedException();
         }

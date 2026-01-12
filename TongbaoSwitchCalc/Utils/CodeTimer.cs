@@ -18,4 +18,6 @@ public sealed class CodeTimer : IDisposable
         //Console.WriteLine($"{mName} 耗时: {mStopWatch.Elapsed.TotalMilliseconds:F3} ms");
         Debug.WriteLine($"{mName} 耗时: {mStopWatch.Elapsed.TotalMilliseconds:F3} ms");
     }
+
+    public float ElapsedMilliseconds => (float)mStopWatch.Elapsed.TotalMilliseconds;
 }
