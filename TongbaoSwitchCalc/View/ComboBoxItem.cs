@@ -4,14 +4,14 @@ using TongbaoSwitchCalc.DataModel;
 
 namespace TongbaoSwitchCalc
 {
-    public class SquadComboBoxItem
+    public class ComboBoxItem<T>
     {
         public string Key { get; set; }
-        public SquadType Value { get; set; }
+        public T Value { get; set; }
 
-        public SquadComboBoxItem(SquadType type)
+        public ComboBoxItem(string key, T type)
         {
-            Key = Define.GetSquadName(type);
+            Key = key;
             Value = type;
         }
     }

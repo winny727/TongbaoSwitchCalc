@@ -5,19 +5,23 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using TongbaoSwitchCalc.DataModel;
+using TongbaoSwitchCalc.DataModel.Simulation;
 using TongbaoSwitchCalc.Impl;
-using TongbaoSwitchCalc.Simulation;
+using TongbaoSwitchCalc.Impl.Simulation;
 
 namespace TongbaoSwitchCalc
 {
     public partial class MainForm : Form
     {
         private PlayerData mPlayerData;
-        private IRandomGenerator mRandom;
+        private RandomGenerator mRandom;
         private SwitchSimulator mSwitchSimulator;
+        private DataCollector mDataCollector;
 
-        private SquadType mSelectedSquadType = SquadType.Flower;
-        private int mSelectedTongbaoPosIndex = -1;
+        private SquadType mSelectedSquadType = default;
+        private SimulationType mSelectedSimulationType = default;
+        private int mSelectedTongbaoSlotIndex = -1;
+        private bool mLastSwitchIsSimulation = false;
 
         private string mOutputResult;
         private bool mOutputResultChanged = false;
@@ -49,7 +53,8 @@ namespace TongbaoSwitchCalc
             Helper.InitConfig();
             mRandom = new RandomGenerator();
             mPlayerData = new PlayerData(mRandom);
-            mSwitchSimulator = new SwitchSimulator(mPlayerData);
+            mDataCollector = new DataCollector();
+            mSwitchSimulator = new SwitchSimulator(mPlayerData, mDataCollector);
             InitPlayerData();
         }
 
@@ -85,7 +90,7 @@ namespace TongbaoSwitchCalc
             {
                 for (int i = 0; i < 1000; i++)
                 {
-                    SelectTongbaoPos(i % names.Length);
+                    SelectTongbaoSlot(i % names.Length);
                     SwitchOnce(true);
                 }
             }
@@ -109,13 +114,23 @@ namespace TongbaoSwitchCalc
 
             comboBoxSquad.DisplayMember = "Key";
             comboBoxSquad.ValueMember = "Value";
-
             comboBoxSquad.Items.Clear();
             foreach (SquadType type in Enum.GetValues(typeof(SquadType)))
             {
-                comboBoxSquad.Items.Add(new SquadComboBoxItem(type));
+                string key = Define.GetSquadName(type);
+                comboBoxSquad.Items.Add(new ComboBoxItem<SquadType>(key, type));
             }
             comboBoxSquad.SelectedIndex = 0;
+
+            comboBoxSimMode.DisplayMember = "Key";
+            comboBoxSimMode.ValueMember = "Value";
+            comboBoxSimMode.Items.Clear();
+            foreach (SimulationType type in Enum.GetValues(typeof(SimulationType)))
+            {
+                string key = SimulationDefine.GetSimulationName(type);
+                comboBoxSimMode.Items.Add(new ComboBoxItem<SimulationType>(key, type));
+            }
+            comboBoxSimMode.SelectedIndex = 0;
 
             checkBoxFortune.Checked = false;
 
@@ -160,9 +175,17 @@ namespace TongbaoSwitchCalc
             }
         }
 
-        private void UpdateTongbaoView(int posIndex)
+        private void UpdateAllTongbaoView()
         {
-            if (posIndex < 0 || posIndex >= listViewTongbao.Items.Count)
+            for (int i = 0; i < mPlayerData.MaxTongbaoCount; i++)
+            {
+                UpdateTongbaoView(i);
+            }
+        }
+
+        private void UpdateTongbaoView(int slotIndex)
+        {
+            if (slotIndex < 0 || slotIndex >= listViewTongbao.Items.Count)
             {
                 return;
             }
@@ -170,17 +193,18 @@ namespace TongbaoSwitchCalc
             var sb = mTempStringBuilder;
             sb.Clear();
 
-            Tongbao tongbao = mPlayerData.GetTongbao(posIndex);
-            ListViewItem item = listViewTongbao.Items[posIndex];
+            Tongbao tongbao = mPlayerData.GetTongbao(slotIndex);
+            ListViewItem item = listViewTongbao.Items[slotIndex];
             if (tongbao != null)
             {
                 sb.Append('[')
-                  .Append(posIndex + 1)
+                  .Append(slotIndex + 1)
                   .Append(']');
                 Helper.AppendTongbaoFullName(sb, tongbao.Id);
                 if (tongbao.RandomResType != ResType.None)
                 {
-                    sb.Append("\n(")
+                    sb.AppendLine()
+                      .Append('(')
                       .Append(Define.GetResName(tongbao.RandomResType))
                       .Append('+')
                       .Append(tongbao.RandomResCount)
@@ -192,7 +216,7 @@ namespace TongbaoSwitchCalc
             else
             {
                 sb.Append('[')
-                  .Append(posIndex + 1)
+                  .Append(slotIndex + 1)
                   .Append("] (空)");
                 item.Text = sb.ToString();
                 item.ImageKey = "Empty";
@@ -229,55 +253,59 @@ namespace TongbaoSwitchCalc
 
             sb.Append("生命值: ").Append(hp).Append('(');
             AppendSigned(sb, deltaHp);
-            sb.Append(")\n");
+            sb.AppendLine(")");
 
             sb.Append("源石锭: ").Append(ingots).Append('(');
             AppendSigned(sb, deltaIngots);
-            sb.Append(")\n");
+            sb.AppendLine(")");
 
             sb.Append("票券: ").Append(coupon).Append('(');
             AppendSigned(sb, deltaCoupon);
-            sb.Append(")\n");
+            sb.AppendLine(")");
 
             sb.Append("烛火: ").Append(candle).Append('(');
             AppendSigned(sb, deltaCandle);
-            sb.Append(")\n");
+            sb.AppendLine(")");
 
-            sb.Append("鸿蒙开荒烛火: ").Append(primalFarmingCandle).Append('\n');
+            sb.Append("鸿蒙开荒烛火: ")
+              .Append(primalFarmingCandle)
+              .AppendLine();
 
             sb.Append("护盾: ").Append(shield).Append('(');
             AppendSigned(sb, deltaShield);
-            sb.Append(")\n");
+            sb.AppendLine(")");
 
             sb.Append("希望: ").Append(hope).Append('(');
             AppendSigned(sb, deltaHope);
-            sb.Append(")\n");
+            sb.AppendLine(")");
 
             lblRes.Text = sb.ToString();
             sb.Clear();
 
-            int posIndex = mSelectedTongbaoPosIndex;
-            Tongbao tongbao = mPlayerData.GetTongbao(posIndex);
+            int slotIndex = mSelectedTongbaoSlotIndex;
+            Tongbao tongbao = mPlayerData.GetTongbao(slotIndex);
 
             if (tongbao == null)
             {
-                sb.Append("当前未选中通宝\n");
+                sb.AppendLine("当前选中通宝:")
+                  .AppendLine("无");
             }
             else
             {
-                sb.Append("当前选中通宝: [")
-                  .Append(posIndex + 1)
+                sb.AppendLine("当前选中通宝:")
+                  .Append('[')
+                  .Append(slotIndex + 1)
                   .Append(']');
                 Helper.AppendTongbaoFullName(sb, tongbao.Id);
-                sb.Append('\n');
+                sb.AppendLine();
             }
 
             sb.Append("当前交换次数: ")
               .Append(mPlayerData.SwitchCount)
-              .Append('\n');
+              .AppendLine();
 
             sb.Append("下次交换消耗生命值: ")
-              .Append(mPlayerData.GetNextSwitchCostLifePoint());
+              .Append(mPlayerData.NextSwitchCostLifePoint);
 
             lblCurrent.Text = sb.ToString();
             sb.Clear();
@@ -289,96 +317,115 @@ namespace TongbaoSwitchCalc
             }
         }
 
-        private void OnSelectNewRandomTongbao(int id, int posIndex)
+        private void OnSelectNewRandomTongbao(int id, int slotIndex)
         {
             Tongbao tongbao = Tongbao.CreateTongbao(id, mRandom);
-            mPlayerData.InsertTongbao(tongbao, posIndex);
-            UpdateTongbaoView(posIndex);
+            mPlayerData.InsertTongbao(tongbao, slotIndex);
+            UpdateTongbaoView(slotIndex);
             UpdateView();
         }
 
-        private void OnSelectNewCustomTongbao(int id, int posIndex,
+        private void OnSelectNewCustomTongbao(int id, int slotIndex,
             ResType randomResType = ResType.None, int randomResCount = 0)
         {
             Tongbao tongbao = Tongbao.CreateTongbao(id);
             tongbao.ApplyRandomRes(randomResType, randomResCount);
-            mPlayerData.InsertTongbao(tongbao, posIndex);
-            UpdateTongbaoView(posIndex);
+            mPlayerData.InsertTongbao(tongbao, slotIndex);
+            UpdateTongbaoView(slotIndex);
             UpdateView();
         }
 
-        private void SelectTongbaoPos(int posIndex)
+        private void SelectTongbaoSlot(int slotIndex)
         {
-            mSelectedTongbaoPosIndex = posIndex;
-            UpdateView();
-        }
-
-        private void SwitchSimulation()
-        {
-            mSwitchSimulator.MaxSimulateCount = (int)numSimCnt.Value;
-            mSwitchSimulator.NextSwitchPosIndex = mSelectedTongbaoPosIndex;
-            mSwitchSimulator.ForceSwitch = checkBoxForceSwitch.Checked;
-            mSwitchSimulator.Simulate();
-            mOutputResult = mSwitchSimulator.OutputResult;
-            mOutputResultChanged = true;
-            for (int i = 0; i < mPlayerData.MaxTongbaoCount; i++)
-            {
-                UpdateTongbaoView(i);
-            }
+            mSelectedTongbaoSlotIndex = slotIndex;
             UpdateView();
         }
 
         private void SwitchOnce(bool force = false)
         {
-            int posIndex = mSelectedTongbaoPosIndex;
-            if (!mPlayerData.SwitchTongbao(posIndex, force))
+            if (mLastSwitchIsSimulation)
             {
-                Tongbao tongbao = mPlayerData.GetTongbao(posIndex);
+                ClearRecord();
+            }
+
+            mLastSwitchIsSimulation = false;
+            int slotIndex = mSelectedTongbaoSlotIndex;
+            mDataCollector?.OnSwitchStepBegin(new SimulateContext(0, mPlayerData.SwitchCount, slotIndex, mPlayerData));
+            if (!mPlayerData.SwitchTongbao(slotIndex, force))
+            {
+                Tongbao tongbao = mPlayerData.GetTongbao(slotIndex);
                 if (tongbao == null)
                 {
+                    mDataCollector?.OnSwitchStepEnd(new SimulateContext(0, mPlayerData.SwitchCount, slotIndex, mPlayerData), SwitchStepResult.SelectedEmpty);
                     MessageBox.Show("交换失败，请先选中一个通宝。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
                 if (!tongbao.CanSwitch())
                 {
+                    mDataCollector?.OnSwitchStepEnd(new SimulateContext(0, mPlayerData.SwitchCount, slotIndex, mPlayerData), SwitchStepResult.TongbaoCanNotSwitch);
                     MessageBox.Show($"交换失败，选中通宝[{Helper.GetTongbaoFullName(tongbao.Id)}]无法交换。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
-                if (!force && !mPlayerData.HasEnoughSwitchLife())
+                if (!force && !mPlayerData.HasEnoughSwitchLife)
                 {
+                    mDataCollector?.OnSwitchStepEnd(new SimulateContext(0, mPlayerData.SwitchCount, slotIndex, mPlayerData), SwitchStepResult.LifePointNotEnough);
                     MessageBox.Show($"交换失败，当前生命值不足", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
+                mDataCollector?.OnSwitchStepEnd(new SimulateContext(0, mPlayerData.SwitchCount, slotIndex, mPlayerData), SwitchStepResult.UnknownError);
                 MessageBox.Show("交换失败，请检查当前配置和状态。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-            if (!string.IsNullOrEmpty(mOutputResult))
-            {
-                mOutputResult += "\n";
-            }
-            mOutputResult = $"({mPlayerData.SwitchCount}) {mPlayerData.LastSwitchResult}";
+
+            mDataCollector?.OnSwitchStepEnd(new SimulateContext(0, mPlayerData.SwitchCount, slotIndex, mPlayerData), SwitchStepResult.Success);
+            mOutputResult += $"({mPlayerData.SwitchCount}) {mDataCollector.LastSwitchResult}{Environment.NewLine}";
             mOutputResultChanged = true;
-            UpdateTongbaoView(posIndex);
+            UpdateTongbaoView(slotIndex);
             UpdateView();
         }
 
-        private void cbSquad_SelectedIndexChanged(object sender, EventArgs e)
+        private void SwitchSimulate(SimulationType mode)
         {
-            SquadComboBoxItem item = comboBoxSquad.SelectedItem as SquadComboBoxItem;
-            //if (mPlayerData.SwitchCount > 0)
-            //{
-            //    var result = MessageBox.Show("切换分队会重置当前交换次数，是否继续？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            //    if (result == DialogResult.No)
-            //    {
-            //        return;
-            //    }
-            //    mPlayerData.SwitchCount = 0;
-            //}
+            if (checkBoxAutoRevert.Checked)
+            {
+                ResetPlayerData();
+            }
+            mLastSwitchIsSimulation = true;
+            mSwitchSimulator.TotalSimulationCount = (int)numSimCnt.Value;
+            mSwitchSimulator.MinimumLifePoint = (int)numMinHp.Value;
+            mSwitchSimulator.NextSwitchSlotIndex = mSelectedTongbaoSlotIndex;
+            mSwitchSimulator.Simulate(mode);
+            mOutputResult = mDataCollector.OutputResult;
+            mOutputResultChanged = true;
+            UpdateAllTongbaoView();
+            UpdateView();
+        }
 
-            mSelectedSquadType = item?.Value ?? SquadType.Flower;
+        private void ResetPlayerData()
+        {
+            if (mLastSwitchIsSimulation)
+            {
+                mSwitchSimulator.RevertPlayerData();
+            }
+            mPlayerData.SwitchCount = 0;
+            mPlayerData.InitResValues(new Dictionary<ResType, int>()
+            {
+                { ResType.LifePoint, (int)numHp.Value },
+                { ResType.OriginiumIngots, (int)numIngots.Value },
+                { ResType.Coupon, (int)numCoupon.Value },
+                { ResType.Candles, (int)numCandle.Value },
+                { ResType.Shield, (int)numShield.Value },
+                { ResType.Hope, (int)numHope.Value },
+            });
+        }
+
+        private void comboBoxSquad_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ComboBoxItem<SquadType> item = comboBoxSquad.SelectedItem as ComboBoxItem<SquadType>;
+            mSelectedSquadType = item?.Value ?? default;
             mPlayerData.SetSquadType(mSelectedSquadType);
             InitTongbaoSlot();
         }
@@ -388,14 +435,20 @@ namespace TongbaoSwitchCalc
             mPlayerData.SetSpecialCondition(SpecialConditionFlag.Collectible_Fortune, checkBoxFortune.Checked);
         }
 
+        private void comboBoxSimMode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ComboBoxItem<SimulationType> item = comboBoxSimMode.SelectedItem as ComboBoxItem<SimulationType>;
+            mSelectedSimulationType = item?.Value ?? default;
+        }
+
         // 选择通宝槽位
         private void listViewTongbao_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listViewTongbao.SelectedItems.Count > 0)
             {
                 ListViewItem selectedItem = listViewTongbao.SelectedItems[0];
-                int posIndex = listViewTongbao.Items.IndexOf(selectedItem);
-                SelectTongbaoPos(posIndex);
+                int slotIndex = listViewTongbao.Items.IndexOf(selectedItem);
+                SelectTongbaoSlot(slotIndex);
             }
         }
 
@@ -405,17 +458,7 @@ namespace TongbaoSwitchCalc
             if (listViewTongbao.SelectedItems.Count > 0)
             {
                 ListViewItem selectedItem = listViewTongbao.SelectedItems[0];
-                int posIndex = listViewTongbao.Items.IndexOf(selectedItem);
-
-                //if (mPlayerData.SwitchCount > 0)
-                //{
-                //    var result = MessageBox.Show("添加/更改通宝会重置当前交换次数，是否继续？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                //    if (result == DialogResult.No)
-                //    {
-                //        return;
-                //    }
-                //    mPlayerData.SwitchCount = 0;
-                //}
+                int slotIndex = listViewTongbao.Items.IndexOf(selectedItem);
 
                 // 测试，随机添加通宝
                 var configs = TongbaoConfig.GetAllTongbaoConfigs();
@@ -433,34 +476,29 @@ namespace TongbaoSwitchCalc
                 }
                 if (targetId > 0)
                 {
-                    OnSelectNewRandomTongbao(targetId, posIndex);
-                    //OnSelectNewCustomTongbao(targetId, posIndex);
+                    OnSelectNewRandomTongbao(targetId, slotIndex);
+                    //OnSelectNewCustomTongbao(targetId, slotIndex);
                 }
             }
         }
 
         private void btnSwitch_Click(object sender, EventArgs e)
         {
-            SwitchOnce(checkBoxForceSwitch.Checked);
+            SwitchOnce();
         }
 
         private void btnSimulation_Click(object sender, EventArgs e)
         {
-            SwitchSimulation();
+            SwitchSimulate(mSelectedSimulationType);
         }
 
         private void btnReset_Click(object sender, EventArgs e)
         {
-            mPlayerData.SwitchCount = 0;
-            mPlayerData.InitResValues(new Dictionary<ResType, int>()
+            ResetPlayerData();
+            if (mLastSwitchIsSimulation)
             {
-                { ResType.LifePoint, (int)numHp.Value },
-                { ResType.OriginiumIngots, (int)numIngots.Value },
-                { ResType.Coupon, (int)numCoupon.Value },
-                { ResType.Candles, (int)numCandle.Value },
-                { ResType.Shield, (int)numShield.Value },
-                { ResType.Hope, (int)numHope.Value },
-            });
+                UpdateAllTongbaoView();
+            }
             ClearRecord();
             UpdateView();
         }
@@ -490,15 +528,17 @@ namespace TongbaoSwitchCalc
                 mOutputResultChanged = false;
             }
             mRecordForm.Show();
-            mRecordForm.Activate();
+            mRecordForm.WindowState = FormWindowState.Normal;
+            mRecordForm.Focus();
         }
 
         private void ClearRecord()
         {
-            mSwitchSimulator.ClearOutputResult();
+            mDataCollector.ClearData();
             mOutputResult = string.Empty;
             mRecordForm.Content = string.Empty;
             mOutputResultChanged = false;
+            GC.Collect();
         }
     }
 }

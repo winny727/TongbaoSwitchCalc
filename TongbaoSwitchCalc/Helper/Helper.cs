@@ -242,16 +242,6 @@ namespace TongbaoSwitchCalc
             decimal lastValue = numeric.Value;
             void OnValueChanged(object sender, EventArgs e)
             {
-                //if (type == ResType.LifePoint && playerData.SwitchCount > 0 && numeric.Value != lastValue)
-                //{
-                //    var result = MessageBox.Show("修改生命值会重置当前交换次数，是否继续？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                //    if (result == DialogResult.No)
-                //    {
-                //        return;
-                //    }
-                //    playerData.SwitchCount = 0;
-                //}
-
                 playerData.AddResValue(type, (int)(numeric.Value - lastValue));
                 lastValue = numeric.Value;
             }

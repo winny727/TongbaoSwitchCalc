@@ -5,7 +5,7 @@ namespace TongbaoSwitchCalc.DataModel
 {
     public static class Define
     {
-        public static readonly List<RandomResDefine> RandomResDefines = new List<RandomResDefine>()
+        public static readonly IReadOnlyList<RandomResDefine> RandomResDefines = new List<RandomResDefine>()
         {
             new RandomResDefine(0.0393f, ResType.Shield, 2),
             new RandomResDefine(0.0291f, ResType.Hope, 1),
@@ -13,14 +13,14 @@ namespace TongbaoSwitchCalc.DataModel
         };
 
         // 不同分队的钱盒容量/交换消耗生命值
-        public static readonly Dictionary<SquadType, SquadDefine> SquadDefines = new Dictionary<SquadType, SquadDefine>()
+        public static readonly IReadOnlyDictionary<SquadType, SquadDefine> SquadDefines = new Dictionary<SquadType, SquadDefine>()
         {
             { SquadType.Flower, new SquadDefine(10, new int[]{ 1 }) },
             { SquadType.Tourist, new SquadDefine(13, new int[]{ 1, 1, 2, 2, 3 }) },
             { SquadType.Other, new SquadDefine(10, new int[]{ 1, 1, 2, 2, 3 }) },
         };
 
-        public static readonly Dictionary<ResType, ResType> ParentResType = new Dictionary<ResType, ResType>()
+        public static readonly IReadOnlyDictionary<ResType, ResType> ParentResType = new Dictionary<ResType, ResType>()
         {
             { ResType.PrimalFarmingCandles, ResType.Candles },
         };

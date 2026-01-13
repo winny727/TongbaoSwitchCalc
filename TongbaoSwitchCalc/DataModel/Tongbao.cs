@@ -79,6 +79,37 @@ namespace TongbaoSwitchCalc.DataModel
             mPool.Push(this);
         }
 
+        public void CopyFrom(Tongbao tongbao)
+        {
+            if (tongbao == null)
+            {
+                Id = default;
+                Name = default;
+                Description = default;
+                ImgPath = default;
+                Type = default;
+                SwitchInPool = default;
+                SwitchOutPools = default;
+                ExtraResType = default;
+                ExtraResCount = default;
+                RandomResType = default;
+                RandomResCount = default;
+                return;
+            }
+
+            Id = tongbao.Id;
+            Name = tongbao.Name;
+            Description = tongbao.Description;
+            ImgPath = tongbao.ImgPath;
+            Type = tongbao.Type;
+            SwitchInPool = tongbao.SwitchInPool;
+            SwitchOutPools = tongbao.SwitchOutPools;
+            ExtraResType = tongbao.ExtraResType;
+            ExtraResCount = tongbao.ExtraResCount;
+            RandomResType = tongbao.RandomResType;
+            RandomResCount = tongbao.RandomResCount;
+        }
+
         public bool CanSwitch()
         {
             return SwitchInPool > 0;

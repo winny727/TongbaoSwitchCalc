@@ -42,7 +42,7 @@ namespace TongbaoSwitchCalc.DataModel
             mValidTongbaoTempList.Clear();
             foreach (int tongbaoId in mSwitchOutPools[poolId])
             {
-                if (!playerData.IsTongbaoExist(tongbaoId))
+                if (!playerData.IsTongbaoExist(tongbaoId) && !playerData.IsTongbaoLocked(tongbaoId))
                 {
                     mValidTongbaoTempList.Add(tongbaoId);
                 }
