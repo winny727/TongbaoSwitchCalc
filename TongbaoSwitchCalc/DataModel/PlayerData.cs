@@ -50,7 +50,7 @@ namespace TongbaoSwitchCalc.DataModel
             }
         }
 
-        public void InitResValues(Dictionary<ResType, int> resValues)
+        public void InitResValues(IReadOnlyDictionary<ResType, int> resValues)
         {
             mResValues.Clear();
             if (resValues != null)

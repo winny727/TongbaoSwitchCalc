@@ -33,6 +33,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.checkBoxFortune = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.panelLockedList = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
             this.numSimCnt = new System.Windows.Forms.NumericUpDown();
             this.listViewTongbao = new System.Windows.Forms.ListView();
@@ -64,6 +66,7 @@
             this.comboBoxSimMode = new System.Windows.Forms.ComboBox();
             this.label10 = new System.Windows.Forms.Label();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.label11 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numSimCnt)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -110,6 +113,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label12);
+            this.groupBox1.Controls.Add(this.panelLockedList);
             this.groupBox1.Controls.Add(this.comboBoxSquad);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.checkBoxFortune);
@@ -119,6 +124,24 @@
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "基础设置";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(6, 65);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(77, 12);
+            this.label12.TabIndex = 4;
+            this.label12.Text = "商店锁定通宝";
+            // 
+            // panelLockedList
+            // 
+            this.panelLockedList.BackColor = System.Drawing.SystemColors.Window;
+            this.panelLockedList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelLockedList.Location = new System.Drawing.Point(6, 80);
+            this.panelLockedList.Name = "panelLockedList";
+            this.panelLockedList.Size = new System.Drawing.Size(188, 36);
+            this.panelLockedList.TabIndex = 2;
             // 
             // label2
             // 
@@ -490,12 +513,24 @@
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "自定义规则";
             // 
+            // label11
+            // 
+            this.label11.BackColor = System.Drawing.SystemColors.Window;
+            this.label11.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label11.Location = new System.Drawing.Point(382, 410);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(120, 20);
+            this.label11.TabIndex = 15;
+            this.label11.Text = "双击添加/更改通宝";
+            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // MainForm
             // 
             this.AcceptButton = this.btnSwitch;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 452);
+            this.Controls.Add(this.label11);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.btnRecord);
@@ -569,5 +604,8 @@
         private System.Windows.Forms.NumericUpDown numMinHp;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.CheckBox checkBoxAutoRevert;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Panel panelLockedList;
     }
 }

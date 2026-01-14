@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using TongbaoSwitchCalc.DataModel;
+using TongbaoSwitchCalc.View;
 
 namespace TongbaoSwitchCalc
 {
@@ -38,7 +39,7 @@ namespace TongbaoSwitchCalc
 
         private int GetListViewItemId(ListViewItem item) => (item?.Tag is int id) ? id : -1;
 
-        public void SetSelectedIds(List<int> selectedIds)
+        public void SetSelectedIds(IReadOnlyList<int> selectedIds)
         {
             SelectedIds.Clear();
             if (IsMultiSelect)
@@ -47,7 +48,7 @@ namespace TongbaoSwitchCalc
                 {
                     if (!SelectedIds.Contains(id))
                     {
-                        SelectedIds.Remove(id);
+                        SelectedIds.Add(id);
                     }
                 }
             }
@@ -140,11 +141,9 @@ namespace TongbaoSwitchCalc
         {
             foreach (ListViewItem item in listView1.Items)
             {
+                if (item == null) continue;
                 int id = GetListViewItemId(item);
-                if (SelectedIds.Contains(id))
-                {
-                    item.Checked = true;
-                }
+                item.Checked = SelectedIds.Contains(id);
             }
         }
 
@@ -155,8 +154,6 @@ namespace TongbaoSwitchCalc
                 return;
             }
 
-            SelectedId = -1;
-            SelectedIds.Clear();
             if (listView1.SelectedItems.Count > 0)
             {
                 ListViewItem selectedItem = listView1.SelectedItems[0];
@@ -176,17 +173,16 @@ namespace TongbaoSwitchCalc
             int id = GetListViewItemId(e.Item);
             if (IsSingleSelect)
             {
-                foreach (ListViewItem item in listView1.CheckedItems)
+                if (e.Item.Checked && !SelectedIds.Contains(id))
                 {
-                    if (item != null && item != e.Item)
-                    {
-                        item.Checked = false;
-                    }
-                }
-                SelectedIds.Clear();
-                if (e.Item.Checked)
-                {
+                    SelectedIds.Clear();
                     SelectedIds.Add(id);
+                    UpdateChecked(); //清空其它选中项
+                }
+                else if (!e.Item.Checked && SelectedIds.Contains(id))
+                {
+                    SelectedIds.Clear();
+                    UpdateChecked();
                 }
             }
             else if (IsMultiSelect)
@@ -203,13 +199,19 @@ namespace TongbaoSwitchCalc
             mRawSet = false;
 
             SelectedId = SelectedIds.Count > 0 ? SelectedIds[0] : -1;
-            btnOK.Enabled = SelectedIds.Count > 0;
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             ComboBoxItem<RandomResDefine> item = comboBox1.SelectedItem as ComboBoxItem<RandomResDefine>;
             SelectedRandomRes = item?.Value;
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            SelectedIds.Clear();
+            SelectedId = -1;
+            UpdateChecked();
         }
 
         private void btnRandom_Click(object sender, EventArgs e)

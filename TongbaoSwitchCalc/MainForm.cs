@@ -7,6 +7,7 @@ using TongbaoSwitchCalc.DataModel;
 using TongbaoSwitchCalc.DataModel.Simulation;
 using TongbaoSwitchCalc.Impl;
 using TongbaoSwitchCalc.Impl.Simulation;
+using TongbaoSwitchCalc.View;
 
 namespace TongbaoSwitchCalc
 {
@@ -24,11 +25,13 @@ namespace TongbaoSwitchCalc
         private int mSelectedTongbaoSlotIndex = -1;
         private bool mCanRevertPlayerData = false;
 
+        private IconGridControl mIconGrid;
         private string mOutputResult;
         private bool mOutputResultChanged = false;
         private RecordForm mRecordForm;
         private readonly StringBuilder mTempStringBuilder = new StringBuilder();
 
+        private readonly List<Image> mTempTongbaoImages = new List<Image>();
         private readonly Dictionary<ResType, int> mTempResValues = new Dictionary<ResType, int>();
 
         protected override CreateParams CreateParams
@@ -123,6 +126,7 @@ namespace TongbaoSwitchCalc
 
         private void InitView()
         {
+            mIconGrid = new IconGridControl();
             mRecordForm = new RecordForm(this);
             Helper.InitResources();
 
@@ -147,6 +151,16 @@ namespace TongbaoSwitchCalc
             comboBoxSimMode.SelectedIndex = 0;
 
             checkBoxFortune.Checked = false;
+
+            panelLockedList.Controls.Clear();
+            panelLockedList.Controls.Add(mIconGrid);
+            mIconGrid.CellSize = 24;
+            mIconGrid.Spacing = -3;
+            mIconGrid.Width = panelLockedList.Width;
+            mIconGrid.Height = panelLockedList.Height;
+            mIconGrid.Click -= iconGridControl_Click;
+            mIconGrid.Click += iconGridControl_Click;
+            UpdateLockedListView();
 
             Helper.SetupResNumberic(mPlayerData, numHp, ResType.LifePoint);
             Helper.SetupResNumberic(mPlayerData, numIngots, ResType.OriginiumIngots);
@@ -332,11 +346,29 @@ namespace TongbaoSwitchCalc
             }
         }
 
+        private void UpdateLockedListView()
+        {
+            mTempTongbaoImages.Clear();
+            foreach (var id in mPlayerData.LockedTongbaoList)
+            {
+                Image image = Helper.GetTongbaoImage(id);
+                mTempTongbaoImages.Add(image);
+            }
+            mIconGrid.SetIcons(mTempTongbaoImages);
+        }
+
         private void OnSelectNewRandomTongbao(int id, int slotIndex)
         {
             mCanRevertPlayerData = false;
             Tongbao tongbao = Tongbao.CreateTongbao(id, mRandom);
-            mPlayerData.InsertTongbao(tongbao, slotIndex);
+            if (tongbao != null)
+            {
+                mPlayerData.InsertTongbao(tongbao, slotIndex);
+            }
+            else
+            {
+                mPlayerData.RemoveTongbaoAt(slotIndex);
+            }
             UpdateTongbaoView(slotIndex);
             UpdateView();
         }
@@ -346,8 +378,15 @@ namespace TongbaoSwitchCalc
         {
             mCanRevertPlayerData = false;
             Tongbao tongbao = Tongbao.CreateTongbao(id);
-            tongbao.ApplyRandomRes(randomResType, randomResCount);
-            mPlayerData.InsertTongbao(tongbao, slotIndex);
+            if (tongbao != null)
+            {
+                tongbao.ApplyRandomRes(randomResType, randomResCount);
+                mPlayerData.InsertTongbao(tongbao, slotIndex);
+            }
+            else
+            {
+                mPlayerData.RemoveTongbaoAt(slotIndex);
+            }
             UpdateTongbaoView(slotIndex);
             UpdateView();
         }
@@ -489,7 +528,11 @@ namespace TongbaoSwitchCalc
                 int slotIndex = listViewTongbao.Items.IndexOf(selectedItem);
 
                 SelectorForm selectorForm = new SelectorForm(SelectMode.SingleSelectWithComboBox);
-
+                Tongbao tongbao = mPlayerData.GetTongbao(slotIndex);
+                if (tongbao != null)
+                {
+                    selectorForm.SetSelectedIds(new List<int> { tongbao.Id });
+                }
                 if (selectorForm.ShowDialog() == DialogResult.OK)
                 {
                     if (selectorForm.SelectedRandomRes != null)
@@ -574,6 +617,18 @@ namespace TongbaoSwitchCalc
             mRecordForm.Show();
             mRecordForm.WindowState = FormWindowState.Normal;
             mRecordForm.Focus();
+        }
+
+        private void iconGridControl_Click(object sender, EventArgs e)
+        {
+            SelectorForm selectorForm = new SelectorForm(SelectMode.MultiSelect);
+            selectorForm.SetSelectedIds(mPlayerData.LockedTongbaoList);
+            if (selectorForm.ShowDialog() == DialogResult.OK)
+            {
+                mPlayerData.LockedTongbaoList.Clear();
+                mPlayerData.LockedTongbaoList.AddRange(selectorForm.SelectedIds);
+                UpdateLockedListView();
+            }
         }
     }
 }

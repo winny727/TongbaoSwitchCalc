@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using TongbaoSwitchCalc.DataModel;
 
-namespace TongbaoSwitchCalc
+namespace TongbaoSwitchCalc.View
 {
     public class ComboBoxItem<T>
     {
