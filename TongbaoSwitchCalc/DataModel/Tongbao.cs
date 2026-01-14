@@ -44,7 +44,7 @@ namespace TongbaoSwitchCalc.DataModel
             mTongbaoConfigDict.Clear();
         }
 
-        public static Dictionary<int, TongbaoConfig> GetAllTongbaoConfigs()
+        public static IReadOnlyDictionary<int, TongbaoConfig> GetAllTongbaoConfigs()
         {
             return mTongbaoConfigDict;
         }

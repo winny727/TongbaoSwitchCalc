@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using TongbaoSwitchCalc;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
-namespace ArknightsRoguelikeRec
+namespace TongbaoSwitchCalc
 {
     public partial class RecordForm : Form
     {

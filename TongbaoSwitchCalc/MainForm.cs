@@ -1,5 +1,4 @@
-﻿using ArknightsRoguelikeRec;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
@@ -45,6 +44,8 @@ namespace TongbaoSwitchCalc
         //TODO 通宝选择窗口
         //TODO 自定义规则选择
         //TODO 目标数据统计
+        //规则模板四“新获得的目标生命马上用于筹谋交换”?
+        //TODO 商店卡钱逻辑
 
         public MainForm()
         {
@@ -163,8 +164,9 @@ namespace TongbaoSwitchCalc
         {
             // InitImageList
             listViewTongbao.LargeImageList?.Dispose();
+            //listViewTongbao.SmallImageList?.Dispose();
             listViewTongbao.LargeImageList = Helper.CreateTongbaoImageList(new Size(54, 54));
-            listViewTongbao.SmallImageList = Helper.CreateTongbaoImageList(new Size(24, 24));
+            //listViewTongbao.SmallImageList = Helper.CreateTongbaoImageList(new Size(24, 24));
 
             // InitSlot
             InitTongbaoSlot();
@@ -438,6 +440,15 @@ namespace TongbaoSwitchCalc
             mPlayerData.InitResValues(mTempResValues);
         }
 
+        private void ClearRecord()
+        {
+            mPrintDataCollector.ClearData();
+            mOutputResult = string.Empty;
+            mRecordForm.Content = string.Empty;
+            mOutputResultChanged = false;
+            GC.Collect();
+        }
+
         private void comboBoxSquad_SelectedIndexChanged(object sender, EventArgs e)
         {
             mCanRevertPlayerData = false;
@@ -477,25 +488,41 @@ namespace TongbaoSwitchCalc
                 ListViewItem selectedItem = listViewTongbao.SelectedItems[0];
                 int slotIndex = listViewTongbao.Items.IndexOf(selectedItem);
 
-                // 测试，随机添加通宝
-                var configs = TongbaoConfig.GetAllTongbaoConfigs();
-                int random = mRandom.Next(0, configs.Count);
-                int index = 0;
-                int targetId = -1;
-                foreach (var item in configs)
+                SelectorForm selectorForm = new SelectorForm(SelectMode.SingleSelectWithComboBox);
+
+                if (selectorForm.ShowDialog() == DialogResult.OK)
                 {
-                    if (index == random)
+                    if (selectorForm.SelectedRandomRes != null)
                     {
-                        targetId = item.Value.Id;
-                        break;
+                        ResType resType = selectorForm.SelectedRandomRes.ResType;
+                        int resCount = selectorForm.SelectedRandomRes.ResCount;
+                        OnSelectNewCustomTongbao(selectorForm.SelectedId, slotIndex, resType, resCount);
                     }
-                    index++;
+                    else
+                    {
+                        OnSelectNewRandomTongbao(selectorForm.SelectedId, slotIndex);
+                    }
                 }
-                if (targetId > 0)
-                {
-                    OnSelectNewRandomTongbao(targetId, slotIndex);
-                    //OnSelectNewCustomTongbao(targetId, slotIndex);
-                }
+
+                //// 测试，随机添加通宝
+                //var configs = TongbaoConfig.GetAllTongbaoConfigs();
+                //int random = mRandom.Next(0, configs.Count);
+                //int index = 0;
+                //int targetId = -1;
+                //foreach (var item in configs)
+                //{
+                //    if (index == random)
+                //    {
+                //        targetId = item.Value.Id;
+                //        break;
+                //    }
+                //    index++;
+                //}
+                //if (targetId > 0)
+                //{
+                //    OnSelectNewRandomTongbao(targetId, slotIndex);
+                //    //OnSelectNewCustomTongbao(targetId, slotIndex);
+                //}
             }
         }
 
@@ -547,15 +574,6 @@ namespace TongbaoSwitchCalc
             mRecordForm.Show();
             mRecordForm.WindowState = FormWindowState.Normal;
             mRecordForm.Focus();
-        }
-
-        private void ClearRecord()
-        {
-            mPrintDataCollector.ClearData();
-            mOutputResult = string.Empty;
-            mRecordForm.Content = string.Empty;
-            mOutputResultChanged = false;
-            GC.Collect();
         }
     }
 }

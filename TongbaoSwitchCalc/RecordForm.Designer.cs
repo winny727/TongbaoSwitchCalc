@@ -1,4 +1,4 @@
-﻿namespace ArknightsRoguelikeRec
+﻿namespace TongbaoSwitchCalc
 {
     partial class RecordForm
     {
@@ -77,7 +77,7 @@
             this.Controls.Add(this.textBox1);
             this.DoubleBuffered = true;
             this.Font = new System.Drawing.Font("宋体", 9F);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.Name = "RecordForm";

@@ -354,7 +354,7 @@
             this.btnSync.Name = "btnSync";
             this.btnSync.Size = new System.Drawing.Size(132, 23);
             this.btnSync.TabIndex = 15;
-            this.btnSync.Text = "同步资源到初始";
+            this.btnSync.Text = "同步资源到初始设置";
             this.btnSync.UseVisualStyleBackColor = true;
             this.btnSync.Click += new System.EventHandler(this.btnSync_Click);
             // 

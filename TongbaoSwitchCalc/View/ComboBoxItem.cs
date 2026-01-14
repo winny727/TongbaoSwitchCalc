@@ -9,10 +9,10 @@ namespace TongbaoSwitchCalc
         public string Key { get; set; }
         public T Value { get; set; }
 
-        public ComboBoxItem(string key, T type)
+        public ComboBoxItem(string key, T value)
         {
             Key = key;
-            Value = type;
+            Value = value;
         }
     }
 }
