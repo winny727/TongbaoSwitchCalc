@@ -51,6 +51,7 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             {
                 mIsSimulating = true;
                 DataCollector?.OnSimulateBegin(type, TotalSimulationCount, PlayerData);
+                //TODO 模拟次数大于等于1000，改为多线程
                 while (SimulationStepIndex < TotalSimulationCount)
                 {
                     SimulateStep();

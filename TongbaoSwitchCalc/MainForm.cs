@@ -46,9 +46,6 @@ namespace TongbaoSwitchCalc
             }
         }
 
-        //TODO 目标数据统计
-        //规则模板四“新获得的目标生命马上用于筹谋交换”?
-
         public MainForm()
         {
             InitializeComponent();
