@@ -81,11 +81,10 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             mItems.Clear();
         }
 
-        public bool MoveToIndex(int index)
+        public bool MoveToIndex(SimulationRule item, int index)
         {
-            if (index > 0 && index < mItems.Count)
+            if (index >= 0 && index < mItems.Count)
             {
-                var item = mItems[index];
                 mItems.Remove(item);
                 mItems.Insert(index, item);
                 return true;

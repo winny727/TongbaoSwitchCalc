@@ -71,7 +71,7 @@
             // 
             // numericUpDown1
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(95, 40);
+            this.numericUpDown1.Location = new System.Drawing.Point(95, 42);
             this.numericUpDown1.Maximum = new decimal(new int[] {
             10,
             0,
@@ -98,7 +98,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(176, 39);
+            this.pictureBox1.Location = new System.Drawing.Point(95, 39);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(24, 24);
             this.pictureBox1.TabIndex = 11;
@@ -106,7 +106,7 @@
             // 
             // btnSel
             // 
-            this.btnSel.Location = new System.Drawing.Point(95, 40);
+            this.btnSel.Location = new System.Drawing.Point(176, 39);
             this.btnSel.Name = "btnSel";
             this.btnSel.Size = new System.Drawing.Size(75, 23);
             this.btnSel.TabIndex = 8;
@@ -117,7 +117,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(206, 45);
+            this.label3.Location = new System.Drawing.Point(117, 45);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(53, 12);
             this.label3.TabIndex = 12;

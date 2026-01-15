@@ -62,19 +62,19 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             switch (type)
             {
                 case SimulationRuleType.PrioritySlot:
-                    if (args.Length > 0 && args[0] is int prioritySlot)
+                    if (args != null && args.Length > 0 && args[0] is int prioritySlot)
                     {
                         return new PrioritySlotRule(prioritySlot);
                     }
                     break;
                 case SimulationRuleType.AutoStop:
-                    if (args.Length > 0 && args[0] is int targetTongbaoId)
+                    if (args != null && args.Length > 0 && args[0] is int targetTongbaoId)
                     {
                         return new AutoStopRule(targetTongbaoId);
                     }
                     break;
                 case SimulationRuleType.ExpectationTongbao:
-                    if (args.Length > 0 && args[0] is int expectedTongbaoId)
+                    if (args != null && args.Length > 0 && args[0] is int expectedTongbaoId)
                     {
                         return new ExpectationTongbaoRule(expectedTongbaoId);
                     }

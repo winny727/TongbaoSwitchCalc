@@ -72,6 +72,7 @@
             this.btnDown = new System.Windows.Forms.Button();
             this.btnUp = new System.Windows.Forms.Button();
             this.linkLblSync = new System.Windows.Forms.LinkLabel();
+            this.checkBoxEnableRecord = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numSimCnt)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -441,7 +442,7 @@
             // checkBoxAutoRevert
             // 
             this.checkBoxAutoRevert.AutoSize = true;
-            this.checkBoxAutoRevert.Location = new System.Drawing.Point(520, 421);
+            this.checkBoxAutoRevert.Location = new System.Drawing.Point(518, 392);
             this.checkBoxAutoRevert.Name = "checkBoxAutoRevert";
             this.checkBoxAutoRevert.Size = new System.Drawing.Size(132, 16);
             this.checkBoxAutoRevert.TabIndex = 11;
@@ -588,12 +589,25 @@
             this.linkLblSync.Text = "同步实时资源到初始资源设置";
             this.linkLblSync.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLblSync_LinkClicked);
             // 
+            // checkBoxEnableRecord
+            // 
+            this.checkBoxEnableRecord.AutoSize = true;
+            this.checkBoxEnableRecord.Checked = true;
+            this.checkBoxEnableRecord.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxEnableRecord.Location = new System.Drawing.Point(518, 412);
+            this.checkBoxEnableRecord.Name = "checkBoxEnableRecord";
+            this.checkBoxEnableRecord.Size = new System.Drawing.Size(132, 28);
+            this.checkBoxEnableRecord.TabIndex = 16;
+            this.checkBoxEnableRecord.Text = "模拟时记录每次交换\r\n(会使模拟性能下降)";
+            this.checkBoxEnableRecord.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AcceptButton = this.btnSwitch;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 452);
+            this.Controls.Add(this.checkBoxEnableRecord);
             this.Controls.Add(this.checkBoxAutoRevert);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.groupBox5);
@@ -680,5 +694,6 @@
         private System.Windows.Forms.Button btnDown;
         private System.Windows.Forms.Button btnUp;
         private System.Windows.Forms.LinkLabel linkLblSync;
+        private System.Windows.Forms.CheckBox checkBoxEnableRecord;
     }
 }

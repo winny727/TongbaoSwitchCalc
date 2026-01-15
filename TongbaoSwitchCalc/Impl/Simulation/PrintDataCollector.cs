@@ -8,6 +8,8 @@ namespace TongbaoSwitchCalc.Impl.Simulation
 {
     public class PrintDataCollector : IDataCollector<SimulateContext>
     {
+        public bool RecordEverySwitch { get; set; } = true;
+
         private SimulationType mSimulationType;
         private int mSimulationTotal = 0;
         private readonly Tongbao mTongbaoBefore = new Tongbao();
@@ -67,6 +69,11 @@ namespace TongbaoSwitchCalc.Impl.Simulation
 
         public void OnSwitchStepBegin(in SimulateContext context)
         {
+            if (!RecordEverySwitch)
+            {
+                return;
+            }
+
             Tongbao tongbaoBefore = context.PlayerData.GetTongbao(context.SlotIndex);
             mTongbaoBefore.CopyFrom(tongbaoBefore);
             mResBefore.Clear();
@@ -78,6 +85,11 @@ namespace TongbaoSwitchCalc.Impl.Simulation
 
         public void OnSwitchStepEnd(in SimulateContext context, SwitchStepResult result)
         {
+            if (!RecordEverySwitch)
+            {
+                return;
+            }
+
             mSwitchResultSB.Clear();
             mResChangedTempSB.Clear();
 

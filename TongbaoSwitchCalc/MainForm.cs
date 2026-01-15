@@ -46,7 +46,6 @@ namespace TongbaoSwitchCalc
             }
         }
 
-        //TODO 自定义规则选择
         //TODO 目标数据统计
         //规则模板四“新获得的目标生命马上用于筹谋交换”?
 
@@ -510,9 +509,27 @@ namespace TongbaoSwitchCalc
                 ResetPlayerData();
             }
             mCanRevertPlayerData = true;
+            mPrintDataCollector.RecordEverySwitch = checkBoxEnableRecord.Checked;
             mSwitchSimulator.TotalSimulationCount = (int)numSimCnt.Value;
             mSwitchSimulator.MinimumLifePoint = (int)numMinHp.Value;
             mSwitchSimulator.NextSwitchSlotIndex = mSelectedTongbaoSlotIndex;
+
+            // ApplyRule
+            mSwitchSimulator.SlotIndexPriority.Clear();
+            mSwitchSimulator.TargetTongbaoIds.Clear();
+            mSwitchSimulator.ExpectedTongbaoId = -1;
+            foreach (TreeNode treeNode in treeViewRule.Nodes)
+            {
+                if (treeNode.Tag is UniqueRuleCollection collection && treeNode.Checked)
+                {
+                    foreach (var item in collection)
+                    {
+                        if (!item.Enabled) continue;
+                        item.ApplyRule(mSwitchSimulator);
+                    }
+                }
+            }
+
             mSwitchSimulator.Simulate(mode);
             mOutputResult = mPrintDataCollector.OutputResult;
             mOutputResultChanged = true;
@@ -691,9 +708,9 @@ namespace TongbaoSwitchCalc
         private void btnAdd_Click(object sender, EventArgs e)
         {
             TreeNode selectedNode = treeViewRule.SelectedNode;
-            TreeNode parentNode = selectedNode.Parent;
             if (selectedNode?.Tag is SimulationRule rule)
             {
+                TreeNode parentNode = selectedNode.Parent;
                 var collection = GetRuleCollection(rule);
                 int index = collection.IndexOf(rule) + 1;
                 CustomRuleForm customRuleForm = new CustomRuleForm(collection.Type);
@@ -701,9 +718,15 @@ namespace TongbaoSwitchCalc
                 if (customRuleForm.ShowDialog() == DialogResult.OK)
                 {
                     SimulationRule newRule = SimulationDefine.CreateSimulationRule(collection.Type, customRuleForm.SelectedParams);
-                    collection.Insert(index, newRule);
-                    UpdateRuleTreeView();
-                    selectedNode.TreeView.SelectedNode = parentNode.Nodes[index];
+                    if (collection.Insert(index, newRule))
+                    {
+                        UpdateRuleTreeView();
+                        selectedNode.TreeView.SelectedNode = parentNode.Nodes[index];
+                    }
+                    else if (newRule != null)
+                    {
+                        MessageBox.Show("自定义规则添加失败，自定义规则与已有规则冲突", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                 }
             }
             else if (selectedNode?.Tag is UniqueRuleCollection collection)
@@ -713,9 +736,15 @@ namespace TongbaoSwitchCalc
                 if (customRuleForm.ShowDialog() == DialogResult.OK)
                 {
                     SimulationRule newRule = SimulationDefine.CreateSimulationRule(collection.Type, customRuleForm.SelectedParams);
-                    collection.Add(newRule);
-                    UpdateRuleTreeView();
-                    selectedNode.TreeView.SelectedNode = parentNode.Nodes[collection.Count - 1];
+                    if (collection.Add(newRule))
+                    {
+                        UpdateRuleTreeView();
+                        selectedNode.TreeView.SelectedNode = selectedNode.Nodes[collection.Count - 1];
+                    }
+                    else if (newRule != null)
+                    {
+                        MessageBox.Show("自定义规则添加失败，自定义规则与已有规则冲突", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                 }
             }
         }
@@ -723,9 +752,9 @@ namespace TongbaoSwitchCalc
         private void btnRemove_Click(object sender, EventArgs e)
         {
             TreeNode selectedNode = treeViewRule.SelectedNode;
-            TreeNode parentNode = selectedNode.Parent;
             if (selectedNode?.Tag is SimulationRule rule)
             {
+                TreeNode parentNode = selectedNode.Parent;
                 var collection = GetRuleCollection(rule);
                 int index = collection.IndexOf(rule);
                 collection.RemoveAt(index);
@@ -740,12 +769,12 @@ namespace TongbaoSwitchCalc
         private void btnUp_Click(object sender, EventArgs e)
         {
             TreeNode selectedNode = treeViewRule.SelectedNode;
-            TreeNode parentNode = selectedNode.Parent;
             if (selectedNode?.Tag is SimulationRule rule)
             {
+                TreeNode parentNode = selectedNode.Parent;
                 var collection = GetRuleCollection(rule);
                 int index = collection.IndexOf(rule);
-                if (collection.MoveToIndex(index - 1))
+                if (collection.MoveToIndex(rule, index - 1))
                 {
                     UpdateRuleTreeView();
                     selectedNode.TreeView.SelectedNode = parentNode.Nodes[index - 1];
@@ -756,12 +785,12 @@ namespace TongbaoSwitchCalc
         private void btnDown_Click(object sender, EventArgs e)
         {
             TreeNode selectedNode = treeViewRule.SelectedNode;
-            TreeNode parentNode = selectedNode.Parent;
             if (selectedNode?.Tag is SimulationRule rule)
             {
+                TreeNode parentNode = selectedNode.Parent;
                 var collection = GetRuleCollection(rule);
                 int index = collection.IndexOf(rule);
-                if (collection.MoveToIndex(index + 1))
+                if (collection.MoveToIndex(rule, index + 1))
                 {
                     UpdateRuleTreeView();
                     selectedNode.TreeView.SelectedNode = parentNode.Nodes[index + 1];

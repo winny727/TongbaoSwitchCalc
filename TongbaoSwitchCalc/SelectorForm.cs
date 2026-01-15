@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Reflection;
 using System.Windows.Forms;
 using TongbaoSwitchCalc.DataModel;
 using TongbaoSwitchCalc.View;
@@ -146,6 +147,10 @@ namespace TongbaoSwitchCalc
                 if (item == null) continue;
                 int id = GetListViewItemId(item);
                 item.Checked = SelectedIds.Contains(id);
+                if (IsSingleSelect && item.Checked)
+                {
+                    item.EnsureVisible();
+                }
             }
         }
 

@@ -33,6 +33,7 @@ namespace TongbaoSwitchCalc
                 case SimulationRuleType.PrioritySlot:
                     label2.Text = "钱盒槽位编号";
                     numericUpDown1.Visible = true;
+                    SelectedParams = new object[] { (int)(numericUpDown1.Value - 1) }; // 默认值
                     break;
                 case SimulationRuleType.AutoStop:
                     label2.Text = "目标/降级通宝";
