@@ -32,6 +32,8 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             mRevertPlayerData = new PlayerData(playerData.Random);
         }
 
+        //private void Log(string msg) => System.Diagnostics.Debug.WriteLine(msg);
+
         public void RevertPlayerData()
         {
             PlayerData.CopyFrom(mRevertPlayerData);
@@ -66,7 +68,7 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             mSlotIndexPriorityIndex = 0;
             if (SlotIndexPriority.Count > 0)
             {
-                Helper.Log($"优先槽位(#{mSlotIndexPriorityIndex}): {NextSwitchSlotIndex}");
+                //Log($"优先槽位(#{mSlotIndexPriorityIndex}): {NextSwitchSlotIndex}");
                 NextSwitchSlotIndex = SlotIndexPriority[0];
             }
             mSimulateStepResult = SimulateStepResult.Success;
@@ -119,12 +121,12 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             Tongbao tongbao = PlayerData.GetTongbao(NextSwitchSlotIndex);
             if (tongbao != null && TargetTongbaoIds.Contains(tongbao.Id))
             {
-                Helper.Log($"优先槽位(#{mSlotIndexPriorityIndex}): {NextSwitchSlotIndex}获得目标通宝{tongbao.Name}");
+                //Log($"优先槽位(#{mSlotIndexPriorityIndex}): {NextSwitchSlotIndex}获得目标通宝{tongbao.Name}");
                 mSlotIndexPriorityIndex++;
                 if (mSlotIndexPriorityIndex < SlotIndexPriority.Count)
                 {
                     NextSwitchSlotIndex = SlotIndexPriority[mSlotIndexPriorityIndex];
-                    Helper.Log($"优先槽位(#{mSlotIndexPriorityIndex}): {NextSwitchSlotIndex}");
+                    //Log($"优先槽位(#{mSlotIndexPriorityIndex}): {NextSwitchSlotIndex}");
                 }
                 else
                 {

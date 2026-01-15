@@ -55,6 +55,8 @@ namespace TongbaoSwitchCalc.DataModel
                     return "票券";
                 case ResType.Candles:
                     return "烛火";
+                case ResType.PrimalFarmingCandles:
+                    return "鸿蒙开荒烛火";
                 case ResType.Shield:
                     return "护盾";
                 case ResType.Hope:

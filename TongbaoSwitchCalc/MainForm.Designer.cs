@@ -168,7 +168,7 @@
             0});
             this.numSimCnt.Location = new System.Drawing.Point(65, 46);
             this.numSimCnt.Maximum = new decimal(new int[] {
-            999999,
+            99999,
             0,
             0,
             0});
@@ -442,6 +442,8 @@
             // checkBoxAutoRevert
             // 
             this.checkBoxAutoRevert.AutoSize = true;
+            this.checkBoxAutoRevert.Checked = true;
+            this.checkBoxAutoRevert.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxAutoRevert.Location = new System.Drawing.Point(518, 392);
             this.checkBoxAutoRevert.Name = "checkBoxAutoRevert";
             this.checkBoxAutoRevert.Size = new System.Drawing.Size(132, 16);

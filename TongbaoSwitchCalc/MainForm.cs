@@ -535,6 +535,8 @@ namespace TongbaoSwitchCalc
             mOutputResultChanged = true;
             UpdateAllTongbaoView();
             UpdateView();
+
+            MessageBox.Show(mStatisticDataCollector.GetOutputResult(), "模拟期望", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void ResetPlayerData()
