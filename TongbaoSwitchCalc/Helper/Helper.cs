@@ -16,11 +16,11 @@ namespace TongbaoSwitchCalc
         private static Image mTongbaoSlotImage;
         private static readonly Dictionary<string, Image> mTongbaoImageCache = new Dictionary<string, Image>();
 
-        public static readonly Dictionary<SimulationRuleType, SimulationRuleCollection> SimulationRulePresets = new Dictionary<SimulationRuleType, SimulationRuleCollection>()
+        public static readonly Dictionary<SimulationRuleType, List<SimulationRule>> SimulationRulePresets = new Dictionary<SimulationRuleType, List<SimulationRule>>()
         {
-            { SimulationRuleType.PrioritySlot, new SimulationRuleCollection() },
-            { SimulationRuleType.AutoStop, new SimulationRuleCollection() },
-            { SimulationRuleType.ExpectationTongbao, new SimulationRuleCollection() },
+            { SimulationRuleType.PrioritySlot, new List<SimulationRule>() },
+            { SimulationRuleType.AutoStop, new List<SimulationRule>() },
+            { SimulationRuleType.ExpectationTongbao, new List<SimulationRule>() },
         };
 
         public static TongbaoConfig GetTongbaoConfigByName(string name)

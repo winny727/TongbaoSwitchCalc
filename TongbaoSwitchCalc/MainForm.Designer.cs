@@ -53,7 +53,6 @@
             this.numHp = new System.Windows.Forms.NumericUpDown();
             this.lblRes = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.btnSync = new System.Windows.Forms.Button();
             this.lblCurrent = new System.Windows.Forms.Label();
             this.btnSwitch = new System.Windows.Forms.Button();
             this.btnSimulation = new System.Windows.Forms.Button();
@@ -72,6 +71,7 @@
             this.btnRemove = new System.Windows.Forms.Button();
             this.btnDown = new System.Windows.Forms.Button();
             this.btnUp = new System.Windows.Forms.Button();
+            this.linkLblSync = new System.Windows.Forms.LinkLabel();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numSimCnt)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -203,6 +203,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.linkLblSync);
             this.groupBox2.Controls.Add(this.label6);
             this.groupBox2.Controls.Add(this.numShield);
             this.groupBox2.Controls.Add(this.label7);
@@ -215,7 +216,7 @@
             this.groupBox2.Controls.Add(this.numIngots);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.numHp);
-            this.groupBox2.Location = new System.Drawing.Point(218, 12);
+            this.groupBox2.Location = new System.Drawing.Point(424, 12);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(230, 122);
             this.groupBox2.TabIndex = 5;
@@ -362,43 +363,31 @@
             // 
             this.lblRes.Location = new System.Drawing.Point(6, 17);
             this.lblRes.Name = "lblRes";
-            this.lblRes.Size = new System.Drawing.Size(113, 100);
+            this.lblRes.Size = new System.Drawing.Size(113, 102);
             this.lblRes.TabIndex = 7;
             // 
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.lblRes);
-            this.groupBox4.Controls.Add(this.btnSync);
-            this.groupBox4.Controls.Add(this.lblCurrent);
-            this.groupBox4.Location = new System.Drawing.Point(518, 318);
+            this.groupBox4.Location = new System.Drawing.Point(660, 12);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(270, 122);
+            this.groupBox4.Size = new System.Drawing.Size(128, 122);
             this.groupBox4.TabIndex = 7;
             this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "实时数据监测";
-            // 
-            // btnSync
-            // 
-            this.btnSync.Location = new System.Drawing.Point(132, 91);
-            this.btnSync.Name = "btnSync";
-            this.btnSync.Size = new System.Drawing.Size(132, 23);
-            this.btnSync.TabIndex = 15;
-            this.btnSync.Text = "同步资源到初始设置";
-            this.btnSync.UseVisualStyleBackColor = true;
-            this.btnSync.Click += new System.EventHandler(this.btnSync_Click);
+            this.groupBox4.Text = "实时资源监测";
             // 
             // lblCurrent
             // 
-            this.lblCurrent.Location = new System.Drawing.Point(125, 17);
+            this.lblCurrent.Location = new System.Drawing.Point(518, 330);
             this.lblCurrent.Name = "lblCurrent";
-            this.lblCurrent.Size = new System.Drawing.Size(139, 100);
+            this.lblCurrent.Size = new System.Drawing.Size(144, 113);
             this.lblCurrent.TabIndex = 8;
             // 
             // btnSwitch
             // 
-            this.btnSwitch.Location = new System.Drawing.Point(660, 12);
+            this.btnSwitch.Location = new System.Drawing.Point(668, 330);
             this.btnSwitch.Name = "btnSwitch";
-            this.btnSwitch.Size = new System.Drawing.Size(128, 23);
+            this.btnSwitch.Size = new System.Drawing.Size(120, 23);
             this.btnSwitch.TabIndex = 11;
             this.btnSwitch.Text = "交换";
             this.btnSwitch.UseVisualStyleBackColor = true;
@@ -406,9 +395,9 @@
             // 
             // btnSimulation
             // 
-            this.btnSimulation.Location = new System.Drawing.Point(660, 41);
+            this.btnSimulation.Location = new System.Drawing.Point(668, 359);
             this.btnSimulation.Name = "btnSimulation";
-            this.btnSimulation.Size = new System.Drawing.Size(128, 23);
+            this.btnSimulation.Size = new System.Drawing.Size(120, 23);
             this.btnSimulation.TabIndex = 12;
             this.btnSimulation.Text = "开始模拟";
             this.btnSimulation.UseVisualStyleBackColor = true;
@@ -416,19 +405,19 @@
             // 
             // btnReset
             // 
-            this.btnReset.Location = new System.Drawing.Point(660, 70);
+            this.btnReset.Location = new System.Drawing.Point(668, 388);
             this.btnReset.Name = "btnReset";
-            this.btnReset.Size = new System.Drawing.Size(128, 23);
+            this.btnReset.Size = new System.Drawing.Size(120, 23);
             this.btnReset.TabIndex = 13;
-            this.btnReset.Text = "重置交换数据";
+            this.btnReset.Text = "重置";
             this.btnReset.UseVisualStyleBackColor = true;
             this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
             // 
             // btnRecord
             // 
-            this.btnRecord.Location = new System.Drawing.Point(660, 99);
+            this.btnRecord.Location = new System.Drawing.Point(668, 417);
             this.btnRecord.Name = "btnRecord";
-            this.btnRecord.Size = new System.Drawing.Size(128, 23);
+            this.btnRecord.Size = new System.Drawing.Size(120, 23);
             this.btnRecord.TabIndex = 14;
             this.btnRecord.Text = "查看交换记录";
             this.btnRecord.UseVisualStyleBackColor = true;
@@ -436,14 +425,13 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.checkBoxAutoRevert);
             this.groupBox3.Controls.Add(this.label9);
             this.groupBox3.Controls.Add(this.numMinHp);
             this.groupBox3.Controls.Add(this.label2);
             this.groupBox3.Controls.Add(this.comboBoxSimMode);
             this.groupBox3.Controls.Add(this.numSimCnt);
             this.groupBox3.Controls.Add(this.label10);
-            this.groupBox3.Location = new System.Drawing.Point(454, 12);
+            this.groupBox3.Location = new System.Drawing.Point(218, 12);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(200, 122);
             this.groupBox3.TabIndex = 5;
@@ -453,11 +441,11 @@
             // checkBoxAutoRevert
             // 
             this.checkBoxAutoRevert.AutoSize = true;
-            this.checkBoxAutoRevert.Location = new System.Drawing.Point(14, 100);
+            this.checkBoxAutoRevert.Location = new System.Drawing.Point(520, 421);
             this.checkBoxAutoRevert.Name = "checkBoxAutoRevert";
-            this.checkBoxAutoRevert.Size = new System.Drawing.Size(180, 16);
+            this.checkBoxAutoRevert.Size = new System.Drawing.Size(132, 16);
             this.checkBoxAutoRevert.TabIndex = 11;
-            this.checkBoxAutoRevert.Text = "开始模拟前自动重置交换数据";
+            this.checkBoxAutoRevert.Text = "开始模拟前自动重置";
             this.checkBoxAutoRevert.UseVisualStyleBackColor = true;
             // 
             // label9
@@ -519,7 +507,7 @@
             this.groupBox5.Controls.Add(this.treeViewRule);
             this.groupBox5.Location = new System.Drawing.Point(518, 140);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(270, 172);
+            this.groupBox5.Size = new System.Drawing.Size(270, 184);
             this.groupBox5.TabIndex = 12;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "自定义模拟策略";
@@ -528,11 +516,11 @@
             // 
             this.label11.BackColor = System.Drawing.SystemColors.Window;
             this.label11.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label11.Location = new System.Drawing.Point(382, 410);
+            this.label11.Location = new System.Drawing.Point(302, 410);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(120, 20);
+            this.label11.Size = new System.Drawing.Size(200, 20);
             this.label11.TabIndex = 15;
-            this.label11.Text = "双击添加/更改通宝";
+            this.label11.Text = "单击选中通宝，双击添加/更改通宝";
             this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // treeViewRule
@@ -542,6 +530,8 @@
             this.treeViewRule.Name = "treeViewRule";
             this.treeViewRule.Size = new System.Drawing.Size(258, 117);
             this.treeViewRule.TabIndex = 0;
+            this.treeViewRule.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeViewRule_AfterCheck);
+            this.treeViewRule.DoubleClick += new System.EventHandler(this.treeViewRule_DoubleClick);
             // 
             // btnAdd
             // 
@@ -587,19 +577,32 @@
             this.btnUp.UseVisualStyleBackColor = true;
             this.btnUp.Click += new System.EventHandler(this.btnUp_Click);
             // 
+            // linkLblSync
+            // 
+            this.linkLblSync.AutoSize = true;
+            this.linkLblSync.Location = new System.Drawing.Point(63, 101);
+            this.linkLblSync.Name = "linkLblSync";
+            this.linkLblSync.Size = new System.Drawing.Size(161, 12);
+            this.linkLblSync.TabIndex = 16;
+            this.linkLblSync.TabStop = true;
+            this.linkLblSync.Text = "同步实时资源到初始资源设置";
+            this.linkLblSync.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLblSync_LinkClicked);
+            // 
             // MainForm
             // 
             this.AcceptButton = this.btnSwitch;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 452);
+            this.Controls.Add(this.checkBoxAutoRevert);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.groupBox5);
-            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.btnRecord);
-            this.Controls.Add(this.btnReset);
-            this.Controls.Add(this.btnSimulation);
+            this.Controls.Add(this.lblCurrent);
             this.Controls.Add(this.btnSwitch);
+            this.Controls.Add(this.btnReset);
+            this.Controls.Add(this.groupBox3);
+            this.Controls.Add(this.btnSimulation);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.listViewTongbao);
@@ -628,6 +631,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numMinHp)).EndInit();
             this.groupBox5.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -659,7 +663,6 @@
         private System.Windows.Forms.Button btnSwitch;
         private System.Windows.Forms.Button btnSimulation;
         private System.Windows.Forms.Button btnReset;
-        private System.Windows.Forms.Button btnSync;
         private System.Windows.Forms.Button btnRecord;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.ComboBox comboBoxSimMode;
@@ -676,5 +679,6 @@
         private System.Windows.Forms.Button btnAdd;
         private System.Windows.Forms.Button btnDown;
         private System.Windows.Forms.Button btnUp;
+        private System.Windows.Forms.LinkLabel linkLblSync;
     }
 }

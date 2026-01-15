@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using TongbaoSwitchCalc.DataModel;
@@ -191,18 +193,58 @@ namespace TongbaoSwitchCalc
             treeViewRule.Nodes.Clear();
             foreach (var item in Helper.SimulationRulePresets)
             {
-                SimulationRuleType type = item.Key;
-                SimulationRuleCollection presets = item.Value;
-                string name = SimulationDefine.GetSimulationRuleName(type);
-                TreeNode treeNode = treeViewRule.Nodes.Add(name);
-                treeNode.Tag = presets;
-                foreach (var preset in presets)
+                string name = SimulationDefine.GetSimulationRuleName(item.Key);
+                UniqueRuleCollection collection = new UniqueRuleCollection(item.Key);
+                foreach (var preset in item.Value)
                 {
-                    TreeNode child = treeNode.Nodes.Add(preset.GetRuleString());
-                    child.Tag = preset;
+                    collection.Add(preset);
                 }
+                TreeNode treeNode = treeViewRule.Nodes.Add(name);
+                treeNode.Checked  = true;
+                treeNode.Tag = collection;
+                UpdateRuleTreeView();
             }
             treeViewRule.ExpandAll();
+        }
+
+        private void UpdateRuleTreeView()
+        {
+            treeViewRule.BeginUpdate();
+            try
+            {
+                foreach (TreeNode treeNode in treeViewRule.Nodes)
+                {
+                    if (treeNode.Tag is UniqueRuleCollection collection)
+                    {
+                        for (int i = 0; i < collection.Count; i++)
+                        {
+                            SimulationRule rule = collection[i];
+                            string text = rule.GetRuleString();
+                            TreeNode child;
+                            if (i < treeNode.Nodes.Count)
+                            {
+                                child = treeNode.Nodes[i];
+                            }
+                            else
+                            {
+                                child = new TreeNode();
+                                treeNode.Nodes.Add(child);
+                            }
+                            child.Text = text;
+                            child.Checked = rule.Enabled;
+                            child.Tag = rule;
+                        }
+                        for (int i = treeNode.Nodes.Count - 1; i >= collection.Count; i--)
+                        {
+                            treeNode.Nodes.RemoveAt(i);
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                treeViewRule.EndUpdate();
+            }
         }
 
         private void InitTongbaoSlot()
@@ -605,7 +647,7 @@ namespace TongbaoSwitchCalc
             UpdateView();
         }
 
-        private void btnSync_Click(object sender, EventArgs e)
+        private void linkLblSync_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             int hp = mPlayerData.GetResValue(ResType.LifePoint);
             int ingots = mPlayerData.GetResValue(ResType.OriginiumIngots);
@@ -648,22 +690,129 @@ namespace TongbaoSwitchCalc
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-
+            TreeNode selectedNode = treeViewRule.SelectedNode;
+            TreeNode parentNode = selectedNode.Parent;
+            if (selectedNode?.Tag is SimulationRule rule)
+            {
+                var collection = GetRuleCollection(rule);
+                int index = collection.IndexOf(rule) + 1;
+                CustomRuleForm customRuleForm = new CustomRuleForm(collection.Type);
+                customRuleForm.SetNumericRange(1, mPlayerData.MaxTongbaoCount);
+                if (customRuleForm.ShowDialog() == DialogResult.OK)
+                {
+                    SimulationRule newRule = SimulationDefine.CreateSimulationRule(collection.Type, customRuleForm.SelectedParams);
+                    collection.Insert(index, newRule);
+                    UpdateRuleTreeView();
+                    selectedNode.TreeView.SelectedNode = parentNode.Nodes[index];
+                }
+            }
+            else if (selectedNode?.Tag is UniqueRuleCollection collection)
+            {
+                CustomRuleForm customRuleForm = new CustomRuleForm(collection.Type);
+                customRuleForm.SetNumericRange(1, mPlayerData.MaxTongbaoCount);
+                if (customRuleForm.ShowDialog() == DialogResult.OK)
+                {
+                    SimulationRule newRule = SimulationDefine.CreateSimulationRule(collection.Type, customRuleForm.SelectedParams);
+                    collection.Add(newRule);
+                    UpdateRuleTreeView();
+                    selectedNode.TreeView.SelectedNode = parentNode.Nodes[collection.Count - 1];
+                }
+            }
         }
 
         private void btnRemove_Click(object sender, EventArgs e)
         {
-
+            TreeNode selectedNode = treeViewRule.SelectedNode;
+            TreeNode parentNode = selectedNode.Parent;
+            if (selectedNode?.Tag is SimulationRule rule)
+            {
+                var collection = GetRuleCollection(rule);
+                int index = collection.IndexOf(rule);
+                collection.RemoveAt(index);
+                UpdateRuleTreeView();
+                if (index < parentNode.Nodes.Count)
+                {
+                    selectedNode.TreeView.SelectedNode = parentNode.Nodes[index];
+                }
+            }
         }
 
         private void btnUp_Click(object sender, EventArgs e)
         {
-
+            TreeNode selectedNode = treeViewRule.SelectedNode;
+            TreeNode parentNode = selectedNode.Parent;
+            if (selectedNode?.Tag is SimulationRule rule)
+            {
+                var collection = GetRuleCollection(rule);
+                int index = collection.IndexOf(rule);
+                if (collection.MoveToIndex(index - 1))
+                {
+                    UpdateRuleTreeView();
+                    selectedNode.TreeView.SelectedNode = parentNode.Nodes[index - 1];
+                }
+            }
         }
 
         private void btnDown_Click(object sender, EventArgs e)
         {
+            TreeNode selectedNode = treeViewRule.SelectedNode;
+            TreeNode parentNode = selectedNode.Parent;
+            if (selectedNode?.Tag is SimulationRule rule)
+            {
+                var collection = GetRuleCollection(rule);
+                int index = collection.IndexOf(rule);
+                if (collection.MoveToIndex(index + 1))
+                {
+                    UpdateRuleTreeView();
+                    selectedNode.TreeView.SelectedNode = parentNode.Nodes[index + 1];
+                }
+            }
+        }
 
+        private void treeViewRule_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            if (e.Node?.Tag is SimulationRule rule)
+            {
+                rule.Enabled = e.Node.Checked;
+            }
+        }
+
+        private UniqueRuleCollection GetRuleCollection(SimulationRule rule)
+        {
+            if (rule == null)
+            {
+                return null;
+            }
+
+            foreach (TreeNode treeNode in treeViewRule.Nodes)
+            {
+                if (treeNode.Tag is UniqueRuleCollection collection && collection.Type == rule.Type)
+                {
+                    return collection;
+                }
+            }
+            return null;
+        }
+
+        private void treeViewRule_DoubleClick(object sender, EventArgs e)
+        {
+            TreeNode selectedNode = treeViewRule.SelectedNode;
+            if (selectedNode?.Tag is SimulationRule rule)
+            {
+                var collection = GetRuleCollection(rule);
+                int index = collection.IndexOf(rule);
+                CustomRuleForm customRuleForm = new CustomRuleForm(collection.Type);
+                object[] args = SimulationDefine.GetSimulationRuleArgs(rule);
+                customRuleForm.SetSelectedParams(args);
+                customRuleForm.SetNumericRange(1, mPlayerData.MaxTongbaoCount);
+                if (customRuleForm.ShowDialog() == DialogResult.OK)
+                {
+                    SimulationRule newRule = SimulationDefine.CreateSimulationRule(rule.Type, customRuleForm.SelectedParams);
+                    collection.RemoveAt(index);
+                    collection.Insert(index, newRule);
+                    UpdateRuleTreeView();
+                }
+            }
         }
     }
 }

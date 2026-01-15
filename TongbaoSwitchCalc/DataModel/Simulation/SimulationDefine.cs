@@ -56,6 +56,51 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             }
             return string.Empty;
         }
+
+        public static SimulationRule CreateSimulationRule(SimulationRuleType type, params object[] args)
+        {
+            switch (type)
+            {
+                case SimulationRuleType.PrioritySlot:
+                    if (args.Length > 0 && args[0] is int prioritySlot)
+                    {
+                        return new PrioritySlotRule(prioritySlot);
+                    }
+                    break;
+                case SimulationRuleType.AutoStop:
+                    if (args.Length > 0 && args[0] is int targetTongbaoId)
+                    {
+                        return new AutoStopRule(targetTongbaoId);
+                    }
+                    break;
+                case SimulationRuleType.ExpectationTongbao:
+                    if (args.Length > 0 && args[0] is int expectedTongbaoId)
+                    {
+                        return new ExpectationTongbaoRule(expectedTongbaoId);
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return null;
+        }
+
+        public static object[] GetSimulationRuleArgs(SimulationRule rule)
+        {
+            if (rule is PrioritySlotRule prioritySlotRule)
+            {
+                return new object[] { prioritySlotRule.PrioritySlotIndex };
+            }
+            else if (rule is AutoStopRule autoStopRule)
+            {
+                return new object[] { autoStopRule.TargetTongbaoId };
+            }
+            else if (rule is ExpectationTongbaoRule expectedTongbaoRule)
+            {
+                return new object[] { expectedTongbaoRule.ExpectedTongbaoId };
+            }
+            return null;
+        }
     }
 
     public struct SimulateContext

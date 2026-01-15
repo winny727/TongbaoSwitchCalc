@@ -1,117 +1,16 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace TongbaoSwitchCalc.DataModel.Simulation
 {
     public abstract class SimulationRule
     {
+        public bool Enabled { get; set; } = true;
         public abstract SimulationRuleType Type { get; }
         public abstract void ApplyRule(SwitchSimulator simulator);
         public abstract void UnapplyRule(SwitchSimulator simulator);
         public abstract bool Equals(SimulationRule other);
         public abstract string GetRuleString();
-    }
-
-    public class SimulationRuleCollection : IEnumerable<SimulationRule>
-    {
-        private readonly List<SimulationRule> mItems = new List<SimulationRule>();
-        public IReadOnlyList<SimulationRule> Items => mItems;
-
-        public int Count => mItems.Count;
-        public SimulationRule this[int index] => mItems[index];
-
-        private bool CanAddRule(SimulationRule rule)
-        {
-            if (rule == null)
-            {
-                return false;
-            }
-
-            foreach (var item in mItems)
-            {
-                if (item.Equals(rule))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public bool Add(SimulationRule item)
-        {
-            if (CanAddRule(item))
-            {
-                mItems.Add(item);
-                return true;
-            }
-            return false;
-        }
-
-        public bool Insert(int index, SimulationRule item)
-        {
-            if (CanAddRule(item))
-            {
-                mItems.Insert(index, item);
-                return true;
-            }
-            return false;
-        }
-
-        public bool Contains(SimulationRule item)
-        {
-            return mItems.Contains(item);
-        }
-
-        public int IndexOf(SimulationRule item)
-        {
-            return mItems.IndexOf(item);
-        }
-
-        public bool Remove(SimulationRule item)
-        {
-            return mItems.Remove(item);
-        }
-
-        public void RemoveAt(int index)
-        {
-            mItems.RemoveAt(index);
-        }
-
-        public void Clear()
-        {
-            mItems.Clear();
-        }
-
-        public void MoveUp(int index)
-        {
-            if (index > 0 && index < mItems.Count)
-            {
-                var item = mItems[index];
-                mItems.RemoveAt(index);
-                mItems.Insert(index - 1, item);
-            }
-        }
-
-        public void MoveDown(int index)
-        {
-            if (index >= 0 && index < mItems.Count - 1)
-            {
-                var item = mItems[index];
-                mItems.RemoveAt(index);
-                mItems.Insert(index + 1, item);
-            }
-        }
-
-        public IEnumerator<SimulationRule> GetEnumerator()
-        {
-            return mItems.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
     }
 
     public class PrioritySlotRule : SimulationRule
