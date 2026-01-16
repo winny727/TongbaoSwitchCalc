@@ -39,6 +39,7 @@
             this.numSimCnt = new System.Windows.Forms.NumericUpDown();
             this.listViewTongbao = new System.Windows.Forms.ListView();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.linkLblSync = new System.Windows.Forms.LinkLabel();
             this.label6 = new System.Windows.Forms.Label();
             this.numShield = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
@@ -59,22 +60,21 @@
             this.btnReset = new System.Windows.Forms.Button();
             this.btnRecord = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.checkBoxAutoRevert = new System.Windows.Forms.CheckBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.comboBoxMultiSel = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
             this.numMinHp = new System.Windows.Forms.NumericUpDown();
             this.comboBoxSimMode = new System.Windows.Forms.ComboBox();
             this.label10 = new System.Windows.Forms.Label();
+            this.checkBoxAutoRevert = new System.Windows.Forms.CheckBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.treeViewRule = new System.Windows.Forms.TreeView();
-            this.btnAdd = new System.Windows.Forms.Button();
-            this.btnRemove = new System.Windows.Forms.Button();
             this.btnDown = new System.Windows.Forms.Button();
             this.btnUp = new System.Windows.Forms.Button();
-            this.linkLblSync = new System.Windows.Forms.LinkLabel();
+            this.btnRemove = new System.Windows.Forms.Button();
+            this.btnAdd = new System.Windows.Forms.Button();
+            this.treeViewRule = new System.Windows.Forms.TreeView();
+            this.label11 = new System.Windows.Forms.Label();
             this.checkBoxEnableRecord = new System.Windows.Forms.CheckBox();
-            this.comboBoxMultiSel = new System.Windows.Forms.ComboBox();
-            this.label13 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numSimCnt)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -137,7 +137,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(6, 65);
+            this.label12.Location = new System.Drawing.Point(9, 69);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(77, 12);
             this.label12.TabIndex = 4;
@@ -147,7 +147,7 @@
             // 
             this.panelLockedList.BackColor = System.Drawing.SystemColors.Window;
             this.panelLockedList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelLockedList.Location = new System.Drawing.Point(6, 80);
+            this.panelLockedList.Location = new System.Drawing.Point(6, 84);
             this.panelLockedList.Name = "panelLockedList";
             this.panelLockedList.Size = new System.Drawing.Size(188, 36);
             this.panelLockedList.TabIndex = 2;
@@ -225,6 +225,17 @@
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "初始资源设置";
+            // 
+            // linkLblSync
+            // 
+            this.linkLblSync.AutoSize = true;
+            this.linkLblSync.Location = new System.Drawing.Point(63, 104);
+            this.linkLblSync.Name = "linkLblSync";
+            this.linkLblSync.Size = new System.Drawing.Size(161, 12);
+            this.linkLblSync.TabIndex = 16;
+            this.linkLblSync.TabStop = true;
+            this.linkLblSync.Text = "同步实时资源到初始资源设置";
+            this.linkLblSync.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLblSync_LinkClicked);
             // 
             // label6
             // 
@@ -443,17 +454,23 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "模拟设置";
             // 
-            // checkBoxAutoRevert
+            // label13
             // 
-            this.checkBoxAutoRevert.AutoSize = true;
-            this.checkBoxAutoRevert.Checked = true;
-            this.checkBoxAutoRevert.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxAutoRevert.Location = new System.Drawing.Point(518, 396);
-            this.checkBoxAutoRevert.Name = "checkBoxAutoRevert";
-            this.checkBoxAutoRevert.Size = new System.Drawing.Size(132, 16);
-            this.checkBoxAutoRevert.TabIndex = 11;
-            this.checkBoxAutoRevert.Text = "开始模拟前自动重置";
-            this.checkBoxAutoRevert.UseVisualStyleBackColor = true;
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 103);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(53, 12);
+            this.label13.TabIndex = 12;
+            this.label13.Text = "多选通宝";
+            // 
+            // comboBoxMultiSel
+            // 
+            this.comboBoxMultiSel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxMultiSel.FormattingEnabled = true;
+            this.comboBoxMultiSel.Location = new System.Drawing.Point(64, 100);
+            this.comboBoxMultiSel.Name = "comboBoxMultiSel";
+            this.comboBoxMultiSel.Size = new System.Drawing.Size(130, 20);
+            this.comboBoxMultiSel.TabIndex = 11;
             // 
             // label9
             // 
@@ -504,6 +521,18 @@
             this.label10.TabIndex = 1;
             this.label10.Text = "模拟类型";
             // 
+            // checkBoxAutoRevert
+            // 
+            this.checkBoxAutoRevert.AutoSize = true;
+            this.checkBoxAutoRevert.Checked = true;
+            this.checkBoxAutoRevert.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxAutoRevert.Location = new System.Drawing.Point(518, 396);
+            this.checkBoxAutoRevert.Name = "checkBoxAutoRevert";
+            this.checkBoxAutoRevert.Size = new System.Drawing.Size(132, 16);
+            this.checkBoxAutoRevert.TabIndex = 11;
+            this.checkBoxAutoRevert.Text = "开始模拟前自动重置";
+            this.checkBoxAutoRevert.UseVisualStyleBackColor = true;
+            // 
             // groupBox5
             // 
             this.groupBox5.Controls.Add(this.btnDown);
@@ -517,49 +546,6 @@
             this.groupBox5.TabIndex = 12;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "自定义模拟策略";
-            // 
-            // label11
-            // 
-            this.label11.BackColor = System.Drawing.SystemColors.Window;
-            this.label11.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label11.Location = new System.Drawing.Point(302, 414);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(200, 20);
-            this.label11.TabIndex = 15;
-            this.label11.Text = "单击选中通宝，双击添加/更改通宝";
-            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // treeViewRule
-            // 
-            this.treeViewRule.CheckBoxes = true;
-            this.treeViewRule.Location = new System.Drawing.Point(6, 49);
-            this.treeViewRule.Name = "treeViewRule";
-            this.treeViewRule.Size = new System.Drawing.Size(258, 117);
-            this.treeViewRule.TabIndex = 0;
-            this.treeViewRule.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeViewRule_AfterCheck);
-            this.treeViewRule.DoubleClick += new System.EventHandler(this.treeViewRule_DoubleClick);
-            // 
-            // btnAdd
-            // 
-            this.btnAdd.Font = new System.Drawing.Font("宋体", 12F);
-            this.btnAdd.Location = new System.Drawing.Point(8, 20);
-            this.btnAdd.Name = "btnAdd";
-            this.btnAdd.Size = new System.Drawing.Size(23, 23);
-            this.btnAdd.TabIndex = 1;
-            this.btnAdd.Text = "+";
-            this.btnAdd.UseVisualStyleBackColor = true;
-            this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
-            // 
-            // btnRemove
-            // 
-            this.btnRemove.Font = new System.Drawing.Font("宋体", 12F);
-            this.btnRemove.Location = new System.Drawing.Point(37, 20);
-            this.btnRemove.Name = "btnRemove";
-            this.btnRemove.Size = new System.Drawing.Size(23, 23);
-            this.btnRemove.TabIndex = 2;
-            this.btnRemove.Text = "-";
-            this.btnRemove.UseVisualStyleBackColor = true;
-            this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
             // 
             // btnDown
             // 
@@ -583,16 +569,48 @@
             this.btnUp.UseVisualStyleBackColor = true;
             this.btnUp.Click += new System.EventHandler(this.btnUp_Click);
             // 
-            // linkLblSync
+            // btnRemove
             // 
-            this.linkLblSync.AutoSize = true;
-            this.linkLblSync.Location = new System.Drawing.Point(63, 101);
-            this.linkLblSync.Name = "linkLblSync";
-            this.linkLblSync.Size = new System.Drawing.Size(161, 12);
-            this.linkLblSync.TabIndex = 16;
-            this.linkLblSync.TabStop = true;
-            this.linkLblSync.Text = "同步实时资源到初始资源设置";
-            this.linkLblSync.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLblSync_LinkClicked);
+            this.btnRemove.Font = new System.Drawing.Font("宋体", 12F);
+            this.btnRemove.Location = new System.Drawing.Point(37, 20);
+            this.btnRemove.Name = "btnRemove";
+            this.btnRemove.Size = new System.Drawing.Size(23, 23);
+            this.btnRemove.TabIndex = 2;
+            this.btnRemove.Text = "-";
+            this.btnRemove.UseVisualStyleBackColor = true;
+            this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
+            // 
+            // btnAdd
+            // 
+            this.btnAdd.Font = new System.Drawing.Font("宋体", 12F);
+            this.btnAdd.Location = new System.Drawing.Point(8, 20);
+            this.btnAdd.Name = "btnAdd";
+            this.btnAdd.Size = new System.Drawing.Size(23, 23);
+            this.btnAdd.TabIndex = 1;
+            this.btnAdd.Text = "+";
+            this.btnAdd.UseVisualStyleBackColor = true;
+            this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
+            // 
+            // treeViewRule
+            // 
+            this.treeViewRule.CheckBoxes = true;
+            this.treeViewRule.Location = new System.Drawing.Point(6, 49);
+            this.treeViewRule.Name = "treeViewRule";
+            this.treeViewRule.Size = new System.Drawing.Size(258, 117);
+            this.treeViewRule.TabIndex = 0;
+            this.treeViewRule.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeViewRule_AfterCheck);
+            this.treeViewRule.DoubleClick += new System.EventHandler(this.treeViewRule_DoubleClick);
+            // 
+            // label11
+            // 
+            this.label11.BackColor = System.Drawing.SystemColors.Window;
+            this.label11.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label11.Location = new System.Drawing.Point(302, 414);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(200, 20);
+            this.label11.TabIndex = 15;
+            this.label11.Text = "单击选中通宝，双击添加/更改通宝";
+            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // checkBoxEnableRecord
             // 
@@ -605,24 +623,6 @@
             this.checkBoxEnableRecord.TabIndex = 16;
             this.checkBoxEnableRecord.Text = "模拟时记录每次交换\r\n(会使模拟性能下降)";
             this.checkBoxEnableRecord.UseVisualStyleBackColor = true;
-            // 
-            // comboBoxMultiSel
-            // 
-            this.comboBoxMultiSel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxMultiSel.FormattingEnabled = true;
-            this.comboBoxMultiSel.Location = new System.Drawing.Point(64, 100);
-            this.comboBoxMultiSel.Name = "comboBoxMultiSel";
-            this.comboBoxMultiSel.Size = new System.Drawing.Size(130, 20);
-            this.comboBoxMultiSel.TabIndex = 11;
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(6, 103);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(53, 12);
-            this.label13.TabIndex = 12;
-            this.label13.Text = "多选通宝";
             // 
             // MainForm
             // 
