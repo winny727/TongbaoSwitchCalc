@@ -94,9 +94,9 @@ namespace TongbaoSwitchCalc.Impl.Simulation
                                   .Append(item.Value)
                                   .Append('(')
                                   .Append(p * 100)
-                                  .AppendLine("%)")
-                                  .AppendLine();
+                                  .AppendLine("%)");
             }
+            mTempStringBuilder.AppendLine();
 
 
             mTempStringBuilder.AppendLine("期望资源变化:");

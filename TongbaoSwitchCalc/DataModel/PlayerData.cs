@@ -5,6 +5,7 @@ namespace TongbaoSwitchCalc.DataModel
 {
     public class PlayerData : IReadOnlyPlayerData
     {
+        public ITongbaoSelector TongbaoSelector { get; private set; }
         public IRandomGenerator Random { get; private set; }
 
         private SquadDefine mSquadDefine;
@@ -20,8 +21,9 @@ namespace TongbaoSwitchCalc.DataModel
         public int NextSwitchCostLifePoint => mSquadDefine.GetCostLifePoint(SwitchCount);
         public bool HasEnoughSwitchLife => GetResValue(ResType.LifePoint) > NextSwitchCostLifePoint;
 
-        public PlayerData(IRandomGenerator random)
+        public PlayerData(ITongbaoSelector selector, IRandomGenerator random)
         {
+            TongbaoSelector = selector ?? throw new ArgumentNullException(nameof(selector));
             Random = random ?? throw new ArgumentNullException(nameof(random));
             Init(default);
         }
@@ -35,7 +37,7 @@ namespace TongbaoSwitchCalc.DataModel
 
             SwitchCount = 0;
             SquadType = squadType;
-            mSquadDefine = Define.SquadDefines[squadType];
+            mSquadDefine = Define.SquadDefines[squadType]; //只读Dictionary线程安全
             SpecialConditionFlag = SpecialConditionFlag.None;
             LockedTongbaoList.Clear();
 
@@ -374,8 +376,19 @@ namespace TongbaoSwitchCalc.DataModel
             int lifePoint = GetResValue(ResType.LifePoint);
             if (lifePoint > costLifePoint || force)
             {
-                int newTongbaoId = SwitchPool.SwitchTongbao(Random, this, tongbao);
-                Tongbao newTongbao = Tongbao.CreateTongbao(newTongbaoId, Random);
+                var tongbaoIds = SwitchPool.SwitchTongbao(Random, this, tongbao);
+                int newTongbaoId = TongbaoSelector.SelectTongbao(tongbaoIds);
+                Tongbao newTongbao;
+                if (tongbao.IsUpgrade)
+                {
+                    // 升级通宝保留品相重复触发一次
+                    newTongbao = Tongbao.CreateTongbao(newTongbaoId);
+                    newTongbao.ApplyRandomRes(tongbao.RandomResType, tongbao.RandomResCount);
+                }
+                else
+                {
+                    newTongbao = Tongbao.CreateTongbao(newTongbaoId, Random);
+                }
                 if (newTongbao != null)
                 {
                     InsertTongbao(newTongbao, slotIndex);

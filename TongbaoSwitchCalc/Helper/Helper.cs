@@ -44,7 +44,7 @@ namespace TongbaoSwitchCalc
         public static string GetTongbaoFullName(int id)
         {
             TongbaoConfig config = TongbaoConfig.GetTongbaoConfigById(id);
-            if (config!=null)
+            if (config != null)
             {
                 string typeName = Define.GetTongbaoTypeName(config.Type);
                 return $"{typeName}-{config.Name}";
@@ -186,6 +186,7 @@ namespace TongbaoSwitchCalc
                 TongbaoType type = line.GetValue<TongbaoType>("Type");
                 int switchInPool = line.GetValue<int>("SwitchInPool");
                 List<int> switchOutPools = ParseList<int>(line.GetValue("SwitchOutPools"));
+                bool isUpgrade = line.GetValue<int>("IsUpgrade") != 0;
                 ResType extraResType = line.GetValue<ResType>("ExtraResType");
                 int extraResCount = line.GetValue<int>("ExtraResCount");
 
@@ -198,6 +199,7 @@ namespace TongbaoSwitchCalc
                     Type = type,
                     SwitchInPool = switchInPool,
                     SwitchOutPools = switchOutPools,
+                    IsUpgrade = isUpgrade,
                     ExtraResType = extraResType,
                     ExtraResCount = extraResCount,
                 };
@@ -296,6 +298,30 @@ namespace TongbaoSwitchCalc
 
             numeric.ValueChanged -= OnValueChanged;
             numeric.ValueChanged += OnValueChanged;
+        }
+
+        // 获取需要多选一的升级通宝
+        public static List<int> GetUpgradeSelectTongbaoIds()
+        {
+            List<int> result = new List<int>();
+            foreach (var item in TongbaoConfig.GetAllTongbaoConfigs())
+            {
+                TongbaoConfig config = item.Value;
+                if (!config.IsUpgrade) continue;
+
+                var switchOutTongbaoIds = SwitchPool.GetSwitchOutTongbaoIds(config.SwitchInPool);
+                if (switchOutTongbaoIds != null && switchOutTongbaoIds.Count > 1)
+                {
+                    foreach (var tongbaoId in switchOutTongbaoIds)
+                    {
+                        if (!result.Contains(tongbaoId))
+                        {
+                            result.Add(tongbaoId);
+                        }
+                    }
+                }
+            }
+            return result;
         }
 
         public static void Log(string msg)

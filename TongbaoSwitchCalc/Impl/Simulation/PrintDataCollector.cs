@@ -9,6 +9,7 @@ namespace TongbaoSwitchCalc.Impl.Simulation
     public class PrintDataCollector : IDataCollector<SimulateContext>
     {
         public bool RecordEverySwitch { get; set; } = true;
+        //TODO 多线程先收集，最后再排序转字符串
 
         private SimulationType mSimulationType;
         private int mSimulationTotal = 0;

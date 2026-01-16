@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Reflection;
 using System.Windows.Forms;
 using TongbaoSwitchCalc.DataModel;
 using TongbaoSwitchCalc.View;
@@ -13,14 +12,17 @@ namespace TongbaoSwitchCalc
         None,
         SingleSelect,
         SingleSelectWithComboBox, // 单选+品相
+        SwitchTongbaoSelector,
         MultiSelect,
     }
 
     public partial class SelectorForm : Form
     {
         public SelectMode SelectMode { get; } = SelectMode.None;
-        public bool IsSingleSelect => SelectMode == SelectMode.SingleSelect ||
-            SelectMode == SelectMode.SingleSelectWithComboBox;
+        public bool IsSingleSelect =>
+            SelectMode == SelectMode.SingleSelect ||
+            SelectMode == SelectMode.SingleSelectWithComboBox || 
+            SelectMode == SelectMode.SwitchTongbaoSelector;
         public bool IsMultiSelect => SelectMode == SelectMode.MultiSelect;
 
         public int SelectedId { get; private set; }
@@ -28,6 +30,7 @@ namespace TongbaoSwitchCalc
         public RandomResDefine SelectedRandomRes { get; private set; }
         public bool IsSelected => SelectedIds.Count > 0;
 
+        private List<int> mSwitchTongbaoIdList = new List<int>();
         private ListViewItem[] mListViewItems;
         private bool mRawSet = false;
 
@@ -38,7 +41,7 @@ namespace TongbaoSwitchCalc
             InitListView();
         }
 
-        private int GetListViewItemId(ListViewItem item) => (item?.Tag is int id) ? id : -1;
+        private int GetListViewItemId(ListViewItem item) => (item?.Tag is TongbaoConfig config) ? config.Id : -1;
 
         public void SetSelectedIds(IReadOnlyList<int> selectedIds)
         {
@@ -59,6 +62,16 @@ namespace TongbaoSwitchCalc
             }
             SelectedId = SelectedIds.Count > 0 ? SelectedIds[0] : -1;
             UpdateChecked();
+        }
+
+        public void SetSwitchTongbaoIdList(IReadOnlyList<int> tongbaoIds)
+        {
+            mSwitchTongbaoIdList.Clear();
+            if (tongbaoIds != null)
+            {
+                mSwitchTongbaoIdList.AddRange(tongbaoIds);
+            }
+            UpdateListView();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -102,7 +115,7 @@ namespace TongbaoSwitchCalc
                 {
                     Name = config.Id.ToString(),
                     Text = Helper.GetTongbaoFullName(config.Id),
-                    Tag = config.Id,
+                    Tag = config,
                     ImageKey = config.Id.ToString(),
                 };
                 listViewItems.Add(listViewItem);
@@ -119,24 +132,30 @@ namespace TongbaoSwitchCalc
         {
             if (mListViewItems == null || mListViewItems.Length == 0)
             {
-                mRawSet = false;
-                return;
-            }
-
-            if (string.IsNullOrEmpty(textBox1.Text))
-            {
-                listView1.Items.Clear();
-                listView1.Items.AddRange(mListViewItems);
                 return;
             }
 
             listView1.Items.Clear();
             foreach (ListViewItem item in mListViewItems)
             {
-                if (item.Text.IndexOf(textBox1.Text, StringComparison.OrdinalIgnoreCase) >= 0)
+                int tongbaoId = GetListViewItemId(item);
+                if (SelectMode == SelectMode.SwitchTongbaoSelector)
                 {
-                    listView1.Items.Add(item);
+                    if (!mSwitchTongbaoIdList.Contains(tongbaoId))
+                    {
+                        continue;
+                    }
                 }
+
+                if (!string.IsNullOrEmpty(textBox1.Text))
+                {
+                    if (item.Text.IndexOf(textBox1.Text, StringComparison.OrdinalIgnoreCase) < 0)
+                    {
+                        continue;
+                    }
+                }
+
+                listView1.Items.Add(item);
             }
         }
 

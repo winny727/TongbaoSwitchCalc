@@ -73,6 +73,8 @@
             this.btnUp = new System.Windows.Forms.Button();
             this.linkLblSync = new System.Windows.Forms.LinkLabel();
             this.checkBoxEnableRecord = new System.Windows.Forms.CheckBox();
+            this.comboBoxMultiSel = new System.Windows.Forms.ComboBox();
+            this.label13 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numSimCnt)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -127,7 +129,7 @@
             this.groupBox1.Controls.Add(this.checkBoxFortune);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(200, 122);
+            this.groupBox1.Size = new System.Drawing.Size(200, 126);
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "基础设置";
@@ -191,7 +193,7 @@
             this.listViewTongbao.GridLines = true;
             this.listViewTongbao.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.listViewTongbao.HideSelection = false;
-            this.listViewTongbao.Location = new System.Drawing.Point(12, 140);
+            this.listViewTongbao.Location = new System.Drawing.Point(12, 144);
             this.listViewTongbao.MultiSelect = false;
             this.listViewTongbao.Name = "listViewTongbao";
             this.listViewTongbao.Scrollable = false;
@@ -219,7 +221,7 @@
             this.groupBox2.Controls.Add(this.numHp);
             this.groupBox2.Location = new System.Drawing.Point(424, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(230, 122);
+            this.groupBox2.Size = new System.Drawing.Size(230, 126);
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "初始资源设置";
@@ -372,21 +374,21 @@
             this.groupBox4.Controls.Add(this.lblRes);
             this.groupBox4.Location = new System.Drawing.Point(660, 12);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(128, 122);
+            this.groupBox4.Size = new System.Drawing.Size(128, 126);
             this.groupBox4.TabIndex = 7;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "实时资源监测";
             // 
             // lblCurrent
             // 
-            this.lblCurrent.Location = new System.Drawing.Point(518, 330);
+            this.lblCurrent.Location = new System.Drawing.Point(518, 334);
             this.lblCurrent.Name = "lblCurrent";
             this.lblCurrent.Size = new System.Drawing.Size(144, 113);
             this.lblCurrent.TabIndex = 8;
             // 
             // btnSwitch
             // 
-            this.btnSwitch.Location = new System.Drawing.Point(668, 330);
+            this.btnSwitch.Location = new System.Drawing.Point(668, 334);
             this.btnSwitch.Name = "btnSwitch";
             this.btnSwitch.Size = new System.Drawing.Size(120, 23);
             this.btnSwitch.TabIndex = 11;
@@ -396,7 +398,7 @@
             // 
             // btnSimulation
             // 
-            this.btnSimulation.Location = new System.Drawing.Point(668, 359);
+            this.btnSimulation.Location = new System.Drawing.Point(668, 363);
             this.btnSimulation.Name = "btnSimulation";
             this.btnSimulation.Size = new System.Drawing.Size(120, 23);
             this.btnSimulation.TabIndex = 12;
@@ -406,7 +408,7 @@
             // 
             // btnReset
             // 
-            this.btnReset.Location = new System.Drawing.Point(668, 388);
+            this.btnReset.Location = new System.Drawing.Point(668, 392);
             this.btnReset.Name = "btnReset";
             this.btnReset.Size = new System.Drawing.Size(120, 23);
             this.btnReset.TabIndex = 13;
@@ -416,7 +418,7 @@
             // 
             // btnRecord
             // 
-            this.btnRecord.Location = new System.Drawing.Point(668, 417);
+            this.btnRecord.Location = new System.Drawing.Point(668, 421);
             this.btnRecord.Name = "btnRecord";
             this.btnRecord.Size = new System.Drawing.Size(120, 23);
             this.btnRecord.TabIndex = 14;
@@ -426,6 +428,8 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.label13);
+            this.groupBox3.Controls.Add(this.comboBoxMultiSel);
             this.groupBox3.Controls.Add(this.label9);
             this.groupBox3.Controls.Add(this.numMinHp);
             this.groupBox3.Controls.Add(this.label2);
@@ -434,7 +438,7 @@
             this.groupBox3.Controls.Add(this.label10);
             this.groupBox3.Location = new System.Drawing.Point(218, 12);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(200, 122);
+            this.groupBox3.Size = new System.Drawing.Size(200, 126);
             this.groupBox3.TabIndex = 5;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "模拟设置";
@@ -444,7 +448,7 @@
             this.checkBoxAutoRevert.AutoSize = true;
             this.checkBoxAutoRevert.Checked = true;
             this.checkBoxAutoRevert.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxAutoRevert.Location = new System.Drawing.Point(518, 392);
+            this.checkBoxAutoRevert.Location = new System.Drawing.Point(518, 396);
             this.checkBoxAutoRevert.Name = "checkBoxAutoRevert";
             this.checkBoxAutoRevert.Size = new System.Drawing.Size(132, 16);
             this.checkBoxAutoRevert.TabIndex = 11;
@@ -490,7 +494,6 @@
             this.comboBoxSimMode.Name = "comboBoxSimMode";
             this.comboBoxSimMode.Size = new System.Drawing.Size(130, 20);
             this.comboBoxSimMode.TabIndex = 8;
-            this.comboBoxSimMode.SelectedIndexChanged += new System.EventHandler(this.comboBoxSimMode_SelectedIndexChanged);
             // 
             // label10
             // 
@@ -508,7 +511,7 @@
             this.groupBox5.Controls.Add(this.btnRemove);
             this.groupBox5.Controls.Add(this.btnAdd);
             this.groupBox5.Controls.Add(this.treeViewRule);
-            this.groupBox5.Location = new System.Drawing.Point(518, 140);
+            this.groupBox5.Location = new System.Drawing.Point(518, 144);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(270, 184);
             this.groupBox5.TabIndex = 12;
@@ -519,7 +522,7 @@
             // 
             this.label11.BackColor = System.Drawing.SystemColors.Window;
             this.label11.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label11.Location = new System.Drawing.Point(302, 410);
+            this.label11.Location = new System.Drawing.Point(302, 414);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(200, 20);
             this.label11.TabIndex = 15;
@@ -596,19 +599,37 @@
             this.checkBoxEnableRecord.AutoSize = true;
             this.checkBoxEnableRecord.Checked = true;
             this.checkBoxEnableRecord.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxEnableRecord.Location = new System.Drawing.Point(518, 412);
+            this.checkBoxEnableRecord.Location = new System.Drawing.Point(518, 416);
             this.checkBoxEnableRecord.Name = "checkBoxEnableRecord";
             this.checkBoxEnableRecord.Size = new System.Drawing.Size(132, 28);
             this.checkBoxEnableRecord.TabIndex = 16;
             this.checkBoxEnableRecord.Text = "模拟时记录每次交换\r\n(会使模拟性能下降)";
             this.checkBoxEnableRecord.UseVisualStyleBackColor = true;
             // 
+            // comboBoxMultiSel
+            // 
+            this.comboBoxMultiSel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxMultiSel.FormattingEnabled = true;
+            this.comboBoxMultiSel.Location = new System.Drawing.Point(64, 100);
+            this.comboBoxMultiSel.Name = "comboBoxMultiSel";
+            this.comboBoxMultiSel.Size = new System.Drawing.Size(130, 20);
+            this.comboBoxMultiSel.TabIndex = 11;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 103);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(53, 12);
+            this.label13.TabIndex = 12;
+            this.label13.Text = "多选通宝";
+            // 
             // MainForm
             // 
             this.AcceptButton = this.btnSwitch;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 452);
+            this.ClientSize = new System.Drawing.Size(800, 456);
             this.Controls.Add(this.checkBoxEnableRecord);
             this.Controls.Add(this.checkBoxAutoRevert);
             this.Controls.Add(this.label11);
@@ -697,5 +718,7 @@
         private System.Windows.Forms.Button btnUp;
         private System.Windows.Forms.LinkLabel linkLblSync;
         private System.Windows.Forms.CheckBox checkBoxEnableRecord;
+        private System.Windows.Forms.ComboBox comboBoxMultiSel;
+        private System.Windows.Forms.Label label13;
     }
 }

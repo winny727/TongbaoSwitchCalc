@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Drawing;
-using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using TongbaoSwitchCalc.DataModel;
 using TongbaoSwitchCalc.DataModel.Simulation;
 using TongbaoSwitchCalc.Impl;
 using TongbaoSwitchCalc.Impl.Simulation;
+using TongbaoSwitchCalc.Impl.View;
 using TongbaoSwitchCalc.View;
 
 namespace TongbaoSwitchCalc
@@ -17,13 +16,12 @@ namespace TongbaoSwitchCalc
     {
         private PlayerData mPlayerData;
         private RandomGenerator mRandom;
+        private TongbaoSelector mTongbaoSelector;
         private SwitchSimulator mSwitchSimulator;
         private PrintDataCollector mPrintDataCollector;
         private StatisticDataCollector mStatisticDataCollector;
         private CompositeDataCollector mCompositeDataCollector;
 
-        private SquadType mSelectedSquadType = default;
-        private SimulationType mSelectedSimulationType = default;
         private int mSelectedTongbaoSlotIndex = -1;
         private bool mCanRevertPlayerData = false;
 
@@ -60,7 +58,8 @@ namespace TongbaoSwitchCalc
         {
             Helper.InitConfig();
             mRandom = new RandomGenerator();
-            mPlayerData = new PlayerData(mRandom);
+            mTongbaoSelector = new TongbaoSelector(mRandom);
+            mPlayerData = new PlayerData(mTongbaoSelector, mRandom);
             mPrintDataCollector = new PrintDataCollector();
             mStatisticDataCollector = new StatisticDataCollector();
             mCompositeDataCollector = new CompositeDataCollector();
@@ -80,7 +79,13 @@ namespace TongbaoSwitchCalc
             mTempResValues.Add(ResType.Candles, (int)numCandle.Value);
             mTempResValues.Add(ResType.Shield, (int)numShield.Value);
             mTempResValues.Add(ResType.Hope, (int)numHope.Value);
-            mPlayerData.Init(mSelectedSquadType, mTempResValues);
+
+            SquadType squadType = default;
+            if (comboBoxSquad.SelectedItem is ComboBoxItem<SquadType> item)
+            {
+                squadType = item.Value;
+            }
+            mPlayerData.Init(squadType, mTempResValues);
         }
 
         private void DataModelTest()
@@ -146,6 +151,19 @@ namespace TongbaoSwitchCalc
             }
             comboBoxSimMode.SelectedIndex = 0;
 
+            comboBoxMultiSel.DisplayMember = "Key";
+            comboBoxMultiSel.ValueMember = "Value";
+            comboBoxMultiSel.Items.Clear();
+            comboBoxMultiSel.Items.Add(new ComboBoxItem<TongbaoSelectMode>("默认", TongbaoSelectMode.Default));
+            comboBoxMultiSel.Items.Add(new ComboBoxItem<TongbaoSelectMode>("随机", TongbaoSelectMode.Random));
+            foreach (var id in Helper.GetUpgradeSelectTongbaoIds())
+            {
+                TongbaoConfig config = TongbaoConfig.GetTongbaoConfigById(id);
+                if (config == null) continue;
+                comboBoxMultiSel.Items.Add(new ComboBoxItem<TongbaoSelectMode>(config.Name, TongbaoSelectMode.Specific, config));
+            }
+            comboBoxMultiSel.SelectedIndex = 0;
+
             checkBoxFortune.Checked = false;
 
             panelLockedList.Controls.Clear();
@@ -196,7 +214,7 @@ namespace TongbaoSwitchCalc
                     collection.Add(preset);
                 }
                 TreeNode treeNode = treeViewRule.Nodes.Add(name);
-                treeNode.Checked  = true;
+                treeNode.Checked = true;
                 treeNode.Tag = collection;
                 UpdateRuleTreeView();
             }
@@ -461,6 +479,8 @@ namespace TongbaoSwitchCalc
             }
 
             mCanRevertPlayerData = false;
+            mPrintDataCollector.RecordEverySwitch = true; //单次交换固定打印
+            mTongbaoSelector.TongbaoSelectMode = TongbaoSelectMode.Dialog; //弹窗询问
             int slotIndex = mSelectedTongbaoSlotIndex;
             mPrintDataCollector?.OnSwitchStepBegin(new SimulateContext(0, mPlayerData.SwitchCount, slotIndex, mPlayerData));
             if (!mPlayerData.SwitchTongbao(slotIndex, force))
@@ -507,6 +527,19 @@ namespace TongbaoSwitchCalc
             }
             mCanRevertPlayerData = true;
             mPrintDataCollector.RecordEverySwitch = checkBoxEnableRecord.Checked;
+            mTongbaoSelector.TongbaoSelectMode = TongbaoSelectMode.Default;
+            if (comboBoxMultiSel.SelectedItem is ComboBoxItem<TongbaoSelectMode> cbItem)
+            {
+                if (cbItem.Value != TongbaoSelectMode.Specific)
+                {
+                    mTongbaoSelector.TongbaoSelectMode = cbItem.Value;
+                }
+                else if (cbItem.Args != null && cbItem.Args.Length > 0 && cbItem.Args[0] is TongbaoConfig config)
+                {
+                    mTongbaoSelector.TongbaoSelectMode = cbItem.Value;
+                    mTongbaoSelector.SpecificTongbaoId = config.Id;
+                }
+            }
             mSwitchSimulator.TotalSimulationCount = (int)numSimCnt.Value;
             mSwitchSimulator.MinimumLifePoint = (int)numMinHp.Value;
             mSwitchSimulator.NextSwitchSlotIndex = mSelectedTongbaoSlotIndex;
@@ -567,21 +600,16 @@ namespace TongbaoSwitchCalc
         private void comboBoxSquad_SelectedIndexChanged(object sender, EventArgs e)
         {
             mCanRevertPlayerData = false;
-            ComboBoxItem<SquadType> item = comboBoxSquad.SelectedItem as ComboBoxItem<SquadType>;
-            mSelectedSquadType = item?.Value ?? default;
-            mPlayerData.SetSquadType(mSelectedSquadType);
-            InitTongbaoSlot();
+            if (comboBoxSquad.SelectedItem is ComboBoxItem<SquadType> item)
+            {
+                mPlayerData.SetSquadType(item.Value);
+                InitTongbaoSlot();
+            }
         }
 
         private void checkBoxFortune_CheckedChanged(object sender, EventArgs e)
         {
             mPlayerData.SetSpecialCondition(SpecialConditionFlag.Collectible_Fortune, checkBoxFortune.Checked);
-        }
-
-        private void comboBoxSimMode_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            ComboBoxItem<SimulationType> item = comboBoxSimMode.SelectedItem as ComboBoxItem<SimulationType>;
-            mSelectedSimulationType = item?.Value ?? default;
         }
 
         // 选择通宝槽位
@@ -652,7 +680,12 @@ namespace TongbaoSwitchCalc
 
         private void btnSimulation_Click(object sender, EventArgs e)
         {
-            SwitchSimulate(mSelectedSimulationType);
+            SimulationType simType = default;
+            if (comboBoxSimMode.SelectedItem is ComboBoxItem<SimulationType> item)
+            {
+                simType = item.Value;
+            }
+            SwitchSimulate(simType);
         }
 
         private void btnReset_Click(object sender, EventArgs e)
@@ -703,6 +736,8 @@ namespace TongbaoSwitchCalc
                 UpdateLockedListView();
             }
         }
+
+        #region Rule TreeView Controller
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
@@ -805,23 +840,6 @@ namespace TongbaoSwitchCalc
             }
         }
 
-        private UniqueRuleCollection GetRuleCollection(SimulationRule rule)
-        {
-            if (rule == null)
-            {
-                return null;
-            }
-
-            foreach (TreeNode treeNode in treeViewRule.Nodes)
-            {
-                if (treeNode.Tag is UniqueRuleCollection collection && collection.Type == rule.Type)
-                {
-                    return collection;
-                }
-            }
-            return null;
-        }
-
         private void treeViewRule_DoubleClick(object sender, EventArgs e)
         {
             TreeNode selectedNode = treeViewRule.SelectedNode;
@@ -842,5 +860,24 @@ namespace TongbaoSwitchCalc
                 }
             }
         }
+
+        private UniqueRuleCollection GetRuleCollection(SimulationRule rule)
+        {
+            if (rule == null)
+            {
+                return null;
+            }
+
+            foreach (TreeNode treeNode in treeViewRule.Nodes)
+            {
+                if (treeNode.Tag is UniqueRuleCollection collection && collection.Type == rule.Type)
+                {
+                    return collection;
+                }
+            }
+            return null;
+        }
+
+        #endregion
     }
 }

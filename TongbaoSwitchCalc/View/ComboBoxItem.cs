@@ -8,11 +8,13 @@ namespace TongbaoSwitchCalc.View
     {
         public string Key { get; set; }
         public T Value { get; set; }
+        public object[] Args { get; set; }
 
-        public ComboBoxItem(string key, T value)
+        public ComboBoxItem(string key, T value, params object[] args)
         {
             Key = key;
             Value = value;
+            Args = args;
         }
     }
 }

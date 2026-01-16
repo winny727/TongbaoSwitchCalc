@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Xml.Linq;
 
 namespace TongbaoSwitchCalc.DataModel
 {
@@ -14,6 +14,7 @@ namespace TongbaoSwitchCalc.DataModel
         public TongbaoType Type;
         public int SwitchInPool; //交换前池子ID
         public List<int> SwitchOutPools; //交换后池子ID列表
+        public bool IsUpgrade; //是否升级通宝
         public ResType ExtraResType; //通宝自带效果
         public int ExtraResCount;
 
@@ -42,6 +43,7 @@ namespace TongbaoSwitchCalc.DataModel
         public static void ClearTongbaoConfig()
         {
             mTongbaoConfigDict.Clear();
+            SwitchPool.Clear();
         }
 
         public static IReadOnlyDictionary<int, TongbaoConfig> GetAllTongbaoConfigs()
@@ -59,17 +61,18 @@ namespace TongbaoSwitchCalc.DataModel
         public TongbaoType Type { get; private set; }
         public int SwitchInPool { get; private set; } //交换前池子ID
         public List<int> SwitchOutPools { get; private set; } //交换后池子ID列表
+        public bool IsUpgrade { get; private set; } //是否升级通宝
         public ResType ExtraResType { get; private set; } //通宝自带效果
         public int ExtraResCount { get; private set; }
         public ResType RandomResType { get; private set; } //品相效果
         public int RandomResCount { get; private set; }
 
-        private static readonly Stack<Tongbao> mPool = new Stack<Tongbao>();
+        private static readonly ConcurrentStack<Tongbao> mPool = new ConcurrentStack<Tongbao>();
         public static Tongbao Allocate()
         {
-            if (mPool.Count > 0)
+            if (mPool.TryPop(out var result))
             {
-                return mPool.Pop();
+                return result;
             }
             return new Tongbao();
         }
@@ -133,6 +136,7 @@ namespace TongbaoSwitchCalc.DataModel
             tongbao.Type = config.Type;
             tongbao.SwitchInPool = config.SwitchInPool;
             tongbao.SwitchOutPools = config.SwitchOutPools;
+            tongbao.IsUpgrade = config.IsUpgrade;
             tongbao.ExtraResType = config.ExtraResType;
             tongbao.ExtraResCount = config.ExtraResCount;
             tongbao.SetupRandomRes(random);

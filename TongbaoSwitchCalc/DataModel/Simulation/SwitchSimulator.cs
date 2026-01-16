@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace TongbaoSwitchCalc.DataModel.Simulation
 {
@@ -24,15 +25,19 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
 
         private const int SWITCH_STEP_LIMIT = 10000; // 交换上限，防止死循环
 
+        public int ParallelThreshold { get; set; } = 100000; // 触发多线程的阈值（交换次数*剩余模拟次数）
+        public int MaxParallelism { get; set; } = Environment.ProcessorCount;
+        private bool mUseParallel = false;
+
         public SwitchSimulator(PlayerData playerData, IDataCollector<SimulateContext> collector = null)
         {
             PlayerData = playerData ?? throw new ArgumentNullException(nameof(playerData));
             DataCollector = collector;
 
-            mRevertPlayerData = new PlayerData(playerData.Random);
+            mRevertPlayerData = new PlayerData(playerData.TongbaoSelector, playerData.Random);
         }
 
-        //private void Log(string msg) => System.Diagnostics.Debug.WriteLine(msg);
+        private void Log(string msg) => System.Diagnostics.Debug.WriteLine(msg);
 
         public void RevertPlayerData()
         {
@@ -46,21 +51,72 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             SwitchStepIndex = 0;
             mSlotIndexPriorityIndex = 0;
             mSimulateStepResult = SimulateStepResult.Success;
+            mUseParallel = false;
             mRevertPlayerData.CopyFrom(PlayerData); // CachePlayerData
             using (CodeTimer ct = CodeTimer.StartNew("Simulate"))
             {
                 mIsSimulating = true;
                 DataCollector?.OnSimulateBegin(type, TotalSimulationCount, PlayerData);
-                //TODO 模拟次数大于等于1000，改为多线程
                 while (SimulationStepIndex < TotalSimulationCount)
                 {
                     SimulateStep();
                     SimulationStepIndex++;
+
+                    //int estimatedLeftSwitchCount = SwitchStepIndex * (TotalSimulationCount - SimulationStepIndex);
+                    //if (!mUseParallel && estimatedLeftSwitchCount >= ParallelThreshold)
+                    //{
+                    //    Log($"预计剩余交换次数过多({estimatedLeftSwitchCount})，触发多线程优化");
+                    //    mUseParallel = true;
+                    //    break;
+                    //}
                 }
+
+                //if (mUseParallel && SimulationStepIndex < TotalSimulationCount)
+                //{
+                //    SimulateParallel(SimulationStepIndex);
+                //}
+
                 mIsSimulating = false;
                 DataCollector?.OnSimulateEnd(SimulationStepIndex, (float)ct.ElapsedMilliseconds, PlayerData);
             }
         }
+
+        private void SimulateParallel(int startIndex)
+        {
+            int remain = TotalSimulationCount - startIndex;
+            var collector = new ThreadSafeDataCollector(DataCollector);
+
+            Parallel.For(
+                0,
+                remain,
+                new ParallelOptions { MaxDegreeOfParallelism = MaxParallelism },
+                i =>
+                {
+                    int simIndex = startIndex + i;
+
+                    // 每个线程独立数据
+                    PlayerData localPlayerData = new PlayerData(PlayerData.TongbaoSelector, PlayerData.Random);
+                    localPlayerData.CopyFrom(mRevertPlayerData); //TODO ThreadSafe
+                    //TODO DataCollector优化？根据顺序排序？
+                    //TODO 数据处理问题修复，数据不对
+
+                    var localSimulator = new SwitchSimulator(localPlayerData, collector)
+                    {
+                        SimulationType = SimulationType,
+                        SlotIndexPriority = new List<int>(SlotIndexPriority),
+                        TargetTongbaoIds = new HashSet<int>(TargetTongbaoIds),
+                        ExpectedTongbaoId = ExpectedTongbaoId,
+                        MinimumLifePoint = MinimumLifePoint,
+                        TotalSimulationCount = 1,
+                        SimulationStepIndex = simIndex
+                    };
+                    localSimulator.SimulateStep();
+                }
+            );
+
+            SimulationStepIndex += remain;
+        }
+
 
         private void SimulateStep()
         {
