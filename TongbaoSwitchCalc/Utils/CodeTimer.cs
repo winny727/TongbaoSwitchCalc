@@ -31,7 +31,10 @@ public sealed class CodeTimer : IDisposable
     public void Dispose()
     {
         mStopWatch.Stop();
-        mPool.Push(this);
+        if (!mPool.Contains(this))
+        {
+            mPool.Push(this);
+        }
         //Console.WriteLine($"{mName} 耗时: {mStopWatch.Elapsed.TotalMilliseconds:F3} ms");
         Debug.WriteLine($"{Name} 耗时: {mStopWatch.Elapsed.TotalMilliseconds:F3} ms");
     }

@@ -9,6 +9,7 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
         public SimulationType SimulationType { get; private set; } = SimulationType.LifePointLimit;
         public PlayerData PlayerData { get; private set; }
         public IDataCollector<SimulateContext> DataCollector { get; private set; }
+        public ILogger Logger { get; private set; }
         public List<int> SlotIndexPriority { get; private set; } = new List<int>(); // 槽位优先级
         public HashSet<int> TargetTongbaoIds { get; private set; } = new HashSet<int>(); // 目标/降级通宝ID集合
         public int ExpectedTongbaoId { get; set; } = -1; // 期望通宝ID
@@ -16,7 +17,9 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
         public int SwitchStepIndex { get; private set; } = 0; // 包括交换失败
         public int MinimumLifePoint { get; set; } = 1; // 最小生命值限制
         public int TotalSimulationCount { get; set; } = 1000;
+
         public int NextSwitchSlotIndex { get; set; } = -1;
+        private int mOriginNextSwitchSlotIndex;
 
         private SimulateStepResult mSimulateStepResult = SimulateStepResult.Success;
         private bool mIsSimulating = false;
@@ -29,19 +32,19 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
         public int MaxParallelism { get; set; } = Environment.ProcessorCount;
         private bool mUseParallel = false;
 
-        public SwitchSimulator(PlayerData playerData, IDataCollector<SimulateContext> collector = null)
+        public SwitchSimulator(PlayerData playerData, IDataCollector<SimulateContext> collector = null, ILogger logger = null)
         {
             PlayerData = playerData ?? throw new ArgumentNullException(nameof(playerData));
             DataCollector = collector;
+            Logger = logger;
 
             mRevertPlayerData = new PlayerData(playerData.TongbaoSelector, playerData.Random);
         }
 
-        private void Log(string msg) => System.Diagnostics.Debug.WriteLine(msg);
-
         public void RevertPlayerData()
         {
             PlayerData.CopyFrom(mRevertPlayerData);
+            NextSwitchSlotIndex = mOriginNextSwitchSlotIndex;
         }
 
         public void Simulate(SimulationType type)
@@ -53,6 +56,7 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             mSimulateStepResult = SimulateStepResult.Success;
             mUseParallel = false;
             mRevertPlayerData.CopyFrom(PlayerData); // CachePlayerData
+            mOriginNextSwitchSlotIndex = NextSwitchSlotIndex;
             using (CodeTimer ct = CodeTimer.StartNew("Simulate"))
             {
                 mIsSimulating = true;
@@ -62,19 +66,19 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
                     SimulateStep();
                     SimulationStepIndex++;
 
-                    //int estimatedLeftSwitchCount = SwitchStepIndex * (TotalSimulationCount - SimulationStepIndex);
-                    //if (!mUseParallel && estimatedLeftSwitchCount >= ParallelThreshold)
-                    //{
-                    //    Log($"预计剩余交换次数过多({estimatedLeftSwitchCount})，触发多线程优化");
-                    //    mUseParallel = true;
-                    //    break;
-                    //}
+                    int estimatedLeftSwitchCount = SwitchStepIndex * (TotalSimulationCount - SimulationStepIndex);
+                    if (!mUseParallel && estimatedLeftSwitchCount >= ParallelThreshold)
+                    {
+                        Logger?.Log($"预计剩余交换次数过多({estimatedLeftSwitchCount})，触发多线程优化");
+                        mUseParallel = true;
+                        break;
+                    }
                 }
 
-                //if (mUseParallel && SimulationStepIndex < TotalSimulationCount)
-                //{
-                //    SimulateParallel(SimulationStepIndex);
-                //}
+                if (mUseParallel && SimulationStepIndex < TotalSimulationCount)
+                {
+                    SimulateParallel(SimulationStepIndex);
+                }
 
                 mIsSimulating = false;
                 DataCollector?.OnSimulateEnd(SimulationStepIndex, (float)ct.ElapsedMilliseconds, PlayerData);
@@ -96,21 +100,22 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
 
                     // 每个线程独立数据
                     PlayerData localPlayerData = new PlayerData(PlayerData.TongbaoSelector, PlayerData.Random);
-                    localPlayerData.CopyFrom(mRevertPlayerData); //TODO ThreadSafe
-                    //TODO DataCollector优化？根据顺序排序？
-                    //TODO 数据处理问题修复，数据不对
+                    localPlayerData.CopyFrom(mRevertPlayerData);
+                    //TODO PrintDataCollector优化？根据顺序排序？
 
+                    // 考虑到线程安全，Logger就不往下放了，反正也没啥要打印的
                     var localSimulator = new SwitchSimulator(localPlayerData, collector)
                     {
                         SimulationType = SimulationType,
+                        SimulationStepIndex = simIndex,
+                        NextSwitchSlotIndex = mOriginNextSwitchSlotIndex,
                         SlotIndexPriority = new List<int>(SlotIndexPriority),
                         TargetTongbaoIds = new HashSet<int>(TargetTongbaoIds),
                         ExpectedTongbaoId = ExpectedTongbaoId,
                         MinimumLifePoint = MinimumLifePoint,
                         TotalSimulationCount = 1,
-                        SimulationStepIndex = simIndex
                     };
-                    localSimulator.SimulateStep();
+                    localSimulator.SimulateStep(false);
                 }
             );
 
@@ -118,14 +123,17 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
         }
 
 
-        private void SimulateStep()
+        private void SimulateStep(bool revertPlayerData = true)
         {
-            RevertPlayerData();
+            if (revertPlayerData)
+            {
+                RevertPlayerData();
+            }
             SwitchStepIndex = 0;
             mSlotIndexPriorityIndex = 0;
             if (SlotIndexPriority.Count > 0)
             {
-                //Log($"优先槽位(#{mSlotIndexPriorityIndex}): {NextSwitchSlotIndex}");
+                //Logger?.Log($"初始优先槽位(#{mSlotIndexPriorityIndex}): {NextSwitchSlotIndex}");
                 NextSwitchSlotIndex = SlotIndexPriority[0];
             }
             mSimulateStepResult = SimulateStepResult.Success;
@@ -178,12 +186,12 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             Tongbao tongbao = PlayerData.GetTongbao(NextSwitchSlotIndex);
             if (tongbao != null && TargetTongbaoIds.Contains(tongbao.Id))
             {
-                //Log($"优先槽位(#{mSlotIndexPriorityIndex}): {NextSwitchSlotIndex}获得目标通宝{tongbao.Name}");
+                //Logger?.Log($"优先槽位(#{mSlotIndexPriorityIndex}): {NextSwitchSlotIndex}获得目标通宝{tongbao.Name}");
                 mSlotIndexPriorityIndex++;
                 if (mSlotIndexPriorityIndex < SlotIndexPriority.Count)
                 {
                     NextSwitchSlotIndex = SlotIndexPriority[mSlotIndexPriorityIndex];
-                    //Log($"优先槽位(#{mSlotIndexPriorityIndex}): {NextSwitchSlotIndex}");
+                    //Logger?.Log($"优先槽位切换(#{mSlotIndexPriorityIndex}): {NextSwitchSlotIndex}");
                 }
                 else
                 {

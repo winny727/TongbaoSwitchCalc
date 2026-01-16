@@ -16,6 +16,7 @@ namespace TongbaoSwitchCalc
     {
         private PlayerData mPlayerData;
         private RandomGenerator mRandom;
+        private Logger mLogger;
         private TongbaoSelector mTongbaoSelector;
         private SwitchSimulator mSwitchSimulator;
         private PrintDataCollector mPrintDataCollector;
@@ -57,7 +58,8 @@ namespace TongbaoSwitchCalc
         private void InitDataModel()
         {
             Helper.InitConfig();
-            mRandom = new RandomGenerator();
+            mRandom = new ThreadSafeRandomGenerator();
+            mLogger = new Logger();
             mTongbaoSelector = new TongbaoSelector(mRandom);
             mPlayerData = new PlayerData(mTongbaoSelector, mRandom);
             mPrintDataCollector = new PrintDataCollector();
@@ -65,7 +67,7 @@ namespace TongbaoSwitchCalc
             mCompositeDataCollector = new CompositeDataCollector();
             mCompositeDataCollector.AddDataCollector(mPrintDataCollector);
             mCompositeDataCollector.AddDataCollector(mStatisticDataCollector);
-            mSwitchSimulator = new SwitchSimulator(mPlayerData, mCompositeDataCollector);
+            mSwitchSimulator = new SwitchSimulator(mPlayerData, mCompositeDataCollector, mLogger);
             InitPlayerData();
         }
 
@@ -129,6 +131,7 @@ namespace TongbaoSwitchCalc
         {
             mIconGrid = new IconGridControl();
             mRecordForm = new RecordForm(this);
+            mLogger.SetLogFunc((msg) => mRecordForm.Content += msg);
             Helper.InitResources();
 
             comboBoxSquad.DisplayMember = "Key";
@@ -560,7 +563,8 @@ namespace TongbaoSwitchCalc
                 }
             }
 
-            mSwitchSimulator.Simulate(mode);
+            mSwitchSimulator.Simulate(mode); //TODO 异步？
+
             mOutputResult = mPrintDataCollector.OutputResult;
             mOutputResultChanged = true;
             UpdateAllTongbaoView();

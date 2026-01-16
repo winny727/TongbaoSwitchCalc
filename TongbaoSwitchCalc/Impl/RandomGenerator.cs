@@ -8,17 +8,17 @@ namespace TongbaoSwitchCalc.Impl
     {
         private Random mRandom = new Random();
 
-        public int Next(int minValue, int maxValue)
+        public virtual int Next(int minValue, int maxValue)
         {
             return mRandom.Next(minValue, maxValue);
         }
 
-        public double NextDouble()
+        public virtual double NextDouble()
         {
             return mRandom.NextDouble();
         }
 
-        public void SetSeed(int seed)
+        public virtual void SetSeed(int seed)
         {
             mRandom = new Random(seed);
         }

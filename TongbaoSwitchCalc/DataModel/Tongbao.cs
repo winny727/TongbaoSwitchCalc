@@ -67,19 +67,44 @@ namespace TongbaoSwitchCalc.DataModel
         public ResType RandomResType { get; private set; } //品相效果
         public int RandomResCount { get; private set; }
 
-        private static readonly ConcurrentStack<Tongbao> mPool = new ConcurrentStack<Tongbao>();
+        // ConcurrentDictionary保证线程安全+回收时不重复
+        private static readonly ConcurrentDictionary<Tongbao, bool> mPool = new ConcurrentDictionary<Tongbao, bool>();
+
+        //线程安全
         public static Tongbao Allocate()
         {
-            if (mPool.TryPop(out var result))
+            if (TryPop(out var result))
             {
                 return result;
             }
             return new Tongbao();
         }
 
+        private static bool TryPop(out Tongbao result)
+        {
+            result = default;
+
+            // 没有栈顶元素可弹出
+            if (mPool.IsEmpty)
+                return false;
+
+            // 获取任意元素，类似栈操作
+            foreach (var key in mPool.Keys)
+            {
+                if (mPool.TryRemove(key, out _))
+                {
+                    result = key;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        //线程安全
         public void Recycle()
         {
-            mPool.Push(this);
+            mPool.TryAdd(this, true);
         }
 
         public void CopyFrom(Tongbao tongbao)

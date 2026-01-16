@@ -12,10 +12,30 @@ namespace TongbaoSwitchCalc.Impl.Simulation
         private float mTotalSimulateTime;
         private int mTotalSwitchCount;
         private readonly Dictionary<SimulateStepResult, int> mTotalSimulateStepResult = new Dictionary<SimulateStepResult, int>();
-        private readonly Dictionary<ResType, int> mTempResBefore = new Dictionary<ResType, int>();
+        private readonly Dictionary<int, Dictionary<ResType, int>> mTempResBefore = new Dictionary<int, Dictionary<ResType, int>>(); // key: simulationStepIndex
         private readonly Dictionary<ResType, int> mTotalResChanged = new Dictionary<ResType, int>();
 
+        private readonly Stack<Dictionary<ResType, int>> mResDictPool = new Stack<Dictionary<ResType, int>>();
+
         private readonly StringBuilder mTempStringBuilder = new StringBuilder();
+
+        private Dictionary<ResType, int> AllocateResDict()
+        {
+            if (mResDictPool.Count > 0)
+            {
+                return mResDictPool.Pop();
+            }
+            return new Dictionary<ResType, int>();
+        }
+
+        private void RecycleResDict(Dictionary<ResType, int> resDict)
+        {
+            if (resDict != null && !mResDictPool.Contains(resDict))
+            {
+                resDict.Clear();
+                mResDictPool.Push(resDict);
+            }
+        }
 
         public void OnSimulateBegin(SimulationType type, int totalSimCount, in IReadOnlyPlayerData playerData)
         {
@@ -30,7 +50,7 @@ namespace TongbaoSwitchCalc.Impl.Simulation
 
         public void OnSimulateStepBegin(in SimulateContext context)
         {
-
+            mTempResBefore.Add(context.SimulationStepIndex, AllocateResDict());
         }
 
         public void OnSimulateStepEnd(in SimulateContext context, SimulateStepResult result)
@@ -40,14 +60,18 @@ namespace TongbaoSwitchCalc.Impl.Simulation
                 mTotalSimulateStepResult.Add(result, 0);
             }
             mTotalSimulateStepResult[result]++;
+
+            RecycleResDict(mTempResBefore[context.SimulationStepIndex]);
+            mTempResBefore.Remove(context.SimulationStepIndex);
         }
 
         public void OnSwitchStepBegin(in SimulateContext context)
         {
-            mTempResBefore.Clear();
+            var resDict = mTempResBefore[context.SimulationStepIndex];
+            resDict.Clear();
             foreach (var item in context.PlayerData.ResValues)
             {
-                mTempResBefore.Add(item.Key, item.Value);
+                resDict.Add(item.Key, item.Value);
             }
         }
 
@@ -60,7 +84,7 @@ namespace TongbaoSwitchCalc.Impl.Simulation
                 {
                     ResType type = item.Key;
                     int afterValue = item.Value;
-                    mTempResBefore.TryGetValue(type, out int beforeValue);
+                    mTempResBefore[context.SimulationStepIndex].TryGetValue(type, out int beforeValue);
                     int changedValue = afterValue - beforeValue;
                     if (!mTotalResChanged.ContainsKey(type))
                     {
@@ -116,10 +140,16 @@ namespace TongbaoSwitchCalc.Impl.Simulation
         public void ClearData()
         {
             mTotalSimulateCount = 0;
+            mTotalSimulateTime = 0;
             mTotalSwitchCount = 0;
             mTotalSimulateStepResult.Clear();
             mTotalResChanged.Clear();
             mTempStringBuilder.Clear();
+            foreach (var item in mTempResBefore)
+            {
+                RecycleResDict(item.Value);
+            }
+            mTempResBefore.Clear();
         }
     }
 }

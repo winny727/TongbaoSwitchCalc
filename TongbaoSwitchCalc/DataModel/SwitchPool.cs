@@ -6,7 +6,6 @@ namespace TongbaoSwitchCalc.DataModel
     internal static class SwitchPool
     {
         private static readonly Dictionary<int, List<int>> mSwitchOutPools = new Dictionary<int, List<int>>(); // <poolId, <out tongbaoId>>
-        private static readonly List<int> mValidTongbaoTempList = new List<int>();
 
         internal static void SetupTongbaoSwitchPool(TongbaoConfig config)
         {
@@ -29,7 +28,6 @@ namespace TongbaoSwitchCalc.DataModel
         internal static void Clear()
         {
             mSwitchOutPools.Clear();
-            mValidTongbaoTempList.Clear();
         }
 
         internal static IReadOnlyList<int> GetSwitchOutTongbaoIds(int id)
@@ -41,18 +39,23 @@ namespace TongbaoSwitchCalc.DataModel
             return null;
         }
 
-        internal static IReadOnlyList<int> SwitchTongbao(IRandomGenerator random, PlayerData playerData, Tongbao tongbao)
+        internal static void SwitchTongbao(IRandomGenerator random, PlayerData playerData, Tongbao tongbao, List<int> outResults)
         {
-            mValidTongbaoTempList.Clear();
+            if (outResults == null)
+            {
+                return;
+            }
+
+            outResults.Clear();
             if (random == null || playerData == null || tongbao == null)
             {
-                return mValidTongbaoTempList;
+                return;
             }
 
             int poolId = tongbao.SwitchInPool;
             if (poolId <= 0 || !mSwitchOutPools.ContainsKey(poolId))
             {
-                return mValidTongbaoTempList; // 不可交换
+                return; // 不可交换
             }
 
             foreach (var tongbaoId in mSwitchOutPools[poolId])
@@ -93,26 +96,26 @@ namespace TongbaoSwitchCalc.DataModel
                     continue;
                 }
 
-                mValidTongbaoTempList.Add(tongbaoId);
+                outResults.Add(tongbaoId);
             }
 
-            if (mValidTongbaoTempList.Count <= 0)
+            if (outResults.Count <= 0)
             {
-                return mValidTongbaoTempList; // 无可交换通宝
+                return; // 无可交换通宝
             }
 
             if (tongbao.IsUpgrade)
             {
-                return mValidTongbaoTempList;
+                return;
             }
             else
             {
                 // 随机
-                int index = random.Next(0, mValidTongbaoTempList.Count);
-                int result = mValidTongbaoTempList[index];
-                mValidTongbaoTempList.Clear();
-                mValidTongbaoTempList.Add(result);
-                return mValidTongbaoTempList;
+                int index = random.Next(0, outResults.Count);
+                int result = outResults[index];
+                outResults.Clear();
+                outResults.Add(result);
+                return;
             }
         }
     }

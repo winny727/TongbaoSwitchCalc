@@ -21,6 +21,8 @@ namespace TongbaoSwitchCalc.DataModel
         public int NextSwitchCostLifePoint => mSquadDefine.GetCostLifePoint(SwitchCount);
         public bool HasEnoughSwitchLife => GetResValue(ResType.LifePoint) > NextSwitchCostLifePoint;
 
+        private readonly List<int> mTempSwitchResults = new List<int>();
+
         public PlayerData(ITongbaoSelector selector, IRandomGenerator random)
         {
             TongbaoSelector = selector ?? throw new ArgumentNullException(nameof(selector));
@@ -376,8 +378,8 @@ namespace TongbaoSwitchCalc.DataModel
             int lifePoint = GetResValue(ResType.LifePoint);
             if (lifePoint > costLifePoint || force)
             {
-                var tongbaoIds = SwitchPool.SwitchTongbao(Random, this, tongbao);
-                int newTongbaoId = TongbaoSelector.SelectTongbao(tongbaoIds);
+                SwitchPool.SwitchTongbao(Random, this, tongbao, mTempSwitchResults);
+                int newTongbaoId = TongbaoSelector.SelectTongbao(mTempSwitchResults);
                 Tongbao newTongbao;
                 if (tongbao.IsUpgrade)
                 {
