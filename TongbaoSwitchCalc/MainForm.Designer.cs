@@ -75,6 +75,7 @@
             this.treeViewRule = new System.Windows.Forms.TreeView();
             this.label11 = new System.Windows.Forms.Label();
             this.checkBoxEnableRecord = new System.Windows.Forms.CheckBox();
+            this.btnRandom = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numSimCnt)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -624,12 +625,23 @@
             this.checkBoxEnableRecord.Text = "模拟时记录每次交换\r\n(会使模拟性能下降)";
             this.checkBoxEnableRecord.UseVisualStyleBackColor = true;
             // 
+            // btnRandom
+            // 
+            this.btnRandom.Location = new System.Drawing.Point(382, 388);
+            this.btnRandom.Name = "btnRandom";
+            this.btnRandom.Size = new System.Drawing.Size(120, 23);
+            this.btnRandom.TabIndex = 17;
+            this.btnRandom.Text = "全部随机";
+            this.btnRandom.UseVisualStyleBackColor = true;
+            this.btnRandom.Click += new System.EventHandler(this.btnRandom_Click);
+            // 
             // MainForm
             // 
             this.AcceptButton = this.btnSwitch;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 456);
+            this.Controls.Add(this.btnRandom);
             this.Controls.Add(this.checkBoxEnableRecord);
             this.Controls.Add(this.checkBoxAutoRevert);
             this.Controls.Add(this.label11);
@@ -642,8 +654,8 @@
             this.Controls.Add(this.btnSimulation);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.listViewTongbao);
             this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.listViewTongbao);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -720,5 +732,6 @@
         private System.Windows.Forms.CheckBox checkBoxEnableRecord;
         private System.Windows.Forms.ComboBox comboBoxMultiSel;
         private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Button btnRandom;
     }
 }

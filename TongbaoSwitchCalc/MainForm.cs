@@ -75,11 +75,14 @@ namespace TongbaoSwitchCalc
             //mSwitchSimulator = new SwitchSimulator(mPlayerData, new ConcurrentThreadSafeDataCollector() { RecordEverySwitch = false }, mLogger); //7.9s，ConcurrentDict GC很多；不记录每次交换：3.1s，33.3s
             mSwitchSimulator = new SwitchSimulator(mPlayerData, new WarpperThreadSafeDataCollector(mCompositeDataCollector), mLogger); //5.5s，55.9s，2.5s，22.8s；若开记录GC很多
 
-            //线程数测试（1000w次无记录WarpperThreadSafeDataCollector）：单线程（主线程）32.5s，单线程（非主线程）35.1s，双线程21.9s，四线程18.2s，八线程19.3s，15线程26.3s，16线程24.3s
+            //线程数测试（16核CPU，1000w次无记录WarpperThreadSafeDataCollector）：单线程（主线程）32.5s，单线程（非主线程）35.1s，双线程21.9s，四线程18.2s，八线程19.3s，15线程26.3s，16线程24.3s
             //结论：线程数：处理器数/4
 
-            //4线程情况下，若不开记录最优为ConcurrentThreadSafeDataCollector 1.6s，开记录最优为WarpperThreadSafeDataCollector 4.0s
+            //4线程情况下，若不开记录最优为ConcurrentThreadSafeDataCollector 1.6s
+            //不开记录WarpperThreadSafeDataCollector 1.8s，开记录最优为WarpperThreadSafeDataCollector 4.0s
             //结论，4线程WarpperThreadSafeDataCollector
+
+            //备注：LockThreadSafeDataCollector和ConcurrentThreadSafeDataCollector还未实现最终的数据整理打印逻辑
 
             InitPlayerData();
         }
@@ -576,7 +579,9 @@ namespace TongbaoSwitchCalc
                 }
             }
 
-            mSwitchSimulator.Simulate(mode); //TODO 异步？
+            mSwitchSimulator.Simulate(mode);
+            //TODO 异步+进度条
+            //一键随机通宝按钮
 
             mOutputResult = mPrintDataCollector.OutputResult;
             mOutputResultChanged = true;
@@ -624,20 +629,24 @@ namespace TongbaoSwitchCalc
 
         private void SetRandomTongbao(int slotIndex)
         {
-            // 测试，随机添加通宝
-            var configs = TongbaoConfig.GetAllTongbaoConfigs();
-            int random = mRandom.Next(0, configs.Count);
-            int index = 0;
-            int targetId = -1;
-            foreach (var item in configs)
+            // 测试，随机添加不重复通宝
+            var list = new List<int>();
+            foreach (var item in TongbaoConfig.GetAllTongbaoConfigs())
             {
-                if (index == random)
+                int tongbaoId = item.Key;
+                if (!mPlayerData.IsTongbaoExist(tongbaoId))
                 {
-                    targetId = item.Value.Id;
-                    break;
+                    list.Add(item.Key);
                 }
-                index++;
             }
+
+            int targetId = -1;
+            if (list.Count > 0)
+            {
+                int random = mRandom.Next(0, list.Count);
+                targetId = list[random];
+            }
+
             if (targetId > 0)
             {
                 OnSelectNewRandomTongbao(targetId, slotIndex);
@@ -753,6 +762,11 @@ namespace TongbaoSwitchCalc
             mRecordForm.Show();
             mRecordForm.WindowState = FormWindowState.Normal;
             mRecordForm.Focus();
+        }
+
+        private void btnRandom_Click(object sender, EventArgs e)
+        {
+            FillRandomTongbao();
         }
 
         private void iconGridControl_Click(object sender, EventArgs e)
