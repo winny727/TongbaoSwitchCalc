@@ -71,6 +71,7 @@ namespace TongbaoSwitchCalc.Impl.Simulation
         public float TotalSimulateTime { get; private set; }
         public int TotalSwitchCount => mSwitchStepResults.Count;
 
+        // TODO capacity
         private readonly ConcurrentDictionary<StepIndexes, TongbaoRecordValue> mTongbaoRecords = new ConcurrentDictionary<StepIndexes, TongbaoRecordValue>();
         private readonly ConcurrentDictionary<ResRecordKey, ResRecordValue> mResValueRecords = new ConcurrentDictionary<ResRecordKey, ResRecordValue>();
         private readonly ConcurrentDictionary<StepIndexes, SwitchStepResult> mSwitchStepResults = new ConcurrentDictionary<StepIndexes, SwitchStepResult>();
@@ -163,18 +164,19 @@ namespace TongbaoSwitchCalc.Impl.Simulation
             Tongbao tongbao = context.PlayerData.GetTongbao(context.SlotIndex);
             int tongbaoId = tongbao != null ? tongbao.Id : -1;
 
-            mTongbaoRecords.AddOrUpdate(indexes, new TongbaoRecordValue
-            {
-                SlotIndex = context.SlotIndex,
-                BeforeId = tongbaoId,
-                AfterId = tongbaoId,
-            },
-            (_, old) => new TongbaoRecordValue
-            {
-                SlotIndex = old.SlotIndex,
-                BeforeId = old.BeforeId,
-                AfterId = tongbaoId,
-            });
+            mTongbaoRecords.AddOrUpdate(indexes,
+                new TongbaoRecordValue
+                {
+                    SlotIndex = context.SlotIndex,
+                    BeforeId = -1,
+                    AfterId = tongbaoId,
+                },
+                (_, old) => new TongbaoRecordValue
+                {
+                    SlotIndex = old.SlotIndex,
+                    BeforeId = old.BeforeId,
+                    AfterId = tongbaoId,
+                });
 
             foreach (var item in context.PlayerData.ResValues)
             {
@@ -186,7 +188,7 @@ namespace TongbaoSwitchCalc.Impl.Simulation
                     },
                     new ResRecordValue
                     {
-                        BeforeValue = item.Value,
+                        BeforeValue = 0,
                         AfterValue = item.Value,
                     },
                     (_, old) => new ResRecordValue

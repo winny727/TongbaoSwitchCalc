@@ -70,6 +70,7 @@ namespace TongbaoSwitchCalc.Impl.Simulation
         public float TotalSimulateTime { get; private set; }
         public int TotalSwitchCount => mSwitchStepResults.Count;
 
+        // TODO capacity
         private readonly Dictionary<StepIndexes, TongbaoRecordValue> mTongbaoRecords = new Dictionary<StepIndexes, TongbaoRecordValue>();
         private readonly Dictionary<ResRecordKey, ResRecordValue> mResValueRecords = new Dictionary<ResRecordKey, ResRecordValue>();
         private readonly Dictionary<StepIndexes, SwitchStepResult> mSwitchStepResults = new Dictionary<StepIndexes, SwitchStepResult>();
@@ -177,27 +178,39 @@ namespace TongbaoSwitchCalc.Impl.Simulation
 
             lock (mTongbaoRecordsLock)
             {
+                int beforeId = -1;
+                if (mTongbaoRecords.TryGetValue(indexes, out var record))
+                {
+                    beforeId = record.BeforeId;
+                }
+
                 mTongbaoRecords[indexes] = new TongbaoRecordValue
                 {
                     SlotIndex = context.SlotIndex,
-                    BeforeId = mTongbaoRecords[indexes].BeforeId,
+                    BeforeId = beforeId,
                     AfterId = tongbaoId,
                 };
             }
 
             foreach (var item in context.PlayerData.ResValues)
             {
+                var key = new ResRecordKey
+                {
+                    Indexes = indexes,
+                    ResType = item.Key,
+                };
+
                 lock (mResValueRecordsLock)
                 {
-                    var key = new ResRecordKey
+                    int beforeValue = 0;
+                    if (mResValueRecords.TryGetValue(key, out var record))
                     {
-                        Indexes = indexes,
-                        ResType = item.Key,
-                    };
+                        beforeValue = record.BeforeValue;
+                    }
 
                     mResValueRecords[key] = new ResRecordValue
                     {
-                        BeforeValue = mResValueRecords[key].BeforeValue,
+                        BeforeValue = beforeValue,
                         AfterValue = item.Value,
                     };
                 }
