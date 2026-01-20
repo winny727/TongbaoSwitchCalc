@@ -5,104 +5,14 @@ using TongbaoSwitchCalc.DataModel.Simulation;
 
 namespace TongbaoSwitchCalc.Impl.Simulation
 {
-    public class LockThreadSafeDataCollector : IThreadSafeDataCollector<SimulateContext>
+    public class LockThreadSafeDataCollector : DataCollector, IThreadSafeDataCollector<SimulateContext>
     {
-        public struct StepIndexes : IEquatable<StepIndexes>
-        {
-            public int SimulateStepIndex;
-            public int SwitchStepIndex;
-
-            public bool Equals(StepIndexes other)
-            {
-                return SimulateStepIndex == other.SimulateStepIndex && SwitchStepIndex == other.SwitchStepIndex;
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    int hash = 17;
-                    hash = hash * 31 + SimulateStepIndex;
-                    hash = hash * 31 + SwitchStepIndex;
-                    return hash;
-                }
-            }
-
-        }
-
-        public struct ResRecordKey : IEquatable<ResRecordKey>
-        {
-            public StepIndexes Indexes;
-            public ResType ResType;
-
-            public bool Equals(ResRecordKey other)
-            {
-                return Indexes.Equals(other.Indexes) && ResType == other.ResType;
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    int hash = 17;
-                    hash = hash * 31 + Indexes.GetHashCode();
-                    hash = hash * 31 + (int)ResType;
-                    return hash;
-                }
-            }
-        }
-
-        public struct ResRecordValue
-        {
-            public int BeforeValue;
-            public int AfterValue;
-        }
-
-        public struct TongbaoRecordValue
-        {
-            public int SlotIndex;
-            public int BeforeId;
-            public int AfterId;
-        }
-
-        public bool RecordEverySwitch { get; set; } = true;
-        public int TotalSimulateCount { get; private set; }
-        public float TotalSimulateTime { get; private set; }
-        public int TotalSwitchCount => mSwitchStepResults.Count;
-
-        // TODO capacity
-        private readonly Dictionary<StepIndexes, TongbaoRecordValue> mTongbaoRecords = new Dictionary<StepIndexes, TongbaoRecordValue>();
-        private readonly Dictionary<ResRecordKey, ResRecordValue> mResValueRecords = new Dictionary<ResRecordKey, ResRecordValue>();
-        private readonly Dictionary<StepIndexes, SwitchStepResult> mSwitchStepResults = new Dictionary<StepIndexes, SwitchStepResult>();
-        private readonly Dictionary<int, SimulateStepResult> mSimulateStepResults = new Dictionary<int, SimulateStepResult>();
         private readonly object mTongbaoRecordsLock = new object();
         private readonly object mResValueRecordsLock = new object();
         private readonly object mSwitchStepResultsLock = new object();
         private readonly object mSimulateStepResultsLock = new object();
 
-
-        public IReadOnlyDictionary<StepIndexes, TongbaoRecordValue> TongbaoRecords => mTongbaoRecords;
-        public IReadOnlyDictionary<ResRecordKey, ResRecordValue> ResValueRecords => mResValueRecords;
-        public IReadOnlyDictionary<StepIndexes, SwitchStepResult> SwitchStepResults => mSwitchStepResults;
-        public IReadOnlyDictionary<int, SimulateStepResult> SimulateStepResults => mSimulateStepResults;
-
-        public void OnSimulateBegin(SimulationType type, int totalSimCount, in IReadOnlyPlayerData playerData)
-        {
-            ClearData();
-        }
-
-        public void OnSimulateEnd(int executedSimCount, float simCostTimeMS, in IReadOnlyPlayerData playerData)
-        {
-            TotalSimulateCount = executedSimCount;
-            TotalSimulateTime = simCostTimeMS;
-        }
-
-        public void OnSimulateStepBegin(in SimulateContext context)
-        {
-
-        }
-
-        public void OnSimulateStepEnd(in SimulateContext context, SimulateStepResult result)
+        public override void OnSimulateStepEnd(in SimulateContext context, SimulateStepResult result)
         {
             lock (mSimulateStepResultsLock)
             {
@@ -110,7 +20,7 @@ namespace TongbaoSwitchCalc.Impl.Simulation
             }
         }
 
-        public void OnSwitchStepBegin(in SimulateContext context)
+        public override void OnSwitchStepBegin(in SimulateContext context)
         {
             if (!RecordEverySwitch)
             {
@@ -155,7 +65,7 @@ namespace TongbaoSwitchCalc.Impl.Simulation
             }
         }
 
-        public void OnSwitchStepEnd(in SimulateContext context, SwitchStepResult result)
+        public override void OnSwitchStepEnd(in SimulateContext context, SwitchStepResult result)
         {
             if (!RecordEverySwitch)
             {
@@ -192,20 +102,20 @@ namespace TongbaoSwitchCalc.Impl.Simulation
                 };
             }
 
-            foreach (var item in context.PlayerData.ResValues)
+            lock (mResValueRecordsLock)
             {
-                var key = new ResRecordKey
+                foreach (var item in context.PlayerData.ResValues)
                 {
-                    Indexes = indexes,
-                    ResType = item.Key,
-                };
-
-                lock (mResValueRecordsLock)
-                {
-                    int beforeValue = 0;
-                    if (mResValueRecords.TryGetValue(key, out var record))
+                    var key = new ResRecordKey
                     {
-                        beforeValue = record.BeforeValue;
+                        Indexes = indexes,
+                        ResType = item.Key,
+                    };
+
+                    int beforeValue = 0;
+                    if (mResValueRecords.TryGetValue(key, out var resRecord))
+                    {
+                        beforeValue = resRecord.BeforeValue;
                     }
 
                     mResValueRecords[key] = new ResRecordValue
@@ -217,10 +127,12 @@ namespace TongbaoSwitchCalc.Impl.Simulation
             }
         }
 
-        public void ClearData()
+        public override void ClearData()
         {
-            TotalSimulateCount = 0;
+            TotalSimulateStep = 0;
+            ExecSimulateStep = 0;
             TotalSimulateTime = 0;
+            EstimatedSwitchStep = 0;
             lock (mTongbaoRecordsLock)
             {
                 mTongbaoRecords.Clear();

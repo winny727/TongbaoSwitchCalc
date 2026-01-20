@@ -73,11 +73,13 @@
             this.btnRemove = new System.Windows.Forms.Button();
             this.btnAdd = new System.Windows.Forms.Button();
             this.treeViewRule = new System.Windows.Forms.TreeView();
-            this.label11 = new System.Windows.Forms.Label();
             this.checkBoxEnableRecord = new System.Windows.Forms.CheckBox();
             this.btnRandom = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
             this.checkBoxOptimize = new System.Windows.Forms.CheckBox();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numSimCnt)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -91,6 +93,7 @@
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMinHp)).BeginInit();
             this.groupBox5.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // comboBoxSquad
@@ -604,22 +607,9 @@
             this.treeViewRule.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeViewRule_AfterCheck);
             this.treeViewRule.DoubleClick += new System.EventHandler(this.treeViewRule_DoubleClick);
             // 
-            // label11
-            // 
-            this.label11.BackColor = System.Drawing.SystemColors.Window;
-            this.label11.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label11.Location = new System.Drawing.Point(352, 337);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(120, 40);
-            this.label11.TabIndex = 15;
-            this.label11.Text = "单击选中通宝\r\n双击添加/更改通宝";
-            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // checkBoxEnableRecord
             // 
             this.checkBoxEnableRecord.AutoSize = true;
-            this.checkBoxEnableRecord.Checked = true;
-            this.checkBoxEnableRecord.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxEnableRecord.Location = new System.Drawing.Point(518, 419);
             this.checkBoxEnableRecord.Name = "checkBoxEnableRecord";
             this.checkBoxEnableRecord.Size = new System.Drawing.Size(132, 28);
@@ -629,9 +619,9 @@
             // 
             // btnRandom
             // 
-            this.btnRandom.Location = new System.Drawing.Point(352, 380);
+            this.btnRandom.Location = new System.Drawing.Point(395, 380);
             this.btnRandom.Name = "btnRandom";
-            this.btnRandom.Size = new System.Drawing.Size(120, 23);
+            this.btnRandom.Size = new System.Drawing.Size(100, 23);
             this.btnRandom.TabIndex = 17;
             this.btnRandom.Text = "全部随机";
             this.btnRandom.UseVisualStyleBackColor = true;
@@ -639,9 +629,9 @@
             // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(352, 409);
+            this.btnClear.Location = new System.Drawing.Point(395, 409);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(120, 23);
+            this.btnClear.Size = new System.Drawing.Size(100, 23);
             this.btnClear.TabIndex = 18;
             this.btnClear.Text = "全部清除";
             this.btnClear.UseVisualStyleBackColor = true;
@@ -658,18 +648,40 @@
             this.checkBoxOptimize.UseVisualStyleBackColor = true;
             this.checkBoxOptimize.CheckedChanged += new System.EventHandler(this.checkBoxOptimize_CheckedChanged);
             // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1,
+            this.toolStripProgressBar1});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 446);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(800, 23);
+            this.statusStrip1.TabIndex = 20;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(193, 18);
+            this.toolStripStatusLabel1.Text = "单击选中通宝，双击添加/更改通宝";
+            // 
+            // toolStripProgressBar1
+            // 
+            this.toolStripProgressBar1.Name = "toolStripProgressBar1";
+            this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 17);
+            // 
             // MainForm
             // 
             this.AcceptButton = this.btnSwitch;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 456);
+            this.ClientSize = new System.Drawing.Size(800, 469);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.checkBoxOptimize);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.btnRandom);
             this.Controls.Add(this.checkBoxEnableRecord);
             this.Controls.Add(this.checkBoxAutoRevert);
-            this.Controls.Add(this.label11);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.btnRecord);
             this.Controls.Add(this.lblCurrent);
@@ -704,6 +716,8 @@
             this.groupBox3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMinHp)).EndInit();
             this.groupBox5.ResumeLayout(false);
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -745,7 +759,6 @@
         private System.Windows.Forms.NumericUpDown numMinHp;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.CheckBox checkBoxAutoRevert;
-        private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Panel panelLockedList;
         private System.Windows.Forms.TreeView treeViewRule;
@@ -760,5 +773,8 @@
         private System.Windows.Forms.Button btnRandom;
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.CheckBox checkBoxOptimize;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
     }
 }

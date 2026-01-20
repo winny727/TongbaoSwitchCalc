@@ -36,6 +36,8 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
                     return mSwitchStepLimitStr;
                 case SimulateStepResult.SwitchFailed:
                     return "交换失败";
+                case SimulateStepResult.CancellationRequested:
+                    return "用户取消";
                 default:
                     break;
             }
@@ -134,6 +136,7 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
         TargetTongbaoFilledPrioritySlots = 3,
         SwitchStepLimitReached = 4,
         SwitchFailed = 5,
+        CancellationRequested = 6,
     }
 
     public enum SwitchStepResult

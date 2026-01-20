@@ -8,68 +8,12 @@ namespace TongbaoSwitchCalc.Impl.Simulation
 {
     public class ConcurrentThreadSafeDataCollector : IThreadSafeDataCollector<SimulateContext>
     {
-        public struct StepIndexes : IEquatable<StepIndexes>
-        {
-            public int SimulateStepIndex;
-            public int SwitchStepIndex;
-
-            public bool Equals(StepIndexes other)
-            {
-                return SimulateStepIndex == other.SimulateStepIndex && SwitchStepIndex == other.SwitchStepIndex;
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    int hash = 17;
-                    hash = hash * 31 + SimulateStepIndex;
-                    hash = hash * 31 + SwitchStepIndex;
-                    return hash;
-                }
-            }
-
-        }
-
-        public struct ResRecordKey : IEquatable<ResRecordKey>
-        {
-            public StepIndexes Indexes;
-            public ResType ResType;
-
-            public bool Equals(ResRecordKey other)
-            {
-                return Indexes.Equals(other.Indexes) && ResType == other.ResType;
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    int hash = 17;
-                    hash = hash * 31 + Indexes.GetHashCode();
-                    hash = hash * 31 + (int)ResType;
-                    return hash;
-                }
-            }
-        }
-
-        public struct ResRecordValue
-        {
-            public int BeforeValue;
-            public int AfterValue;
-        }
-
-        public struct TongbaoRecordValue
-        {
-            public int SlotIndex;
-            public int BeforeId;
-            public int AfterId;
-        }
-
         public bool RecordEverySwitch { get; set; } = true;
-        public int TotalSimulateCount { get; private set; }
+        public int TotalSimulateStep { get; private set; }
+        public int ExecSimulateStep { get; private set; }
         public float TotalSimulateTime { get; private set; }
-        public int TotalSwitchCount => mSwitchStepResults.Count;
+        public int TotalSwitchStep => mSwitchStepResults.Count;
+        public int EstimatedSwitchStep { get; private set; }
 
         // TODO capacity
         private readonly ConcurrentDictionary<StepIndexes, TongbaoRecordValue> mTongbaoRecords = new ConcurrentDictionary<StepIndexes, TongbaoRecordValue>();
@@ -82,15 +26,21 @@ namespace TongbaoSwitchCalc.Impl.Simulation
         public IReadOnlyDictionary<StepIndexes, SwitchStepResult> SwitchStepResults => mSwitchStepResults;
         public IReadOnlyDictionary<int, SimulateStepResult> SimulateStepResults => mSimulateStepResults;
 
-        public void OnSimulateBegin(SimulationType type, int totalSimCount, in IReadOnlyPlayerData playerData)
+        public void OnSimulateBegin(SimulationType type, int totalSimStep, in IReadOnlyPlayerData playerData)
         {
             ClearData();
+            TotalSimulateStep = totalSimStep;
         }
 
-        public void OnSimulateEnd(int executedSimCount, float simCostTimeMS, in IReadOnlyPlayerData playerData)
+        public void OnSimulateEnd(int executedSimStep, float simCostTimeMS, in IReadOnlyPlayerData playerData)
         {
-            TotalSimulateCount = executedSimCount;
+            ExecSimulateStep = executedSimStep;
             TotalSimulateTime = simCostTimeMS;
+        }
+
+        public void OnSimulateParallel(int estimatedLeftSwitchStep, int remainSimStep)
+        {
+            EstimatedSwitchStep = estimatedLeftSwitchStep;
         }
 
         public void OnSimulateStepBegin(in SimulateContext context)
@@ -201,8 +151,10 @@ namespace TongbaoSwitchCalc.Impl.Simulation
 
         public void ClearData()
         {
-            TotalSimulateCount = 0;
+            TotalSimulateStep = 0;
+            ExecSimulateStep = 0;
             TotalSimulateTime = 0;
+            EstimatedSwitchStep = 0;
             mTongbaoRecords.Clear();
             mResValueRecords.Clear();
             mSimulateStepResults.Clear();

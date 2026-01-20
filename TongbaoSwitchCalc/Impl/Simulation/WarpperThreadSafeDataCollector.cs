@@ -14,19 +14,27 @@ namespace TongbaoSwitchCalc.Impl.Simulation
             mInner = inner ?? throw new ArgumentNullException(nameof(inner));
         }
 
-        public void OnSimulateBegin(SimulationType type, int totalSimCount, in IReadOnlyPlayerData playerData)
+        public void OnSimulateBegin(SimulationType type, int totalSimStep, in IReadOnlyPlayerData playerData)
         {
             lock (mLock)
             {
-                mInner.OnSimulateBegin(type, totalSimCount, playerData);
+                mInner.OnSimulateBegin(type, totalSimStep, playerData);
             }
         }
 
-        public void OnSimulateEnd(int executedSimCount, float simCostTimeMS, in IReadOnlyPlayerData playerData)
+        public void OnSimulateEnd(int executedSimStep, float simCostTimeMS, in IReadOnlyPlayerData playerData)
         {
             lock (mLock)
             {
-                mInner.OnSimulateEnd(executedSimCount, simCostTimeMS, playerData);
+                mInner.OnSimulateEnd(executedSimStep, simCostTimeMS, playerData);
+            }
+        }
+
+        public void OnSimulateParallel(int estimatedLeftSwitchStep, int curSimStep)
+        {
+            lock (mLock)
+            {
+                mInner.OnSimulateParallel(estimatedLeftSwitchStep, curSimStep);
             }
         }
 

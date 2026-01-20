@@ -8,9 +8,10 @@ namespace TongbaoSwitchCalc.Impl.Simulation
 {
     public class StatisticDataCollector : IDataCollector<SimulateContext>
     {
-        private int mTotalSimulateCount;
+        private int mTotalSimulateStep;
+        private int mExecSimulateStep;
         private float mTotalSimulateTime;
-        private int mTotalSwitchCount;
+        private int mTotalSwitchStep;
         private readonly Dictionary<SimulateStepResult, int> mTotalSimulateStepResult = new Dictionary<SimulateStepResult, int>();
         private readonly Dictionary<int, Dictionary<ResType, int>> mTempResBefore = new Dictionary<int, Dictionary<ResType, int>>(); // key: simulationStepIndex
         private readonly Dictionary<ResType, int> mTotalResChanged = new Dictionary<ResType, int>();
@@ -37,15 +38,21 @@ namespace TongbaoSwitchCalc.Impl.Simulation
             }
         }
 
-        public void OnSimulateBegin(SimulationType type, int totalSimCount, in IReadOnlyPlayerData playerData)
+        public void OnSimulateBegin(SimulationType type, int totalSimStep, in IReadOnlyPlayerData playerData)
         {
             ClearData();
+            mTotalSimulateStep = totalSimStep;
         }
 
-        public void OnSimulateEnd(int executedSimCount, float simCostTimeMS, in IReadOnlyPlayerData playerData)
+        public void OnSimulateEnd(int executedSimStep, float simCostTimeMS, in IReadOnlyPlayerData playerData)
         {
-            mTotalSimulateCount = executedSimCount;
+            mExecSimulateStep = executedSimStep;
             mTotalSimulateTime = simCostTimeMS;
+        }
+
+        public void OnSimulateParallel(int estimatedLeftSwitchStep, int curSimStep)
+        {
+
         }
 
         public void OnSimulateStepBegin(in SimulateContext context)
@@ -79,7 +86,7 @@ namespace TongbaoSwitchCalc.Impl.Simulation
         {
             if (result == SwitchStepResult.Success)
             {
-                mTotalSwitchCount++;
+                mTotalSwitchStep++;
                 foreach (var item in context.PlayerData.ResValues)
                 {
                     ResType type = item.Key;
@@ -98,13 +105,15 @@ namespace TongbaoSwitchCalc.Impl.Simulation
         public string GetOutputResult()
         {
             mTempStringBuilder.Clear();
-            mTempStringBuilder.AppendLine("模拟完成，总模拟次数: ")
-                              .Append(mTotalSimulateCount)
+            mTempStringBuilder.AppendLine("模拟完成，模拟次数: ")
+                              .Append(mExecSimulateStep)
+                              .Append('/')
+                              .Append(mTotalSimulateStep)
                               .Append(", 模拟耗时: ")
                               .Append(mTotalSimulateTime)
                               .Append("ms")
                               .Append(", 总交换次数: ")
-                              .Append(mTotalSwitchCount)
+                              .Append(mTotalSwitchStep)
                               .AppendLine()
                               .AppendLine();
 
@@ -112,12 +121,12 @@ namespace TongbaoSwitchCalc.Impl.Simulation
             foreach (var item in mTotalSimulateStepResult)
             {
                 string name = SimulationDefine.GetSimulateStepEndReason(item.Key);
-                float p = (float)item.Value / mTotalSimulateCount;
+                float percent = item.Value * 100f / mExecSimulateStep;
                 mTempStringBuilder.Append(name)
                                   .Append(": ")
                                   .Append(item.Value)
-                                  .Append('(')
-                                  .Append(p * 100)
+                                  .Append(" (")
+                                  .Append(percent)
                                   .AppendLine("%)");
             }
             mTempStringBuilder.AppendLine();
@@ -127,7 +136,7 @@ namespace TongbaoSwitchCalc.Impl.Simulation
             foreach (var item in mTotalResChanged)
             {
                 string name = Define.GetResName(item.Key);
-                float expectation = (float)item.Value / mTotalSimulateCount;
+                float expectation = (float)item.Value / mExecSimulateStep;
                 mTempStringBuilder.Append(name)
                                   .Append(": ")
                                   .Append(expectation)
@@ -139,9 +148,10 @@ namespace TongbaoSwitchCalc.Impl.Simulation
 
         public void ClearData()
         {
-            mTotalSimulateCount = 0;
+            mTotalSimulateStep = 0;
             mTotalSimulateTime = 0;
-            mTotalSwitchCount = 0;
+            mExecSimulateStep = 0;
+            mTotalSwitchStep = 0;
             mTotalSimulateStepResult.Clear();
             mTotalResChanged.Clear();
             mTempStringBuilder.Clear();

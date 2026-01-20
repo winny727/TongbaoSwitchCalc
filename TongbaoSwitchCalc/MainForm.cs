@@ -16,7 +16,6 @@ namespace TongbaoSwitchCalc
     {
         private PlayerData mPlayerData;
         private RandomGenerator mRandom;
-        private Logger mLogger;
         private TongbaoSelector mTongbaoSelector;
         private SwitchSimulator mSwitchSimulator;
         private PrintDataCollector mPrintDataCollector;
@@ -60,7 +59,6 @@ namespace TongbaoSwitchCalc
             Helper.InitConfig();
             mRandom = new LockThreadSafeRandomGenerator(); //2.3s
             //mRandom = new ThreadSafeRandomGenerator(); //2.46s
-            mLogger = new Logger();
             mTongbaoSelector = new TongbaoSelector(mRandom);
             mPlayerData = new PlayerData(mTongbaoSelector, mRandom);
             mPrintDataCollector = new PrintDataCollector();
@@ -70,10 +68,10 @@ namespace TongbaoSwitchCalc
             mCompositeDataCollector.AddDataCollector(mStatisticDataCollector);
 
             // 交换耗时测试（16线程）：100w开记录/1000w次开记录/100w次不开记录/1000w次不开记录
-            //mSwitchSimulator = new SwitchSimulator(mPlayerData, mCompositeDataCollector, mLogger); //4.2s，45.9s，3.1s，33.4s
-            //mSwitchSimulator = new SwitchSimulator(mPlayerData, new LockThreadSafeDataCollector() { RecordEverySwitch = false }, mLogger); //100w次就已经21.2s了，锁麻了；不记录每次交换：3.2s，32.1s
-            //mSwitchSimulator = new SwitchSimulator(mPlayerData, new ConcurrentThreadSafeDataCollector() { RecordEverySwitch = false }, mLogger); //7.9s，ConcurrentDict GC很多；不记录每次交换：3.1s，33.3s
-            mSwitchSimulator = new SwitchSimulator(mPlayerData, new WarpperThreadSafeDataCollector(mCompositeDataCollector), mLogger); //5.5s，55.9s，2.5s，22.8s；若开记录GC很多
+            //mSwitchSimulator = new SwitchSimulator(mPlayerData, mCompositeDataCollector); //4.2s，45.9s，3.1s，33.4s
+            //mSwitchSimulator = new SwitchSimulator(mPlayerData, new LockThreadSafeDataCollector() { RecordEverySwitch = false }); //100w次就已经21.2s了，锁麻了；不记录每次交换：3.2s，32.1s
+            //mSwitchSimulator = new SwitchSimulator(mPlayerData, new ConcurrentThreadSafeDataCollector() { RecordEverySwitch = false }); //7.9s，ConcurrentDict GC很多；不记录每次交换：3.1s，33.3s
+            mSwitchSimulator = new SwitchSimulator(mPlayerData, new WarpperThreadSafeDataCollector(mCompositeDataCollector)); //5.5s，55.9s，2.5s，22.8s；若开记录GC很多
 
             //线程数测试（16核CPU，1000w次无记录WarpperThreadSafeDataCollector）：单线程（主线程）32.5s，单线程（非主线程）35.1s，双线程21.9s，四线程18.2s，八线程19.3s，15线程26.3s，16线程24.3s
             //结论：线程数：处理器数/4
@@ -147,7 +145,6 @@ namespace TongbaoSwitchCalc
         {
             mIconGrid = new IconGridControl();
             mRecordForm = new RecordForm(this);
-            mLogger.SetLogFunc((msg) => mRecordForm.Content += msg);
             Helper.InitResources();
 
             comboBoxSquad.DisplayMember = "Key";
@@ -449,6 +446,24 @@ namespace TongbaoSwitchCalc
             mIconGrid.SetIcons(mTempTongbaoImages);
         }
 
+        private void UpdateAsyncSimulateView(bool asyncSimulating)
+        {
+            bool enabled = !asyncSimulating;
+            groupBox1.Enabled = enabled;
+            groupBox2.Enabled = enabled;
+            groupBox3.Enabled = enabled;
+            groupBox5.Enabled = enabled;
+            listViewTongbao.Enabled = enabled;
+            btnRandom.Enabled = enabled;
+            btnClear.Enabled = enabled;
+            checkBoxOptimize.Enabled = enabled;
+            checkBoxAutoRevert.Enabled = enabled;
+            checkBoxEnableRecord.Enabled = enabled;
+            btnSwitch.Enabled = enabled;
+            btnReset.Enabled = enabled;
+            btnSimulation.Text = asyncSimulating ? "停止模拟" : "开始模拟";
+        }
+
         private void UpdateMultiThreadOptimize()
         {
             if (checkBoxOptimize.Checked)
@@ -510,6 +525,7 @@ namespace TongbaoSwitchCalc
 
             mCanRevertPlayerData = false;
             mPrintDataCollector.RecordEverySwitch = true; //单次交换固定打印
+            mPrintDataCollector.InitSimulateStep(0);
             mTongbaoSelector.TongbaoSelectMode = TongbaoSelectMode.Dialog; //弹窗询问
             int slotIndex = mSelectedTongbaoSlotIndex;
             mPrintDataCollector?.OnSwitchStepBegin(new SimulateContext(0, mPlayerData.SwitchCount, slotIndex, mPlayerData));
@@ -549,7 +565,7 @@ namespace TongbaoSwitchCalc
             UpdateView();
         }
 
-        private void SwitchSimulate(SimulationType mode)
+        private async void SwitchSimulate(SimulationType type)
         {
             if (checkBoxAutoRevert.Checked)
             {
@@ -570,6 +586,7 @@ namespace TongbaoSwitchCalc
                     mTongbaoSelector.SpecificTongbaoId = config.Id;
                 }
             }
+            mSwitchSimulator.SimulationType = type;
             mSwitchSimulator.TotalSimulationCount = (int)numSimCnt.Value;
             mSwitchSimulator.MinimumLifePoint = (int)numMinHp.Value;
             mSwitchSimulator.NextSwitchSlotIndex = mSelectedTongbaoSlotIndex;
@@ -590,16 +607,32 @@ namespace TongbaoSwitchCalc
                 }
             }
 
-            mSwitchSimulator.Simulate(mode);
-            //TODO 异步+进度条
-            //开启多线程按钮(SetDataCollector)
+            //mSwitchSimulator.Simulate();
+
+            string simulationName = SimulationDefine.GetSimulationName(mSwitchSimulator.SimulationType);
+            int total = mSwitchSimulator.TotalSimulationCount;
+            UpdateAsyncSimulateView(true);
+            toolStripProgressBar1.Minimum = 0;
+            toolStripProgressBar1.Maximum = mSwitchSimulator.TotalSimulationCount;
+            toolStripProgressBar1.Value = 0;
+            Progress<int> progress = new Progress<int>((value) =>
+            {
+                toolStripProgressBar1.Value = value;
+                float percent = value * 100f / total;
+                toolStripStatusLabel1.Text = $"正在进行[{simulationName}]模拟: {value}/{total} ({percent:F1}%)";
+            });
+            await mSwitchSimulator.SimulateAsync(progress);
 
             mOutputResult = mPrintDataCollector.OutputResult;
             mOutputResultChanged = true;
             UpdateAllTongbaoView();
             UpdateView();
+            UpdateAsyncSimulateView(false);
 
             MessageBox.Show(mStatisticDataCollector.GetOutputResult(), "模拟期望", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            toolStripStatusLabel1.Text = "单击选中通宝，双击添加/更改通宝";
+            toolStripProgressBar1.Value = 0;
         }
 
         private void ResetPlayerData()
@@ -661,6 +694,16 @@ namespace TongbaoSwitchCalc
             if (targetId > 0)
             {
                 OnSelectNewRandomTongbao(targetId, slotIndex);
+            }
+        }
+
+        private void SetNumbericValue(NumericUpDown numeric, decimal value)
+        {
+            if (numeric != null)
+            {
+                if (value > numeric.Maximum) value = numeric.Maximum;
+                if (value < numeric.Minimum) value = numeric.Minimum;
+                numeric.Value = value;
             }
         }
 
@@ -730,6 +773,12 @@ namespace TongbaoSwitchCalc
 
         private void btnSimulation_Click(object sender, EventArgs e)
         {
+            if (mSwitchSimulator.IsAsyncSimulating)
+            {
+                mSwitchSimulator.CancelSimulate();
+                return;
+            }
+
             SimulationType simType = default;
             if (comboBoxSimMode.SelectedItem is ComboBoxItem<SimulationType> item)
             {
@@ -755,12 +804,12 @@ namespace TongbaoSwitchCalc
             int shield = mPlayerData.GetResValue(ResType.Shield);
             int hope = mPlayerData.GetResValue(ResType.Hope);
 
-            numHp.Value = hp;
-            numIngots.Value = ingots;
-            numCoupon.Value = coupon;
-            numCandle.Value = candle;
-            numShield.Value = shield;
-            numHope.Value = hope;
+            SetNumbericValue(numHp, hp);
+            SetNumbericValue(numIngots, ingots);
+            SetNumbericValue(numCoupon, coupon);
+            SetNumbericValue(numCandle, candle);
+            SetNumbericValue(numShield, shield);
+            SetNumbericValue(numHope, hope);
         }
 
         private void btnRecord_Click(object sender, EventArgs e)

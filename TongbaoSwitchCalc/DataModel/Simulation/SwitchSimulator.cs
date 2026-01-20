@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using TongbaoSwitchCalc.Impl.Simulation;
 
@@ -7,38 +8,42 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
 {
     public class SwitchSimulator
     {
-        public SimulationType SimulationType { get; private set; } = SimulationType.LifePointLimit;
         public PlayerData PlayerData { get; private set; }
         public IDataCollector<SimulateContext> DataCollector { get; private set; }
-        public ILogger Logger { get; private set; }
-        public bool MultiThreadOptimize => DataCollector == null || DataCollector is IThreadSafeDataCollector<SimulateContext>;
+
+        public SimulationType SimulationType { get; set; } = SimulationType.LifePointLimit;
         public List<int> SlotIndexPriority { get; private set; } = new List<int>(); // 槽位优先级
         public HashSet<int> TargetTongbaoIds { get; private set; } = new HashSet<int>(); // 目标/降级通宝ID集合
         public int ExpectedTongbaoId { get; set; } = -1; // 期望通宝ID
-        public int SimulationStepIndex { get; private set; } = 0;
-        public int SwitchStepIndex { get; private set; } = 0; // 包括交换失败
         public int MinimumLifePoint { get; set; } = 1; // 最小生命值限制
         public int TotalSimulationCount { get; set; } = 1000;
 
+        private int mSimulationStepIndex = 0;
+        public int SimulationStepIndex => mSimulationStepIndex;
+        public int SwitchStepIndex { get; private set; } = 0; // 包括交换失败
         public int NextSwitchSlotIndex { get; set; } = -1;
-        private int mOriginNextSwitchSlotIndex;
+
+        private IProgress<int> mAsyncProgress;
+        private CancellationTokenSource mCancellationTokenSource;
+        public bool IsAsyncSimulating => mCancellationTokenSource != null;
 
         private SimulateStepResult mSimulateStepResult = SimulateStepResult.Success;
         private bool mIsSimulating = false;
         private int mSlotIndexPriorityIndex = 0;
+        private int mOriginNextSwitchSlotIndex;
         private readonly PlayerData mRevertPlayerData;
 
-        public const int SWITCH_STEP_LIMIT = 10000; // 交换上限，防止死循环
+        public const int SWITCH_STEP_LIMIT = 10000; // 单轮循环的交换上限，防止死循环
 
+        public bool UseMultiThreadOptimize => DataCollector == null || DataCollector is IThreadSafeDataCollector<SimulateContext>;
         public int OptimizeThreshold { get; set; } = 100000; // 触发多线程的阈值（预计剩余交换次数）
-        public int MaxParallelism { get; set; } = Math.Max(1, Environment.ProcessorCount / 4); // 线程太多竞态很严重
-        private bool mUseParallel = false;
+        public int MaxParallelism { get; set; } = Math.Max(1, Environment.ProcessorCount / 4); // 最大线程数，线程太多竞态很严重
+        private bool mUseParallel;
 
-        public SwitchSimulator(PlayerData playerData, IDataCollector<SimulateContext> collector = null, ILogger logger = null)
+        public SwitchSimulator(PlayerData playerData, IDataCollector<SimulateContext> collector = null)
         {
             PlayerData = playerData ?? throw new ArgumentNullException(nameof(playerData));
             DataCollector = collector;
-            Logger = logger;
 
             mRevertPlayerData = new PlayerData(playerData.TongbaoSelector, playerData.Random);
         }
@@ -60,42 +65,83 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             mOriginNextSwitchSlotIndex = NextSwitchSlotIndex;
         }
 
-        public void Simulate(SimulationType type)
+        public async Task SimulateAsync(IProgress<int> progress = null, Action onComplete = null)
         {
-            SimulationType = type;
-            SimulationStepIndex = 0;
+            mCancellationTokenSource = new CancellationTokenSource();
+            mAsyncProgress = progress;
+
+            try
+            {
+                await Task.Run(() => SimulateInternal(mCancellationTokenSource.Token));
+            }
+            finally
+            {
+                mCancellationTokenSource.Dispose();
+                mCancellationTokenSource = null;
+                mAsyncProgress = null;
+            }
+
+            onComplete?.Invoke();
+        }
+
+        public void CancelSimulate()
+        {
+            mCancellationTokenSource?.Cancel();
+        }
+
+        public void Simulate()
+        {
+            SimulateInternal(CancellationToken.None);
+        }
+
+        public void SimulateInternal(CancellationToken token)
+        {
+            mSimulationStepIndex = 0;
             SwitchStepIndex = 0;
             mSlotIndexPriorityIndex = 0;
             mSimulateStepResult = SimulateStepResult.Success;
             mUseParallel = false;
             CachePlayerData();
-            bool disableOptimization = !MultiThreadOptimize;
+            bool disableOptimization = !UseMultiThreadOptimize;
             using (CodeTimer ct = CodeTimer.StartNew("Simulate"))
             {
                 mIsSimulating = true;
-                DataCollector?.OnSimulateBegin(type, TotalSimulationCount, PlayerData);
+                DataCollector?.OnSimulateBegin(SimulationType, TotalSimulationCount, PlayerData);
                 while (SimulationStepIndex < TotalSimulationCount)
                 {
-                    SimulateStep();
-                    SimulationStepIndex++;
+                    SimulateStep(token);
+                    Interlocked.Increment(ref mSimulationStepIndex);
+                    mAsyncProgress?.Report(SimulationStepIndex);
+
+                    if (token.IsCancellationRequested)
+                    {
+                        break;
+                    }
 
                     if (disableOptimization)
                     {
                         continue;
                     }
 
-                    int estimatedLeftSwitchCount = SwitchStepIndex * (TotalSimulationCount - SimulationStepIndex);
-                    if (!mUseParallel && estimatedLeftSwitchCount >= OptimizeThreshold)
+                    int estimatedLeftSwitchStep = SwitchStepIndex * (TotalSimulationCount - SimulationStepIndex);
+                    if (!mUseParallel && estimatedLeftSwitchStep >= OptimizeThreshold)
                     {
-                        Logger?.Log($"预计剩余交换次数过多({estimatedLeftSwitchCount})，触发多线程优化");
                         mUseParallel = true;
+                        DataCollector?.OnSimulateParallel(estimatedLeftSwitchStep, SimulationStepIndex);
                         break;
                     }
                 }
 
                 if (mUseParallel && SimulationStepIndex < TotalSimulationCount)
                 {
-                    SimulateParallel(SimulationStepIndex);
+                    try
+                    {
+                        SimulateParallel(SimulationStepIndex, token);
+                    }
+                    catch (OperationCanceledException)
+                    {
+
+                    }
                 }
 
                 mIsSimulating = false;
@@ -103,7 +149,7 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             }
         }
 
-        private void SimulateParallel(int startIndex)
+        private void SimulateParallel(int startIndex, CancellationToken token)
         {
             int remain = TotalSimulationCount - startIndex;
             if (remain <= 0)
@@ -119,9 +165,18 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             Parallel.For(
                 0,
                 workerCount,
-                new ParallelOptions { MaxDegreeOfParallelism = workerCount },
+                new ParallelOptions
+                {
+                    MaxDegreeOfParallelism = workerCount,
+                    CancellationToken = token,
+                },
                 workerIndex =>
                 {
+                    if (token.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
                     int batchStart = startIndex + workerIndex * batchSize;
                     int batchEnd = Math.Min(batchStart + batchSize, startIndex + remain);
 
@@ -148,19 +203,26 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
                     };
                     localSimulator.CachePlayerData();
 
+                    localSimulator.mIsSimulating = true;
                     for (int simIndex = batchStart; simIndex < batchEnd; simIndex++)
                     {
-                        localSimulator.SimulationStepIndex = simIndex;
-                        localSimulator.SimulateStep();
+                        if (token.IsCancellationRequested)
+                        {
+                            return;
+                        }
+
+                        localSimulator.mSimulationStepIndex = simIndex; //仅用于Context标识，不代表全局进度
+                        localSimulator.SimulateStep(token);
+                        Interlocked.Increment(ref mSimulationStepIndex); //总的Step+1
+                        mAsyncProgress?.Report(mSimulationStepIndex);
                     }
+                    localSimulator.mIsSimulating = false;
                 }
             );
-
-            SimulationStepIndex += remain;
         }
 
 
-        private void SimulateStep()
+        private void SimulateStep(CancellationToken token)
         {
             RevertPlayerData();
             SwitchStepIndex = 0;
@@ -179,7 +241,7 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
                     break;
                 }
 
-                SwitchStep();
+                SwitchStep(token);
                 SwitchStepIndex++;
             }
             if (SwitchStepIndex >= SWITCH_STEP_LIMIT && mSimulateStepResult == SimulateStepResult.Success)
@@ -189,7 +251,7 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             DataCollector?.OnSimulateStepEnd(new SimulateContext(SimulationStepIndex, SwitchStepIndex, NextSwitchSlotIndex, PlayerData), mSimulateStepResult);
         }
 
-        private void SwitchStep()
+        private void SwitchStep(CancellationToken token)
         {
             /*
             模拟停止规则：
@@ -197,6 +259,12 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             期望通宝：不限制血量，根据是否交换出期望通宝停止模拟（除非次数超过上限）
             通用规则：按顺序交换指定槽位内的通宝，直到交换到目标/降级通宝，切换到下一个槽位；若指定槽位被目标/降级通宝填满，则也停止模拟；
             */
+
+            if (token.IsCancellationRequested)
+            {
+                BreakSimulationStep(SimulateStepResult.CancellationRequested);
+                return;
+            }
 
             if (SimulationType == SimulationType.LifePointLimit)
             {

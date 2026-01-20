@@ -42,19 +42,27 @@ namespace TongbaoSwitchCalc.Impl.Simulation
             mDataCollectors.Clear();
         }
 
-        public void OnSimulateBegin(SimulationType type, int totalSimCount, in IReadOnlyPlayerData playerData)
+        public void OnSimulateBegin(SimulationType type, int totalSimStep, in IReadOnlyPlayerData playerData)
         {
             foreach (var collector in mDataCollectors)
             {
-                collector.OnSimulateBegin(type, totalSimCount, in playerData);
+                collector.OnSimulateBegin(type, totalSimStep, in playerData);
             }
         }
 
-        public void OnSimulateEnd(int executedSimCount, float simCostTimeMS, in IReadOnlyPlayerData playerData)
+        public void OnSimulateEnd(int executedSimStep, float simCostTimeMS, in IReadOnlyPlayerData playerData)
         {
             foreach (var collector in mDataCollectors)
             {
-                collector.OnSimulateEnd(executedSimCount, simCostTimeMS, in playerData);
+                collector.OnSimulateEnd(executedSimStep, simCostTimeMS, in playerData);
+            }
+        }
+
+        public void OnSimulateParallel(int estimatedLeftSwitchStep, int remainSimStep)
+        {
+            foreach (var collector in mDataCollectors)
+            {
+                collector.OnSimulateParallel(estimatedLeftSwitchStep, remainSimStep);
             }
         }
 
