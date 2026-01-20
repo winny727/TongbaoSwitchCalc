@@ -12,6 +12,7 @@ namespace TongbaoSwitchCalc.Impl.Simulation
         private int mExecSimulateStep;
         private float mTotalSimulateTime;
         private int mTotalSwitchStep;
+        private bool mIsSimulateParallel;
         private readonly Dictionary<SimulateStepResult, int> mTotalSimulateStepResult = new Dictionary<SimulateStepResult, int>();
         private readonly Dictionary<int, Dictionary<ResType, int>> mTempResBefore = new Dictionary<int, Dictionary<ResType, int>>(); // key: simulationStepIndex
         private readonly Dictionary<ResType, int> mTotalResChanged = new Dictionary<ResType, int>();
@@ -52,7 +53,7 @@ namespace TongbaoSwitchCalc.Impl.Simulation
 
         public void OnSimulateParallel(int estimatedLeftSwitchStep, int curSimStep)
         {
-
+            mIsSimulateParallel = true;
         }
 
         public void OnSimulateStepBegin(in SimulateContext context)
@@ -105,7 +106,14 @@ namespace TongbaoSwitchCalc.Impl.Simulation
         public string GetOutputResult()
         {
             mTempStringBuilder.Clear();
-            mTempStringBuilder.AppendLine("模拟完成，模拟次数: ")
+            mTempStringBuilder.Append("模拟完成");
+
+            if (mIsSimulateParallel)
+            {
+                mTempStringBuilder.Append("(触发多线程优化)");
+            }
+
+            mTempStringBuilder.AppendLine("，模拟次数: ")
                               .Append(mExecSimulateStep)
                               .Append('/')
                               .Append(mTotalSimulateStep)
@@ -152,6 +160,7 @@ namespace TongbaoSwitchCalc.Impl.Simulation
             mTotalSimulateTime = 0;
             mExecSimulateStep = 0;
             mTotalSwitchStep = 0;
+            mIsSimulateParallel = false;
             mTotalSimulateStepResult.Clear();
             mTotalResChanged.Clear();
             mTempStringBuilder.Clear();
