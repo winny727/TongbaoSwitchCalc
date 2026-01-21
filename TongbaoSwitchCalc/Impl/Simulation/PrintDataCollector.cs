@@ -10,11 +10,14 @@ namespace TongbaoSwitchCalc.Impl.Simulation
     public class PrintDataCollector : IDataCollector<SimulateContext>
     {
         public bool RecordEverySwitch { get; set; } = true;
+        public bool OmitExcessiveSwitches { get; set; } = true; // 省略过多的交换信息
 
         private SimulationType mSimulationType;
         private int mTotalSimulateStep;
         private readonly Dictionary<int, string> mTempBeforeTongbaoName = new Dictionary<int, string>();
         private readonly Dictionary<int, Dictionary<ResType, int>> mTempResBefore = new Dictionary<int, Dictionary<ResType, int>>(); // key: simulationStepIndex
+
+        private const int OMIITED_SWITCH_INDEX = 2000; // 交换次数过多则省略
 
         private readonly Stack<Dictionary<ResType, int>> mResDictPool = new Stack<Dictionary<ResType, int>>();
 
@@ -86,6 +89,11 @@ namespace TongbaoSwitchCalc.Impl.Simulation
         public void OnSimulateStepBegin(in SimulateContext context)
         {
             mTempResBefore.Add(context.SimulationStepIndex, AllocateResDict());
+            if (!RecordEverySwitch)
+            {
+                RecordSwitch(context);
+            }
+
             mOutputResult.Append("========第")
                          .Append(context.SimulationStepIndex + 1)
                          .Append('/')
@@ -95,9 +103,42 @@ namespace TongbaoSwitchCalc.Impl.Simulation
 
         public void OnSimulateStepEnd(in SimulateContext context, SimulateStepResult result)
         {
-            RecycleResDict(mTempResBefore[context.SimulationStepIndex]);
-            mTempResBefore.Remove(context.SimulationStepIndex);
-            mTempBeforeTongbaoName.Remove(context.SimulationStepIndex);
+            mSwitchResultSB.Clear();
+            mResChangedTempSB.Clear();
+
+            if (!RecordEverySwitch)
+            {
+                GenerateResChangedString(context);
+                mOutputResult.Append('(')
+                             .Append(context.SimulationStepIndex + 1)
+                             .Append("|1-")
+                             .Append(context.SwitchStepIndex + 1)
+                             .Append(") ")
+                             .Append("总共经过了")
+                             .Append(context.SwitchStepIndex + 1)
+                             .AppendLine("次交换")
+                             .Append('(')
+                             .Append(mResChangedTempSB)
+                             .Append(')')
+                             .AppendLine();
+            }
+            else if (OmitExcessiveSwitches && context.SwitchStepIndex > OMIITED_SWITCH_INDEX)
+            {
+                GenerateResChangedString(context);
+                mOutputResult.Append('(')
+                             .Append(context.SimulationStepIndex + 1)
+                             .Append('|')
+                             .Append(OMIITED_SWITCH_INDEX + 1)
+                             .Append('-')
+                             .Append(context.SwitchStepIndex + 1)
+                             .Append(") ")
+                             .Append("交换次数过多，省略了共")
+                             .Append(context.SwitchStepIndex - OMIITED_SWITCH_INDEX + 1)
+                             .Append("次交换信息 (")
+                             .Append(mResChangedTempSB)
+                             .Append(')')
+                             .AppendLine();
+            }
 
             string breakReason = SimulationDefine.GetSimulateStepEndReason(result);
             mOutputResult.Append("模拟结束，结束原因: ")
@@ -108,6 +149,10 @@ namespace TongbaoSwitchCalc.Impl.Simulation
                          .Append('/')
                          .Append(mTotalSimulateStep)
                          .AppendLine("次模拟结束========");
+
+            RecycleResDict(mTempResBefore[context.SimulationStepIndex]);
+            mTempResBefore.Remove(context.SimulationStepIndex);
+            mTempBeforeTongbaoName.Remove(context.SimulationStepIndex);
         }
 
         public void OnSwitchStepBegin(in SimulateContext context)
@@ -117,20 +162,22 @@ namespace TongbaoSwitchCalc.Impl.Simulation
                 return;
             }
 
-            Tongbao beforeTongbao = context.PlayerData.GetTongbao(context.SlotIndex);
-            mTempBeforeTongbaoName[context.SimulationStepIndex] = beforeTongbao?.Name;
-
-            var resDict = mTempResBefore[context.SimulationStepIndex];
-            resDict.Clear();
-            foreach (var item in context.PlayerData.ResValues)
+            if (OmitExcessiveSwitches && context.SwitchStepIndex >= OMIITED_SWITCH_INDEX + 1) // 多记录一次，用于最终计算差值
             {
-                resDict.Add(item.Key, item.Value);
+                return;
             }
+
+            RecordSwitch(context);
         }
 
         public void OnSwitchStepEnd(in SimulateContext context, SwitchStepResult result)
         {
             if (!RecordEverySwitch)
+            {
+                return;
+            }
+
+            if (OmitExcessiveSwitches && context.SwitchStepIndex >= OMIITED_SWITCH_INDEX)
             {
                 return;
             }
@@ -143,34 +190,7 @@ namespace TongbaoSwitchCalc.Impl.Simulation
             if (result == SwitchStepResult.Success)
             {
                 Tongbao afterTongbao = context.PlayerData.GetTongbao(context.SlotIndex);
-
-                // PlayerData的项只增加不删除，所以这里不需要考虑并集
-                foreach (var item in context.PlayerData.ResValues)
-                {
-                    ResType type = item.Key;
-                    mTempResBefore[context.SimulationStepIndex].TryGetValue(type, out int beforeValue);
-                    int afterValue = item.Value;
-                    int changedValue = afterValue - beforeValue;
-                    if (beforeValue != afterValue)
-                    {
-                        if (mResChangedTempSB.Length > 0)
-                        {
-                            mResChangedTempSB.Append("，");
-                        }
-                        mResChangedTempSB.Append(Define.GetResName(type));
-
-                        if (changedValue > 0)
-                        {
-                            mResChangedTempSB.Append('+');
-                        }
-                        mResChangedTempSB.Append(changedValue);
-
-                        mResChangedTempSB.Append(": ")
-                                         .Append(beforeValue)
-                                         .Append("->")
-                                         .Append(afterValue);
-                    }
-                }
+                GenerateResChangedString(context);
 
                 mSwitchResultSB.Append("将位置[")
                                .Append(context.SlotIndex + 1)
@@ -219,6 +239,50 @@ namespace TongbaoSwitchCalc.Impl.Simulation
                          .Append(") ")
                          .Append(LastSwitchResult)
                          .AppendLine();
+        }
+
+        private void RecordSwitch(in SimulateContext context)
+        {
+            Tongbao beforeTongbao = context.PlayerData.GetTongbao(context.SlotIndex);
+            mTempBeforeTongbaoName[context.SimulationStepIndex] = beforeTongbao?.Name;
+
+            var resDict = mTempResBefore[context.SimulationStepIndex];
+            resDict.Clear();
+            foreach (var item in context.PlayerData.ResValues)
+            {
+                resDict.Add(item.Key, item.Value);
+            }
+        }
+
+        private void GenerateResChangedString(in SimulateContext context)
+        {
+            // PlayerData的项只增加不删除，所以这里不需要考虑并集
+            foreach (var item in context.PlayerData.ResValues)
+            {
+                ResType type = item.Key;
+                mTempResBefore[context.SimulationStepIndex].TryGetValue(type, out int beforeValue);
+                int afterValue = item.Value;
+                int changedValue = afterValue - beforeValue;
+                if (beforeValue != afterValue)
+                {
+                    if (mResChangedTempSB.Length > 0)
+                    {
+                        mResChangedTempSB.Append("，");
+                    }
+                    mResChangedTempSB.Append(Define.GetResName(type));
+
+                    if (changedValue > 0)
+                    {
+                        mResChangedTempSB.Append('+');
+                    }
+                    mResChangedTempSB.Append(changedValue);
+
+                    mResChangedTempSB.Append(": ")
+                                     .Append(beforeValue)
+                                     .Append("->")
+                                     .Append(afterValue);
+                }
+            }
         }
 
         public void ClearData()

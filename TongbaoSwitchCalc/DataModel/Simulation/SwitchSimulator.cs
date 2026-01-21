@@ -246,6 +246,7 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             {
                 mSimulateStepResult = SimulateStepResult.SwitchStepLimitReached;
             }
+            SwitchStepIndex--; //修正为最后一次的Index
             DataCollector?.OnSimulateStepEnd(new SimulateContext(SimulationStepIndex, SwitchStepIndex, NextSwitchSlotIndex, PlayerData), mSimulateStepResult);
         }
 

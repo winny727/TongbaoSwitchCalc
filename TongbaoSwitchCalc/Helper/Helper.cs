@@ -235,18 +235,39 @@ namespace TongbaoSwitchCalc
 
         public static TableReader LoadConfig(string path)
         {
+            // 先尝试 GB2312
             try
             {
-                TableReader tableReader = new TableReader(path, Encoding.Default);
-                return tableReader;
+                return new TableReader(path, Encoding.GetEncoding("GB2312"));
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Log($"通过GB2312编码读取配置失败，尝试UTF-8: {ex.Message}");
+            }
+
+            // 再尝试 UTF-8
+            try
+            {
+                return new TableReader(path, Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                Log($"通过UTF-8编码读取配置失败，尝试系统默认编码: {ex.Message}");
+            }
+
+            // 再尝试 Default
+            try
+            {
+                return new TableReader(path, Encoding.Default);
+            }
+            catch (Exception ex)
+            {
+                Log($"通过系统默认编码读取配置失败: {ex.Message}");
             }
 
             return null;
         }
+
 
         private static void InitTongbaoImageCache()
         {
