@@ -40,6 +40,8 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
         public int MaxParallelism { get; set; } = Math.Max(1, Environment.ProcessorCount / 4); // 最大线程数，线程太多竞态很严重
         private bool mUseParallel;
 
+        private void Log(string msg) => Helper.Log(msg);
+
         public SwitchSimulator(PlayerData playerData, IDataCollector<SimulateContext> collector = null)
         {
             PlayerData = playerData ?? throw new ArgumentNullException(nameof(playerData));
@@ -183,12 +185,11 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
                         return;
                     }
 
-                    //System.Diagnostics.Debug.WriteLine($"{batchStart}->{batchEnd}");
+                    Helper.Log($"{batchStart}->{batchEnd}");
 
                     PlayerData localPlayerData = new PlayerData(PlayerData.TongbaoSelector, PlayerData.Random);
                     localPlayerData.CopyFrom(mRevertPlayerData);
 
-                    // 考虑到线程安全，Logger就不往下放了，反正也没啥要打印的
                     var localSimulator = new SwitchSimulator(localPlayerData, (IThreadSafeDataCollector<SimulateContext>)DataCollector)
                     {
                         SimulationType = SimulationType,
@@ -227,7 +228,7 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             mSlotIndexPriorityIndex = 0;
             if (SlotIndexPriority.Count > 0)
             {
-                //Logger?.Log($"初始优先槽位(#{mSlotIndexPriorityIndex}): {NextSwitchSlotIndex}");
+                Log($"初始优先槽位(#{mSlotIndexPriorityIndex}): {NextSwitchSlotIndex}");
                 NextSwitchSlotIndex = SlotIndexPriority[0];
             }
             mSimulateStepResult = SimulateStepResult.Success;
@@ -260,6 +261,10 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             通用规则：按顺序交换指定槽位内的通宝，直到交换到目标/降级通宝，切换到下一个槽位；若指定槽位被目标/降级通宝填满，则也停止模拟；
             */
 
+            //TODO 槽位已有目标通宝还是会换的bug
+            //TODO 第一轮循环，把优先全换掉；第二轮循环，把非不可交换全换掉
+            //TODO 多线程优化
+
             if (token.IsCancellationRequested)
             {
                 BreakSimulationStep(SimulateStepResult.CancellationRequested);
@@ -276,30 +281,34 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
                 }
             }
 
-            if (SimulationType == SimulationType.ExpectationTongbao || SimulationType == SimulationType.ExpectationTongbao_Limited)
-            {
+            //if (SimulationType == SimulationType.ExpectationTongbao || SimulationType == SimulationType.ExpectationTongbao_Limited)
+            //{
                 if (ExpectedTongbaoId > 0 && PlayerData.IsTongbaoExist(ExpectedTongbaoId))
                 {
                     BreakSimulationStep(SimulateStepResult.ExpectationAchieved);
                     return;
                 }
-            }
+            //}
 
-            Tongbao tongbao = PlayerData.GetTongbao(NextSwitchSlotIndex);
-            if (tongbao != null && TargetTongbaoIds.Contains(tongbao.Id))
+            Tongbao tongbao;
+            while (true)
             {
-                //Logger?.Log($"优先槽位(#{mSlotIndexPriorityIndex}): {NextSwitchSlotIndex}获得目标通宝{tongbao.Name}");
-                mSlotIndexPriorityIndex++;
-                if (mSlotIndexPriorityIndex < SlotIndexPriority.Count)
+                tongbao = PlayerData.GetTongbao(NextSwitchSlotIndex);
+                if (tongbao == null || !TargetTongbaoIds.Contains(tongbao.Id))
                 {
-                    NextSwitchSlotIndex = SlotIndexPriority[mSlotIndexPriorityIndex];
-                    //Logger?.Log($"优先槽位切换(#{mSlotIndexPriorityIndex}): {NextSwitchSlotIndex}");
+                    Log($"优先槽位(#{mSlotIndexPriorityIndex}): {NextSwitchSlotIndex}获得目标通宝{tongbao.Name}");
+                    break;
                 }
-                else
+
+                mSlotIndexPriorityIndex++;
+                if (mSlotIndexPriorityIndex >= SlotIndexPriority.Count)
                 {
+                    Log($"优先槽位切换(#{mSlotIndexPriorityIndex}): {NextSwitchSlotIndex}");
                     BreakSimulationStep(SimulateStepResult.TargetTongbaoFilledPrioritySlots);
                     return;
                 }
+
+                NextSwitchSlotIndex = SlotIndexPriority[mSlotIndexPriorityIndex];
             }
 
             bool force = SimulationType == SimulationType.ExpectationTongbao;

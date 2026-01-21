@@ -15,6 +15,10 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
         void OnSwitchStepBegin(in TContext context);
         void OnSwitchStepEnd(in TContext context, SwitchStepResult result); 
         void ClearData();
+
+        //TODO
+        //IDataCollector<TContext> CloneAsEmpty();
+        //void MergeData(IDataCollector<TContext> other);
     }
 
     public interface IThreadSafeDataCollector<TContext> : IDataCollector<TContext> where TContext : struct

@@ -746,7 +746,7 @@ namespace TongbaoSwitchCalc
         private void btnReset_Click(object sender, EventArgs e)
         {
             ResetPlayerData();
-            ClearRecord();
+            //ClearRecord();
             UpdateAllTongbaoView();
             UpdateView();
         }
