@@ -255,7 +255,8 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             /*
             模拟停止规则：
             高级交换：根据目标生命停止模拟；
-            期望通宝：不限制血量，根据是否交换出期望通宝停止模拟（除非次数超过上限）
+            期望通宝-不限次数：不限制血量，根据是否交换出期望通宝停止模拟（除非次数超过上限）
+            期望通宝-限制血量：限制血量，根据是否交换出期望通宝停止模拟（除非次数超过上限）
             通用规则：按顺序交换指定槽位内的通宝，直到交换到目标/降级通宝，切换到下一个槽位；若指定槽位被目标/降级通宝填满，则也停止模拟；
             */
 
@@ -265,7 +266,7 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
                 return;
             }
 
-            if (SimulationType == SimulationType.LifePointLimit)
+            if (SimulationType == SimulationType.LifePointLimit || SimulationType == SimulationType.ExpectationTongbao_Limited)
             {
                 int lifePointAfterSwitch = PlayerData.GetResValue(ResType.LifePoint) - PlayerData.NextSwitchCostLifePoint;
                 if (lifePointAfterSwitch < MinimumLifePoint)
@@ -275,7 +276,7 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
                 }
             }
 
-            if (SimulationType == SimulationType.ExpectationTongbao)
+            if (SimulationType == SimulationType.ExpectationTongbao || SimulationType == SimulationType.ExpectationTongbao_Limited)
             {
                 if (ExpectedTongbaoId > 0 && PlayerData.IsTongbaoExist(ExpectedTongbaoId))
                 {

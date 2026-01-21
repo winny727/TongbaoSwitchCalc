@@ -517,6 +517,7 @@
             this.comboBoxSimMode.Name = "comboBoxSimMode";
             this.comboBoxSimMode.Size = new System.Drawing.Size(130, 20);
             this.comboBoxSimMode.TabIndex = 8;
+            this.comboBoxSimMode.SelectedIndexChanged += new System.EventHandler(this.comboBoxSimMode_SelectedIndexChanged);
             // 
             // label10
             // 
@@ -597,7 +598,7 @@
             // 
             this.treeViewRule.CheckBoxes = true;
             this.treeViewRule.Location = new System.Drawing.Point(6, 49);
-            this.treeViewRule.Name = "mRuleTreeView";
+            this.treeViewRule.Name = "treeViewRule";
             this.treeViewRule.Size = new System.Drawing.Size(258, 117);
             this.treeViewRule.TabIndex = 0;
             // 

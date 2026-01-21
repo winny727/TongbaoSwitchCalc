@@ -116,11 +116,15 @@ namespace TongbaoSwitchCalc.Impl.Simulation
                              .Append(") ")
                              .Append("总共经过了")
                              .Append(context.SwitchStepIndex + 1)
-                             .AppendLine("次交换")
-                             .Append('(')
+                             .AppendLine("次交换");
+
+                if (mResChangedTempSB.Length > 0)
+                {
+                    mOutputResult.Append('(')
                              .Append(mResChangedTempSB)
                              .Append(')')
                              .AppendLine();
+                }
             }
             else if (OmitExcessiveSwitches && context.SwitchStepIndex > OMIITED_SWITCH_INDEX)
             {
@@ -134,10 +138,15 @@ namespace TongbaoSwitchCalc.Impl.Simulation
                              .Append(") ")
                              .Append("交换次数过多，省略了共")
                              .Append(context.SwitchStepIndex - OMIITED_SWITCH_INDEX + 1)
-                             .Append("次交换信息 (")
+                             .Append("次交换信息");
+
+                if (mResChangedTempSB.Length > 0)
+                {
+                    mOutputResult.Append(" (")
                              .Append(mResChangedTempSB)
                              .Append(')')
                              .AppendLine();
+                }
             }
 
             string breakReason = SimulationDefine.GetSimulateStepEndReason(result);

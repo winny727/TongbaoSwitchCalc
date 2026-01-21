@@ -787,6 +787,7 @@ namespace TongbaoSwitchCalc
 
         private void btnClear_Click(object sender, EventArgs e)
         {
+            mCanRevertPlayerData = false;
             mPlayerData.ClearTongbao();
             UpdateAllTongbaoView();
         }
@@ -806,6 +807,17 @@ namespace TongbaoSwitchCalc
         private void checkBoxOptimize_CheckedChanged(object sender, EventArgs e)
         {
             UpdateMultiThreadOptimize();
+        }
+
+        private void comboBoxSimMode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SimulationType simType = default;
+            if (comboBoxSimMode.SelectedItem is ComboBoxItem<SimulationType> item)
+            {
+                simType = item.Value;
+            }
+
+            numMinHp.Enabled = simType != SimulationType.ExpectationTongbao;
         }
     }
 }

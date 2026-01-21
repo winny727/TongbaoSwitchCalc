@@ -12,7 +12,9 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
                 case SimulationType.LifePointLimit:
                     return "高级交换";
                 case SimulationType.ExpectationTongbao:
-                    return "期望通宝";
+                    return "期望通宝-不限次数";
+                case SimulationType.ExpectationTongbao_Limited:
+                    return "期望通宝-血量限制";
                 default:
                     break;
             }
@@ -126,6 +128,7 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
     {
         LifePointLimit = 0, // 高级交换：根据目标生命确定一轮模拟；
         ExpectationTongbao = 1, // 期望通宝：不限制血量，根据是否交换出期望通宝确定一轮模拟（除非次数超过上限）；
+        ExpectationTongbao_Limited = 2, // 期望通宝：限制血量，根据是否交换出期望通宝确定一轮模拟（除非次数超过上限）；
     }
 
     public enum SimulateStepResult
