@@ -33,7 +33,7 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
                 case SimulateStepResult.ExpectationAchieved:
                     return "已获得期望通宝";
                 case SimulateStepResult.TargetFilledExchangeableSlots:
-                    return "目标/降级通宝已填满优先槽位";
+                    return "目标/降级通宝已填满可交换槽位";
                 case SimulateStepResult.ExchangeStepLimitReached:
                     return mExchangeStepLimitStr;
                 case SimulateStepResult.ExchangeFailed:

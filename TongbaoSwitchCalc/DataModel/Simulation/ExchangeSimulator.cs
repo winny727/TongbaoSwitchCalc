@@ -11,7 +11,7 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
         public IDataCollector<SimulateContext> DataCollector { get; private set; }
 
         public SimulationType SimulationType { get; set; } = SimulationType.LifePointLimit;
-        public List<int> ExchangeableSlots { get; private set; } = new List<int>(); // 槽位优先级
+        public List<int> ExchangeableSlots { get; private set; } = new List<int>(); // 可交换槽位
         public HashSet<int> TargetTongbaoIds { get; private set; } = new HashSet<int>(); // 目标/降级通宝ID集合
         public int ExpectedTongbaoId { get; set; } = -1; // 期望通宝ID
         public int MinimumLifePoint { get; set; } = 1; // 最小生命值限制
@@ -227,7 +227,7 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
             mExchangeableSlotsListIndex = 0;
             if (ExchangeableSlots.Count > 0)
             {
-                //Log($"初始优先槽位(#{mExchangeableSlotsListIndex}): {NextExchangeSlotIndex}");
+                //Log($"初始可交换槽位(#{mExchangeableSlotsListIndex}): {NextExchangeSlotIndex}");
                 NextExchangeSlotIndex = ExchangeableSlots[0];
             }
             mSimulateStepResult = SimulateStepResult.Success;
@@ -299,14 +299,14 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
                 tongbao = PlayerData.GetTongbao(NextExchangeSlotIndex);
                 if (tongbao == null || !TargetTongbaoIds.Contains(tongbao.Id))
                 {
-                    //Log($"优先槽位(#{mExchangeableSlotsListIndex}): {NextExchangeSlotIndex}获得目标通宝{tongbao.Name}");
+                    //Log($"可交换槽位(#{mExchangeableSlotsListIndex}): {NextExchangeSlotIndex}获得目标通宝{tongbao.Name}");
                     break;
                 }
 
                 mExchangeableSlotsListIndex++;
                 if (mExchangeableSlotsListIndex >= ExchangeableSlots.Count)
                 {
-                    //Log($"优先槽位切换(#{mExchangeableSlotsListIndex}): {NextExchangeSlotIndex}");
+                    //Log($"可交换槽位切换(#{mExchangeableSlotsListIndex}): {NextExchangeSlotIndex}");
                     BreakSimulationStep(SimulateStepResult.TargetFilledExchangeableSlots);
                     return;
                 }
