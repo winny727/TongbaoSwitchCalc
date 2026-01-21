@@ -137,30 +137,10 @@ namespace TongbaoSwitchCalc.View
                 CustomRuleForm customRuleForm = new CustomRuleForm(collection.Type);
 
                 // 设Numeric范围+自动填一个没填过的SlotIndex
-                if (rule is PrioritySlotRule)
+                if (rule.Type == SimulationRuleType.PrioritySlot)
                 {
                     customRuleForm.SetNumericRange(1, mPlayerData.MaxTongbaoCount);
-
-                    int defaultIndex = 0;
-                    for (int i = 0; i < mPlayerData.MaxTongbaoCount; i++)
-                    {
-                        bool isExist = false;
-                        foreach (var item in collection)
-                        {
-                            if (item is PrioritySlotRule prioritySlotRule && prioritySlotRule.PrioritySlotIndex == i)
-                            {
-                                isExist = true;
-                                break;
-                            }
-                        }
-                        if (!isExist)
-                        {
-                            defaultIndex = i;
-                            break;
-                        }
-                    }
-                    object[] args = SimulationDefine.GetSimulationRuleArgs(new PrioritySlotRule(defaultIndex));
-                    customRuleForm.SetSelectedParams(args);
+                    AutoSetNextValidSlotIndex(customRuleForm, collection);
                 }
 
                 if (customRuleForm.ShowDialog() == DialogResult.OK)
@@ -180,7 +160,14 @@ namespace TongbaoSwitchCalc.View
             else if (selectedNode?.Tag is UniqueRuleCollection collection)
             {
                 CustomRuleForm customRuleForm = new CustomRuleForm(collection.Type);
-                customRuleForm.SetNumericRange(1, mPlayerData.MaxTongbaoCount);
+
+                // 设Numeric范围+自动填一个没填过的SlotIndex
+                if (collection.Type == SimulationRuleType.PrioritySlot)
+                {
+                    customRuleForm.SetNumericRange(1, mPlayerData.MaxTongbaoCount);
+                    AutoSetNextValidSlotIndex(customRuleForm, collection);
+                }
+
                 if (customRuleForm.ShowDialog() == DialogResult.OK)
                 {
                     SimulationRule newRule = SimulationDefine.CreateSimulationRule(collection.Type, customRuleForm.SelectedParams);
@@ -281,6 +268,30 @@ namespace TongbaoSwitchCalc.View
             {
                 OnRemoveClick(sender, e);
             }
+        }
+
+        private void AutoSetNextValidSlotIndex(CustomRuleForm customRuleForm, UniqueRuleCollection collection)
+        {
+            int defaultIndex = 0;
+            for (int i = 0; i < mPlayerData.MaxTongbaoCount; i++)
+            {
+                bool isExist = false;
+                foreach (var item in collection)
+                {
+                    if (item is SlotIndexRule slotIndexRule && slotIndexRule.SlotIndex == i)
+                    {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if (!isExist)
+                {
+                    defaultIndex = i;
+                    break;
+                }
+            }
+            object[] args = SimulationDefine.GetSimulationRuleArgs(new PrioritySlotRule(defaultIndex));
+            customRuleForm.SetSelectedParams(args);
         }
     }
 }

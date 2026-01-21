@@ -13,68 +13,84 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
         public abstract string GetRuleString();
     }
 
-    public class PrioritySlotRule : SimulationRule
+    public abstract class IntParamRule : SimulationRule
+    {
+        public int IntParam { get; private set; }
+
+        public IntParamRule(int param)
+        {
+            IntParam = param;
+        }
+    }
+
+    public abstract class SlotIndexRule : IntParamRule
+    {
+        public int SlotIndex => IntParam;
+
+        public SlotIndexRule(int slotIndex) : base(slotIndex) { }
+    }
+
+    public abstract class TongbaoIdRule : IntParamRule
+    {
+        public int TongbaoId => IntParam;
+
+        public TongbaoIdRule(int tongbaoId) : base(tongbaoId) { }
+    }
+
+    public class PrioritySlotRule : SlotIndexRule
     {
         public override SimulationRuleType Type { get; } = SimulationRuleType.PrioritySlot;
-        public int PrioritySlotIndex { get; private set; }
 
-        public PrioritySlotRule(int slotIndex)
-        {
-            PrioritySlotIndex = slotIndex;
-        }
+        public PrioritySlotRule(int slotIndex) : base(slotIndex) { }
 
         public override void ApplyRule(SwitchSimulator simulator)
         {
-            if (!simulator.SlotIndexPriority.Contains(PrioritySlotIndex))
+            if (!simulator.SlotIndexPriority.Contains(SlotIndex))
             {
-                simulator.SlotIndexPriority.Add(PrioritySlotIndex);
+                simulator.SlotIndexPriority.Add(SlotIndex);
             }
         }
 
         public override void UnapplyRule(SwitchSimulator simulator)
         {
-            simulator.SlotIndexPriority.Remove(PrioritySlotIndex);
+            simulator.SlotIndexPriority.Remove(SlotIndex);
         }
 
         public override bool Equals(SimulationRule other)
         {
-            return other is PrioritySlotRule otherRule && otherRule.PrioritySlotIndex == PrioritySlotIndex;
+            return other is PrioritySlotRule otherRule && otherRule.SlotIndex == SlotIndex;
         }
 
         public override string GetRuleString()
         {
-            return $"优先交换钱盒槽位{PrioritySlotIndex + 1}里的通宝";
+            return $"优先交换钱盒槽位{SlotIndex + 1}里的通宝";
         }
     }
 
-    public class AutoStopRule : SimulationRule
+    public class AutoStopRule : TongbaoIdRule
     {
         public override SimulationRuleType Type { get; } = SimulationRuleType.AutoStop;
-        public int TargetTongbaoId { get; private set; }
 
-        public AutoStopRule(int targetId)
-        {
-            TargetTongbaoId = targetId;
-        }
+        public AutoStopRule(int targetId) : base(targetId) { }
 
         public override void ApplyRule(SwitchSimulator simulator)
         {
-            simulator.TargetTongbaoIds.Add(TargetTongbaoId);
+            simulator.TargetTongbaoIds.Add(TongbaoId);
         }
 
         public override void UnapplyRule(SwitchSimulator simulator)
         {
-            simulator.TargetTongbaoIds.Remove(TargetTongbaoId);
+            simulator.TargetTongbaoIds.Remove(TongbaoId);
         }
 
         public override bool Equals(SimulationRule other)
         {
-            return other is AutoStopRule otherRule && otherRule.TargetTongbaoId == TargetTongbaoId;
+            return other is AutoStopRule otherRule && otherRule.TongbaoId == TongbaoId;
         }
 
         public override string GetRuleString()
         {
-            TongbaoConfig config = TongbaoConfig.GetTongbaoConfigById(TargetTongbaoId);
+            TongbaoConfig config = TongbaoConfig.GetTongbaoConfigById(TongbaoId);
             if (config == null)
             {
                 return "无效规则，通宝配置错误";
@@ -83,24 +99,20 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
         }
     }
 
-    public class ExpectationTongbaoRule : SimulationRule
+    public class ExpectationTongbaoRule : TongbaoIdRule
     {
         public override SimulationRuleType Type { get; } = SimulationRuleType.ExpectationTongbao;
-        public int ExpectedTongbaoId { get; private set; }
 
-        public ExpectationTongbaoRule(int id)
-        {
-            ExpectedTongbaoId = id;
-        }
+        public ExpectationTongbaoRule(int id) : base(id) { }
 
         public override void ApplyRule(SwitchSimulator simulator)
         {
-            simulator.ExpectedTongbaoId = ExpectedTongbaoId;
+            simulator.ExpectedTongbaoId = TongbaoId;
         }
 
         public override void UnapplyRule(SwitchSimulator simulator)
         {
-            if (simulator.ExpectedTongbaoId == ExpectedTongbaoId)
+            if (simulator.ExpectedTongbaoId == TongbaoId)
             {
                 simulator.ExpectedTongbaoId = -1;
             }
@@ -113,7 +125,7 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
 
         public override string GetRuleString()
         {
-            TongbaoConfig config = TongbaoConfig.GetTongbaoConfigById(ExpectedTongbaoId);
+            TongbaoConfig config = TongbaoConfig.GetTongbaoConfigById(TongbaoId);
             if (config == null)
             {
                 return "无效规则，通宝配置错误";

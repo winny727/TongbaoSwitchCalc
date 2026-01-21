@@ -92,17 +92,9 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
 
         public static object[] GetSimulationRuleArgs(SimulationRule rule)
         {
-            if (rule is PrioritySlotRule prioritySlotRule)
+            if (rule is IntParamRule intParamRule)
             {
-                return new object[] { prioritySlotRule.PrioritySlotIndex };
-            }
-            else if (rule is AutoStopRule autoStopRule)
-            {
-                return new object[] { autoStopRule.TargetTongbaoId };
-            }
-            else if (rule is ExpectationTongbaoRule expectedTongbaoRule)
-            {
-                return new object[] { expectedTongbaoRule.ExpectedTongbaoId };
+                return new object[] { intParamRule.IntParam };
             }
             return null;
         }
