@@ -1,0 +1,77 @@
+Id	Name	Description	ImgPath	Type	ExchangeInPool	ExchangeOutPools	IsUpgrade	ExtraResType	ExtraResCount	备注
+1001	大炎通宝		rogue_5_copper_B_01$0.png	Balance	1	0				
+1002	奇土生金		rogue_5_copper_B_06$0.png	Balance	1	1				
+1003	水生木护		rogue_5_copper_B_07$0.png	Balance	1	1				
+1004	金寒水衍		rogue_5_copper_B_08$0.png	Balance	1	1				
+1005	投木炎延		rogue_5_copper_B_10$0.png	Balance	1	1				
+1006	苦寒		rogue_5_copper_F_01$0.png	Balance	1	1				
+1007	匪风		rogue_5_copper_F_02$0.png	Balance	1	1				
+1008	霖雨		rogue_5_copper_F_03$0.png	Balance	1	1				
+1009	霹雳		rogue_5_copper_F_04$0.png	Balance	1	1				
+1010	旱热		rogue_5_copper_F_05$0.png	Balance	1	1				
+1011	虹霓		rogue_5_copper_F_06$0.png	Balance	1	1				
+1012	雾凇		rogue_5_copper_F_07$0.png	Balance	1	1				
+1013	霜雪		rogue_5_copper_F_08$0.png	Balance	1	1				
+1014	志欲遂		rogue_5_copper_F_13$0.png	Balance	1	2				
+1015	慧避灾		rogue_5_copper_F_14$0.png	Balance	1	2				
+1016	挪移		rogue_5_copper_F_28$0.png	Balance	1	1				
+1017	迅步		rogue_5_copper_F_29$0.png	Balance	1	1				
+1018	重铠		rogue_5_copper_F_31$0.png	Balance	1	1				
+1019	庆丰收		rogue_5_copper_R_01$0.png	Balance	2	2		LifePoint	2	
+1020	塞上月		rogue_5_copper_R_02$0.png	Balance	2	2				
+1021	军屯垦		rogue_5_copper_R_04$0.png	Balance	2	2				
+1022	诡意代币		rogue_5_copper_R_06$0.png	Balance	2	0		OriginiumIngots	10	
+1023	债难偿		rogue_5_copper_R_13$0.png	Balance	2	2		LifePoint	2	
+1024	触锁代币		rogue_5_copper_R_14$0.png	Balance	2	2|3				
+1025	移山繁		rogue_5_copper_U_2$0.png	Balance	2	4				
+1026	天下先		rogue_5_copper_U_4$0.png	Balance	2	5				
+1027	初有文		rogue_5_copper_U_5$0.png	Balance	6	2	1			
+1028	勤运体		rogue_5_copper_U_7$0.png	Balance	7	2	1			
+1029	鸿蒙开荒		rogue_5_copper_S_2$0.png	Balance	3	3		PrimalFarmingCandles	2	
+2001	火灼土沃		rogue_5_copper_B_09$0.png	Flower	1	1				
+2002	驰道长		rogue_5_copper_F_09$0.png	Flower	1	2				
+2003	武人之争		rogue_5_copper_F_10$0.png	Flower	1	3				
+2004	百业俱兴		rogue_5_copper_F_11$0.png	Flower	1	3				
+2005	聚力则强		rogue_5_copper_R_03$0.png	Flower	3	3				
+2006	茧成绢		rogue_5_copper_R_08$0.png	Flower	3	3				
+2007	平沙之盾		rogue_5_copper_R_10$0.png	Flower	3	2|3				
+2008	火上之灶		rogue_5_copper_R_11$0.png	Flower	3	3				
+2009	界园行		rogue_5_copper_R_12$0.png	Flower	2	2				
+2010	延识镇木		rogue_5_copper_R_15$0.png	Flower	2	2|3				
+2011	载道远		rogue_5_copper_U_6$0.png	Flower	2	6				
+2012	修性情		rogue_5_copper_U_8$0.png	Flower	2	7				
+2013	心无患		rogue_5_copper_U_9$0.png	Flower	2	7				
+2014	鸭爵金币		rogue_5_copper_S_1$0.png	Flower	3	3				
+2015	己任重		rogue_5_copper_S_3$0.png	Flower	2	2				
+2016	圣诏封神		rogue_5_copper_S_4$0.png	Flower	3	0				
+2017	神秘商贾		rogue_5_copper_S_5$0.png	Flower	3	3		Coupon	30	
+2018	孜孜不倦		rogue_5_copper_S_8$0.png	Flower	3	3				
+3001	西廉贞		rogue_5_copper_B_02$0.png	Risk	1	0				
+3002	北刺面		rogue_5_copper_B_03$0.png	Risk	1	0				
+3003	南见山		rogue_5_copper_B_04$0.png	Risk	1	0				
+3004	东缺角		rogue_5_copper_B_05$0.png	Risk	1	0				
+3005	寒窗志		rogue_5_copper_F_12$0.png	Risk	1	2				
+3006	战血流		rogue_5_copper_F_15$0.png	Risk	2	2				
+3007	遇良弈		rogue_5_copper_F_16$0.png	Risk	2	2				
+3008	隐市忧		rogue_5_copper_F_17$0.png	Risk	2	2				
+3009	法与律		rogue_5_copper_F_18$0.png	Risk	2	2				
+3010	两江春		rogue_5_copper_F_19$0.png	Risk	2	2				
+3011	凡物变		rogue_5_copper_F_20$0.png	Risk	2	2				
+3012	人间长存		rogue_5_copper_F_21$0.png	Risk	3	3				
+3013	神农守		rogue_5_copper_F_22$0.png	Risk	2	2				
+3014	梦奇物		rogue_5_copper_F_23$0.png	Risk	2	2				
+3015	一字落		rogue_5_copper_F_24$0.png	Risk	2	2				
+3016	待机缘		rogue_5_copper_F_25$0.png	Risk	2	2				
+3017	画人间		rogue_5_copper_F_26$0.png	Risk	2	2				
+3018	恣狂情		rogue_5_copper_F_27$0.png	Risk	2	2				
+3019	生材百相		rogue_5_copper_F_30$0.png	Risk	2	2				
+3020	火机		rogue_5_copper_F_32$0.png	Risk	1	1				
+3021	岁醒天时		rogue_5_copper_P_01$0.png	Risk	0	0				
+3022	无皎之昧		rogue_5_copper_P_02$0.png	Risk	0	0				
+3023	安硕鼷		rogue_5_copper_R_05$0.png	Risk	2	2				
+3024	合乎礼		rogue_5_copper_R_07$0.png	Risk	2	2		OriginiumIngots	30	
+3025	黑子伏		rogue_5_copper_R_09$0.png	Risk	2	2|3				
+3026	移山难		rogue_5_copper_U_1$0.png	Risk	4	2	1			
+3027	朝闻道		rogue_5_copper_U_3$0.png	Risk	5	0	1			
+3028	诛邪雷法		rogue_5_copper_S_6$0.png	Risk	3	3				
+3029	商路难行		rogue_5_copper_S_7$0.png	Risk	3	3				
