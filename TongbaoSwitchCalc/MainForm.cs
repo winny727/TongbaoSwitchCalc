@@ -58,8 +58,8 @@ namespace TongbaoSwitchCalc
         private void InitDataModel()
         {
             Helper.InitConfig();
-            //mRandom = new LockThreadSafeRandomGenerator();
-            mRandom = new ThreadSafeRandomGenerator();
+            mRandom = new LockThreadSafeRandomGenerator(); //2.3s
+            //mRandom = new ThreadSafeRandomGenerator(); //2.46s
             mLogger = new Logger();
             mTongbaoSelector = new TongbaoSelector(mRandom);
             mPlayerData = new PlayerData(mTongbaoSelector, mRandom);
@@ -68,10 +68,14 @@ namespace TongbaoSwitchCalc
             mCompositeDataCollector = new CompositeDataCollector();
             mCompositeDataCollector.AddDataCollector(mPrintDataCollector);
             mCompositeDataCollector.AddDataCollector(mStatisticDataCollector);
-            //mSwitchSimulator = new SwitchSimulator(mPlayerData, mCompositeDataCollector, mLogger);
-            //mSwitchSimulator = new SwitchSimulator(mPlayerData, new LockThreadSafeDataCollector(), mLogger);
-            //mSwitchSimulator = new SwitchSimulator(mPlayerData, new ConcurrentThreadSafeDataCollector(), mLogger);
-            mSwitchSimulator = new SwitchSimulator(mPlayerData, new WarpperThreadSafeDataCollector(mCompositeDataCollector), mLogger);
+
+            // 交换耗时测试：100w开记录/1000w次开记录/100w次不开记录/1000w次不开记录
+            //mSwitchSimulator = new SwitchSimulator(mPlayerData, mCompositeDataCollector, mLogger); //4.2s，45.9s，3.1s，33.4s
+            //mSwitchSimulator = new SwitchSimulator(mPlayerData, new LockThreadSafeDataCollector() { RecordEverySwitch = false }, mLogger); //100w次就已经21.2s了，锁麻了；不记录每次交换：3.2s，32.1s
+            //mSwitchSimulator = new SwitchSimulator(mPlayerData, new ConcurrentThreadSafeDataCollector() { RecordEverySwitch = false }, mLogger); //7.9s，ConcurrentDict GC很多；不记录每次交换：3.1s，33.3s
+            mSwitchSimulator = new SwitchSimulator(mPlayerData, new WarpperThreadSafeDataCollector(mCompositeDataCollector), mLogger); //5.5s，55.9s，2.5s，22.8s；若开记录GC很多
+            //结论，开记录的话用单线程，不开才用WarpperThreadSafeDataCollector
+
             InitPlayerData();
         }
 
@@ -605,6 +609,36 @@ namespace TongbaoSwitchCalc
             GC.Collect();
         }
 
+        private void FillRandomTongbao()
+        {
+            for (int i = 0; i < mPlayerData.TongbaoBox.Length; i++)
+            {
+                SetRandomTongbao(i);
+            }
+        }
+
+        private void SetRandomTongbao(int slotIndex)
+        {
+            // 测试，随机添加通宝
+            var configs = TongbaoConfig.GetAllTongbaoConfigs();
+            int random = mRandom.Next(0, configs.Count);
+            int index = 0;
+            int targetId = -1;
+            foreach (var item in configs)
+            {
+                if (index == random)
+                {
+                    targetId = item.Value.Id;
+                    break;
+                }
+                index++;
+            }
+            if (targetId > 0)
+            {
+                OnSelectNewRandomTongbao(targetId, slotIndex);
+            }
+        }
+
         private void comboBoxSquad_SelectedIndexChanged(object sender, EventArgs e)
         {
             mCanRevertPlayerData = false;
@@ -659,25 +693,8 @@ namespace TongbaoSwitchCalc
                     }
                 }
 
-                //// 测试，随机添加通宝
-                //var configs = TongbaoConfig.GetAllTongbaoConfigs();
-                //int random = mRandom.Next(0, configs.Count);
-                //int index = 0;
-                //int targetId = -1;
-                //foreach (var item in configs)
-                //{
-                //    if (index == random)
-                //    {
-                //        targetId = item.Value.Id;
-                //        break;
-                //    }
-                //    index++;
-                //}
-                //if (targetId > 0)
-                //{
-                //    OnSelectNewRandomTongbao(targetId, slotIndex);
-                //    //OnSelectNewCustomTongbao(targetId, slotIndex);
-                //}
+                // 测试，随机添加通宝
+                //SetRandomTongbao(slotIndex);
             }
         }
 

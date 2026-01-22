@@ -66,7 +66,7 @@ namespace TongbaoSwitchCalc.Impl.Simulation
             public int AfterId;
         }
 
-
+        public bool RecordEverySwitch { get; set; } = true;
         public int TotalSimulateCount { get; private set; }
         public float TotalSimulateTime { get; private set; }
         public int TotalSwitchCount => mSwitchStepResults.Count;
@@ -104,6 +104,11 @@ namespace TongbaoSwitchCalc.Impl.Simulation
 
         public void OnSwitchStepBegin(in SimulateContext context)
         {
+            if (!RecordEverySwitch)
+            {
+                return;
+            }
+
             var indexes = new StepIndexes
             {
                 SimulateStepIndex = context.SimulationStepIndex,
@@ -142,6 +147,11 @@ namespace TongbaoSwitchCalc.Impl.Simulation
 
         public void OnSwitchStepEnd(in SimulateContext context, SwitchStepResult result)
         {
+            if (!RecordEverySwitch)
+            {
+                return;
+            }
+
             var indexes = new StepIndexes
             {
                 SimulateStepIndex = context.SimulationStepIndex,
