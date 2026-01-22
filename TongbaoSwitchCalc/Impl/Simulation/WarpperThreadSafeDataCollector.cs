@@ -1,21 +1,20 @@
 ﻿using System;
+using TongbaoSwitchCalc.DataModel;
+using TongbaoSwitchCalc.DataModel.Simulation;
 
-namespace TongbaoSwitchCalc.DataModel.Simulation
+namespace TongbaoSwitchCalc.Impl.Simulation
 {
-    public sealed class ThreadSafeDataCollector : IDataCollector<SimulateContext>
+    public class WarpperThreadSafeDataCollector : IThreadSafeDataCollector<SimulateContext>
     {
         private readonly IDataCollector<SimulateContext> mInner;
         private readonly object mLock = new object();
 
-        public ThreadSafeDataCollector(IDataCollector<SimulateContext> inner)
+        public WarpperThreadSafeDataCollector(IDataCollector<SimulateContext> inner)
         {
             mInner = inner ?? throw new ArgumentNullException(nameof(inner));
         }
 
-        public void OnSimulateBegin(
-            SimulationType type,
-            int totalSimCount,
-            in IReadOnlyPlayerData playerData)
+        public void OnSimulateBegin(SimulationType type, int totalSimCount, in IReadOnlyPlayerData playerData)
         {
             lock (mLock)
             {
@@ -23,10 +22,7 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             }
         }
 
-        public void OnSimulateEnd(
-            int executedSimCount,
-            float simCostTimeMS,
-            in IReadOnlyPlayerData playerData)
+        public void OnSimulateEnd(int executedSimCount, float simCostTimeMS, in IReadOnlyPlayerData playerData)
         {
             lock (mLock)
             {

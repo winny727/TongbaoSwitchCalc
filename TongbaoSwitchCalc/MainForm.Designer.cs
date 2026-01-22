@@ -394,7 +394,7 @@
             // 
             this.lblCurrent.Location = new System.Drawing.Point(518, 334);
             this.lblCurrent.Name = "lblCurrent";
-            this.lblCurrent.Size = new System.Drawing.Size(144, 113);
+            this.lblCurrent.Size = new System.Drawing.Size(144, 59);
             this.lblCurrent.TabIndex = 8;
             // 
             // btnSwitch

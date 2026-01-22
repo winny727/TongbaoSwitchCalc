@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TongbaoSwitchCalc.Impl.Simulation;
 
 namespace TongbaoSwitchCalc.DataModel.Simulation
 {
@@ -10,6 +11,7 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
         public PlayerData PlayerData { get; private set; }
         public IDataCollector<SimulateContext> DataCollector { get; private set; }
         public ILogger Logger { get; private set; }
+        public bool MultiThreadOptimize => DataCollector == null || DataCollector is IThreadSafeDataCollector<SimulateContext>;
         public List<int> SlotIndexPriority { get; private set; } = new List<int>(); // 槽位优先级
         public HashSet<int> TargetTongbaoIds { get; private set; } = new HashSet<int>(); // 目标/降级通宝ID集合
         public int ExpectedTongbaoId { get; set; } = -1; // 期望通宝ID
@@ -28,11 +30,20 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
 
         private const int SWITCH_STEP_LIMIT = 10000; // 交换上限，防止死循环
 
-        public int ParallelThreshold { get; set; } = 100000; // 触发多线程的阈值（交换次数*剩余模拟次数）
+        public int OptimizeThreshold { get; set; } = 100000; // 触发多线程的阈值（预计剩余交换次数）
         public int MaxParallelism { get; set; } = Environment.ProcessorCount;
         private bool mUseParallel = false;
 
         public SwitchSimulator(PlayerData playerData, IDataCollector<SimulateContext> collector = null, ILogger logger = null)
+        {
+            PlayerData = playerData ?? throw new ArgumentNullException(nameof(playerData));
+            DataCollector = collector;
+            Logger = logger;
+
+            mRevertPlayerData = new PlayerData(playerData.TongbaoSelector, playerData.Random);
+        }
+
+        public SwitchSimulator(PlayerData playerData, IThreadSafeDataCollector<SimulateContext> collector = null, ILogger logger = null)
         {
             PlayerData = playerData ?? throw new ArgumentNullException(nameof(playerData));
             DataCollector = collector;
@@ -57,6 +68,7 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             mUseParallel = false;
             mRevertPlayerData.CopyFrom(PlayerData); // CachePlayerData
             mOriginNextSwitchSlotIndex = NextSwitchSlotIndex;
+            bool disableOptimization = !MultiThreadOptimize;
             using (CodeTimer ct = CodeTimer.StartNew("Simulate"))
             {
                 mIsSimulating = true;
@@ -66,8 +78,13 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
                     SimulateStep();
                     SimulationStepIndex++;
 
+                    if (disableOptimization)
+                    {
+                        continue;
+                    }
+
                     int estimatedLeftSwitchCount = SwitchStepIndex * (TotalSimulationCount - SimulationStepIndex);
-                    if (!mUseParallel && estimatedLeftSwitchCount >= ParallelThreshold)
+                    if (!mUseParallel && estimatedLeftSwitchCount >= OptimizeThreshold)
                     {
                         Logger?.Log($"预计剩余交换次数过多({estimatedLeftSwitchCount})，触发多线程优化");
                         mUseParallel = true;
@@ -88,7 +105,6 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
         private void SimulateParallel(int startIndex)
         {
             int remain = TotalSimulationCount - startIndex;
-            var collector = new ThreadSafeDataCollector(DataCollector);
 
             Parallel.For(
                 0,
@@ -101,10 +117,9 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
                     // 每个线程独立数据
                     PlayerData localPlayerData = new PlayerData(PlayerData.TongbaoSelector, PlayerData.Random);
                     localPlayerData.CopyFrom(mRevertPlayerData);
-                    //TODO PrintDataCollector优化？根据顺序排序？
 
                     // 考虑到线程安全，Logger就不往下放了，反正也没啥要打印的
-                    var localSimulator = new SwitchSimulator(localPlayerData, collector)
+                    var localSimulator = new SwitchSimulator(localPlayerData, (IThreadSafeDataCollector<SimulateContext>)DataCollector)
                     {
                         SimulationType = SimulationType,
                         SimulationStepIndex = simIndex,

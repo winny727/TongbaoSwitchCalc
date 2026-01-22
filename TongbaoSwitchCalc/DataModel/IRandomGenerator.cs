@@ -5,7 +5,6 @@ namespace TongbaoSwitchCalc.DataModel
 {
     public interface IRandomGenerator
     {
-        void SetSeed(int seed);
         int Next(int minValue, int maxValue); // [minValue, maxValue)
         double NextDouble();
     }

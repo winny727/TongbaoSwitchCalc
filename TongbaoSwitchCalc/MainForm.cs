@@ -58,6 +58,7 @@ namespace TongbaoSwitchCalc
         private void InitDataModel()
         {
             Helper.InitConfig();
+            //mRandom = new LockThreadSafeRandomGenerator();
             mRandom = new ThreadSafeRandomGenerator();
             mLogger = new Logger();
             mTongbaoSelector = new TongbaoSelector(mRandom);
@@ -67,7 +68,10 @@ namespace TongbaoSwitchCalc
             mCompositeDataCollector = new CompositeDataCollector();
             mCompositeDataCollector.AddDataCollector(mPrintDataCollector);
             mCompositeDataCollector.AddDataCollector(mStatisticDataCollector);
-            mSwitchSimulator = new SwitchSimulator(mPlayerData, mCompositeDataCollector, mLogger);
+            //mSwitchSimulator = new SwitchSimulator(mPlayerData, mCompositeDataCollector, mLogger);
+            //mSwitchSimulator = new SwitchSimulator(mPlayerData, new LockThreadSafeDataCollector(), mLogger);
+            //mSwitchSimulator = new SwitchSimulator(mPlayerData, new ConcurrentThreadSafeDataCollector(), mLogger);
+            mSwitchSimulator = new SwitchSimulator(mPlayerData, new WarpperThreadSafeDataCollector(mCompositeDataCollector), mLogger);
             InitPlayerData();
         }
 
