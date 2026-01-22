@@ -20,11 +20,37 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
         private readonly Stack<Dictionary<ResType, int>> mResDictPool = new Stack<Dictionary<ResType, int>>();
 
-        // 避免大量模拟时字符串拼接导致频繁GC，用StringBuilder
-        private readonly StringBuilder mExchangeResultSB = new StringBuilder();
-        private readonly StringBuilder mResChangedTempSB = new StringBuilder();
-        public string LastExchangeResult => mExchangeResultSB.ToString();
+        private int mLastExchangeResultStartIndex = -1;
+        private int mLastExchangeResultEndIndex = -1;
+        public string LastExchangeResult
+        {
+            get
+            {
+                if (mLastExchangeResultStartIndex < 0 || mLastExchangeResultEndIndex < 0)
+                {
+                    return string.Empty;
+                }
 
+                int length = mLastExchangeResultEndIndex - mLastExchangeResultStartIndex;
+                if (length > 0)
+                {
+                    char[] chars = new char[length];
+                    for (int i = 0; i < length; i++)
+                    {
+                        int index = i + mLastExchangeResultStartIndex;
+                        //if (index >= 0 && index < mOutputResult.Length)
+                        //{
+                        //    chars[i] = mOutputResult[index];
+                        //}
+                        chars[i] = mOutputResult[index];
+                    }
+                    return new string(chars);
+                }
+                return string.Empty;
+            }
+        }
+
+        // 避免大量模拟时字符串拼接导致频繁GC，用StringBuilder
         private readonly StringBuilder mOutputResult = new StringBuilder();
         public string OutputResult => mOutputResult.ToString();
 
@@ -103,12 +129,8 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
         public void OnSimulateStepEnd(in SimulateContext context, SimulateStepResult result)
         {
-            mExchangeResultSB.Clear();
-            mResChangedTempSB.Clear();
-
             if (!RecordEachExchange)
             {
-                GenerateResChangedString(context);
                 mOutputResult.Append('(')
                              .Append(context.SimulationStepIndex + 1)
                              .Append("|");
@@ -124,17 +146,16 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                              .Append(context.ExchangeStepIndex + 1)
                              .AppendLine("次交换");
 
-                if (mResChangedTempSB.Length > 0)
+                if (IsResChanged(context))
                 {
-                    mOutputResult.Append('(')
-                             .Append(mResChangedTempSB)
-                             .Append(')')
-                             .AppendLine();
+                    mOutputResult.Append('(');
+                    AppendResChangedResult(mOutputResult, context);
+                    mOutputResult.Append(')')
+                                 .AppendLine();
                 }
             }
             else if (OmitExcessiveExchanges && context.ExchangeStepIndex > OMIITED_EXCHANGE_INDEX)
             {
-                GenerateResChangedString(context);
                 mOutputResult.Append('(')
                              .Append(context.SimulationStepIndex + 1)
                              .Append('|');
@@ -142,8 +163,8 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                 if (OMIITED_EXCHANGE_INDEX != context.ExchangeStepIndex)
                 {
                     mOutputResult.Append(OMIITED_EXCHANGE_INDEX + 1)
-                             .Append('-')
-                             .Append(context.ExchangeStepIndex + 1);
+                                 .Append('-')
+                                 .Append(context.ExchangeStepIndex + 1);
                 }
                 else
                 {
@@ -155,12 +176,12 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                              .Append(context.ExchangeStepIndex - OMIITED_EXCHANGE_INDEX + 1)
                              .Append("次交换信息");
 
-                if (mResChangedTempSB.Length > 0)
+                if (IsResChanged(context))
                 {
-                    mOutputResult.Append(" (")
-                             .Append(mResChangedTempSB)
-                             .Append(')')
-                             .AppendLine();
+                    mOutputResult.Append('(');
+                    AppendResChangedResult(mOutputResult, context);
+                    mOutputResult.Append(')')
+                                 .AppendLine();
                 }
             }
 
@@ -206,63 +227,63 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                 return;
             }
 
-            mExchangeResultSB.Clear();
-            mResChangedTempSB.Clear();
+            mOutputResult.Append('(')
+                         .Append(context.SimulationStepIndex + 1)
+                         .Append('|')
+                         .Append(context.ExchangeStepIndex + 1)
+                         .Append(") ");
+
+            mLastExchangeResultStartIndex = mOutputResult.Length;
+            mLastExchangeResultEndIndex = mOutputResult.Length;
 
             mTempBeforeTongbaoName.TryGetValue(context.SimulationStepIndex, out var beforeTongbaoName);
 
             if (result == ExchangeStepResult.Success)
             {
                 Tongbao afterTongbao = context.PlayerData.GetTongbao(context.SlotIndex);
-                GenerateResChangedString(context);
 
-                mExchangeResultSB.Append("将位置[")
-                               .Append(context.SlotIndex + 1)
-                               .Append("]上的[")
-                               .Append(beforeTongbaoName)
-                               .Append("]交换为[")
-                               .Append(afterTongbao.Name)
-                               .Append("] (")
-                               .Append(mResChangedTempSB)
-                               .Append(')');
+                mOutputResult.Append("将位置[")
+                             .Append(context.SlotIndex + 1)
+                             .Append("]上的[")
+                             .Append(beforeTongbaoName)
+                             .Append("]交换为[")
+                             .Append(afterTongbao.Name)
+                             .Append("] (");
+                AppendResChangedResult(mOutputResult, context);
+                mOutputResult.Append(')');
             }
             else
             {
                 switch (result)
                 {
                     case ExchangeStepResult.SelectedEmpty:
-                        mExchangeResultSB.Append("交换失败，选中的位置[")
-                                       .Append(context.SlotIndex + 1)
-                                       .Append("]上的通宝为空");
+                        mOutputResult.Append("交换失败，选中的位置[")
+                                     .Append(context.SlotIndex + 1)
+                                     .Append("]上的通宝为空");
                         break;
                     case ExchangeStepResult.TongbaoUnexchangeable:
-                        mExchangeResultSB.Append("交换失败，通宝[")
-                                       .Append(beforeTongbaoName)
-                                       .Append("]不可交换");
+                        mOutputResult.Append("交换失败，通宝[")
+                                     .Append(beforeTongbaoName)
+                                     .Append("]不可交换");
                         break;
                     case ExchangeStepResult.LifePointNotEnough:
-                        mExchangeResultSB.Append("交换失败，交换所需生命值不足");
+                        mOutputResult.Append("交换失败，交换所需生命值不足");
                         break;
                     case ExchangeStepResult.ExchangeableTongbaoNotExist:
-                        mExchangeResultSB.Append("交换失败，通宝[")
-                                       .Append(beforeTongbaoName)
-                                       .Append("]无可交换通宝");
+                        mOutputResult.Append("交换失败，通宝[")
+                                     .Append(beforeTongbaoName)
+                                     .Append("]无可交换通宝");
                         break;
                     case ExchangeStepResult.UnknownError:
-                        mExchangeResultSB.Append("交换失败，未知错误");
+                        mOutputResult.Append("交换失败，未知错误");
                         break;
                     default:
                         break;
                 }
             }
 
-            mOutputResult.Append('(')
-                         .Append(context.SimulationStepIndex + 1)
-                         .Append('|')
-                         .Append(context.ExchangeStepIndex + 1)
-                         .Append(") ")
-                         .Append(LastExchangeResult)
-                         .AppendLine();
+            mLastExchangeResultEndIndex = mOutputResult.Length;
+            mOutputResult.AppendLine();
         }
 
         private void RecordCurrentExchange(in SimulateContext context)
@@ -278,9 +299,25 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             }
         }
 
-        private void GenerateResChangedString(in SimulateContext context)
+        private bool IsResChanged(in SimulateContext context)
+        {
+            foreach (var item in context.PlayerData.ResValues)
+            {
+                ResType type = item.Key;
+                mTempResBefore[context.SimulationStepIndex].TryGetValue(type, out int beforeValue);
+                int afterValue = item.Value;
+                if (beforeValue != afterValue)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private StringBuilder AppendResChangedResult(StringBuilder sb, in SimulateContext context)
         {
             // PlayerData的项只增加不删除，所以这里不需要考虑并集
+            bool isEmpty = true;
             foreach (var item in context.PlayerData.ResValues)
             {
                 ResType type = item.Key;
@@ -289,31 +326,34 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                 int changedValue = afterValue - beforeValue;
                 if (beforeValue != afterValue)
                 {
-                    if (mResChangedTempSB.Length > 0)
+                    if (!isEmpty)
                     {
-                        mResChangedTempSB.Append("，");
+                        sb.Append("，");
                     }
-                    mResChangedTempSB.Append(Define.GetResName(type));
+                    sb.Append(Define.GetResName(type));
 
                     if (changedValue > 0)
                     {
-                        mResChangedTempSB.Append('+');
+                        sb.Append('+');
                     }
-                    mResChangedTempSB.Append(changedValue);
+                    sb.Append(changedValue);
 
-                    mResChangedTempSB.Append(": ")
-                                     .Append(beforeValue)
-                                     .Append("->")
-                                     .Append(afterValue);
+                    sb.Append(": ")
+                      .Append(beforeValue)
+                      .Append("->")
+                      .Append(afterValue);
+
+                    isEmpty = false;
                 }
             }
+            return sb;
         }
 
         public void ClearData()
         {
+            mLastExchangeResultStartIndex = -1;
+            mLastExchangeResultEndIndex = -1;
             mTempBeforeTongbaoName.Clear();
-            mExchangeResultSB.Clear();
-            mResChangedTempSB.Clear();
             mOutputResult.Clear();
 
             foreach (var item in mTempResBefore)

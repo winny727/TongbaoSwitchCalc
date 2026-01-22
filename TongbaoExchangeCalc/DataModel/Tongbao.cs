@@ -107,37 +107,6 @@ namespace TongbaoExchangeCalc.DataModel
             mPool.TryAdd(this, true);
         }
 
-        public void CopyFrom(Tongbao tongbao)
-        {
-            if (tongbao == null)
-            {
-                Id = default;
-                Name = default;
-                Description = default;
-                ImgPath = default;
-                Type = default;
-                ExchangeInPool = default;
-                ExchangeOutPools = default;
-                ExtraResType = default;
-                ExtraResCount = default;
-                RandomResType = default;
-                RandomResCount = default;
-                return;
-            }
-
-            Id = tongbao.Id;
-            Name = tongbao.Name;
-            Description = tongbao.Description;
-            ImgPath = tongbao.ImgPath;
-            Type = tongbao.Type;
-            ExchangeInPool = tongbao.ExchangeInPool;
-            ExchangeOutPools = tongbao.ExchangeOutPools;
-            ExtraResType = tongbao.ExtraResType;
-            ExtraResCount = tongbao.ExtraResCount;
-            RandomResType = tongbao.RandomResType;
-            RandomResCount = tongbao.RandomResCount;
-        }
-
         public bool CanExchange()
         {
             return ExchangeInPool > 0;

@@ -508,17 +508,18 @@ namespace TongbaoExchangeCalc
                 return;
             }
 
+            mPrintDataCollector?.OnExchangeStepEnd(new SimulateContext(0, mPlayerData.ExchangeCount, slotIndex, mPlayerData), ExchangeStepResult.Success);
+
             var sb = mTempStringBuilder;
             sb.Clear();
-
             sb.Append('(')
               .Append(mPlayerData.ExchangeCount)
               .Append(") ")
               .AppendLine(mPrintDataCollector.LastExchangeResult);
 
-            mPrintDataCollector?.OnExchangeStepEnd(new SimulateContext(0, mPlayerData.ExchangeCount, slotIndex, mPlayerData), ExchangeStepResult.Success);
             mOutputResult += sb.ToString();
             mOutputResultChanged = true;
+
             UpdateTongbaoView(slotIndex);
             UpdateView();
         }

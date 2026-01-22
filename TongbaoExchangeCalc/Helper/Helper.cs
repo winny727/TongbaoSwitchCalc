@@ -53,8 +53,13 @@ namespace TongbaoExchangeCalc
             return string.Empty;
         }
 
-        public static void AppendTongbaoFullName(StringBuilder sb, int id)
+        public static StringBuilder AppendTongbaoFullName(StringBuilder sb, int id)
         {
+            if (sb == null)
+            {
+                return sb;
+            }
+
             TongbaoConfig config = TongbaoConfig.GetTongbaoConfigById(id);
             if (config != null)
             {
@@ -63,6 +68,7 @@ namespace TongbaoExchangeCalc
                   .Append('-')
                   .Append(config.Name);
             }
+            return sb;
         }
 
         public static void InitConfig()
