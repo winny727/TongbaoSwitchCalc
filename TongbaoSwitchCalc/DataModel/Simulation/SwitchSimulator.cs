@@ -58,6 +58,12 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             NextSwitchSlotIndex = mOriginNextSwitchSlotIndex;
         }
 
+        public void CachePlayerData()
+        {
+            mRevertPlayerData.CopyFrom(PlayerData);
+            mOriginNextSwitchSlotIndex = NextSwitchSlotIndex;
+        }
+
         public void Simulate(SimulationType type)
         {
             SimulationType = type;
@@ -66,8 +72,7 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
             mSlotIndexPriorityIndex = 0;
             mSimulateStepResult = SimulateStepResult.Success;
             mUseParallel = false;
-            mRevertPlayerData.CopyFrom(PlayerData); // CachePlayerData
-            mOriginNextSwitchSlotIndex = NextSwitchSlotIndex;
+            CachePlayerData();
             bool disableOptimization = !MultiThreadOptimize;
             using (CodeTimer ct = CodeTimer.StartNew("Simulate"))
             {
@@ -105,16 +110,32 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
         private void SimulateParallel(int startIndex)
         {
             int remain = TotalSimulationCount - startIndex;
+            if (remain <= 0)
+            {
+                return;
+            }
+
+            int workerCount = Math.Min(MaxParallelism, remain);
+
+            // 每个 worker 负责的模拟数量（向上取整）
+            int batchSize = (remain + workerCount - 1) / workerCount;
 
             Parallel.For(
                 0,
-                remain,
-                new ParallelOptions { MaxDegreeOfParallelism = MaxParallelism },
-                i =>
+                workerCount,
+                new ParallelOptions { MaxDegreeOfParallelism = workerCount },
+                workerIndex =>
                 {
-                    int simIndex = startIndex + i;
+                    int batchStart = startIndex + workerIndex * batchSize;
+                    int batchEnd = Math.Min(batchStart + batchSize, startIndex + remain);
 
-                    // 每个线程独立数据
+                    if (batchStart >= batchEnd)
+                    {
+                        return;
+                    }
+
+                    //System.Diagnostics.Debug.WriteLine($"{batchStart}->{batchEnd}");
+
                     PlayerData localPlayerData = new PlayerData(PlayerData.TongbaoSelector, PlayerData.Random);
                     localPlayerData.CopyFrom(mRevertPlayerData);
 
@@ -122,7 +143,6 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
                     var localSimulator = new SwitchSimulator(localPlayerData, (IThreadSafeDataCollector<SimulateContext>)DataCollector)
                     {
                         SimulationType = SimulationType,
-                        SimulationStepIndex = simIndex,
                         NextSwitchSlotIndex = mOriginNextSwitchSlotIndex,
                         SlotIndexPriority = new List<int>(SlotIndexPriority),
                         TargetTongbaoIds = new HashSet<int>(TargetTongbaoIds),
@@ -130,7 +150,13 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
                         MinimumLifePoint = MinimumLifePoint,
                         TotalSimulationCount = 1,
                     };
-                    localSimulator.SimulateStep(false);
+                    localSimulator.CachePlayerData();
+
+                    for (int simIndex = batchStart; simIndex < batchEnd; simIndex++)
+                    {
+                        localSimulator.SimulationStepIndex = simIndex;
+                        localSimulator.SimulateStep();
+                    }
                 }
             );
 
@@ -138,12 +164,9 @@ namespace TongbaoSwitchCalc.DataModel.Simulation
         }
 
 
-        private void SimulateStep(bool revertPlayerData = true)
+        private void SimulateStep()
         {
-            if (revertPlayerData)
-            {
-                RevertPlayerData();
-            }
+            RevertPlayerData();
             SwitchStepIndex = 0;
             mSlotIndexPriorityIndex = 0;
             if (SlotIndexPriority.Count > 0)
