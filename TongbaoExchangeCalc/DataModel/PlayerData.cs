@@ -101,16 +101,16 @@ namespace TongbaoExchangeCalc.DataModel
                 Init(default);
                 return;
             }
-            SquadType = playerData.SquadType;
-            mSquadDefine = Define.SquadDefines[SquadType];
-            ExchangeCount = playerData.ExchangeCount;
             if (!isIgnoreSetting)
             {
                 // 可选不重置Setting类的数据
+                SquadType = playerData.SquadType;
+                mSquadDefine = Define.SquadDefines[SquadType];
                 SpecialConditionFlag = playerData.SpecialConditionFlag;
                 LockedTongbaoList.Clear();
                 LockedTongbaoList.AddRange(playerData.LockedTongbaoList);
             }
+            ExchangeCount = playerData.ExchangeCount;
             InitResValues(playerData.mResValues);
             ClearTongbao();
             if (TongbaoBox.Length != MaxTongbaoCount)
