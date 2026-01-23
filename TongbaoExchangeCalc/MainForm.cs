@@ -19,6 +19,7 @@ namespace TongbaoExchangeCalc
         private TongbaoSelector mTongbaoSelector;
         private SimulationController mSimulationController;
         private PrintDataCollector mPrintDataCollector;
+        private ExchangeDataCollector mExchangeDataCollector;
         private StatisticDataCollector mStatisticDataCollector;
         private CompositeDataCollector mCompositeDataCollector;
 
@@ -70,9 +71,11 @@ namespace TongbaoExchangeCalc
         private void InitSimulationData()
         {
             mPrintDataCollector = new PrintDataCollector();
+            mExchangeDataCollector = new ExchangeDataCollector();
             mStatisticDataCollector = new StatisticDataCollector();
             mCompositeDataCollector = new CompositeDataCollector();
             mCompositeDataCollector.AddDataCollector(mPrintDataCollector);
+            //mCompositeDataCollector.AddDataCollector(mExchangeDataCollector);
             mCompositeDataCollector.AddDataCollector(mStatisticDataCollector);
 
             mSimulationController = new SimulationController(mPlayerData, mCompositeDataCollector);
@@ -506,6 +509,7 @@ namespace TongbaoExchangeCalc
             }
             mCanRevertPlayerData = true;
             mPrintDataCollector.RecordEachExchange = checkBoxEnableRecord.Checked;
+            mExchangeDataCollector.RecordEachExchange = checkBoxEnableRecord.Checked;
             mTongbaoSelector.TongbaoSelectMode = TongbaoSelectMode.Default;
             if (comboBoxMultiSel.SelectedItem is ComboBoxItem<TongbaoSelectMode> cbItem)
             {

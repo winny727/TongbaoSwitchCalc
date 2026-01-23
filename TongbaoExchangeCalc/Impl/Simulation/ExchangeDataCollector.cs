@@ -12,20 +12,15 @@ namespace TongbaoExchangeCalc.Impl.Simulation
         public int TotalSimulateStep { get; protected set; }
         public int ExecSimulateStep { get; protected set; }
         public float TotalSimulateTime { get; protected set; }
-        public int TotalExchangeStep => mExchangeStepResults.Count;
+        public int TotalExecExchangeStep { get; protected set; }
         public int EstimatedExchangeStep { get; protected set; }
 
-        // TODO capacity
-        protected readonly Dictionary<StepIndexes, TongbaoRecordValue> mTongbaoRecords = new Dictionary<StepIndexes, TongbaoRecordValue>();
-        protected readonly Dictionary<ResRecordKey, ResRecordValue> mResValueRecords = new Dictionary<ResRecordKey, ResRecordValue>();
-        protected readonly Dictionary<StepIndexes, ExchangeStepResult> mExchangeStepResults = new Dictionary<StepIndexes, ExchangeStepResult>();
-        protected readonly Dictionary<int, SimulateStepResult> mSimulateStepResults = new Dictionary<int, SimulateStepResult>();
-
-
-        public IReadOnlyDictionary<StepIndexes, TongbaoRecordValue> TongbaoRecords => mTongbaoRecords;
-        public IReadOnlyDictionary<ResRecordKey, ResRecordValue> ResValueRecords => mResValueRecords;
-        public IReadOnlyDictionary<StepIndexes, ExchangeStepResult> ExchangeStepResults => mExchangeStepResults;
-        public IReadOnlyDictionary<int, SimulateStepResult> SimulateStepResults => mSimulateStepResults;
+        protected int mSimulateStepOffset = 0;
+        protected int mArrayIndex = 0;
+        protected TongbaoRecordValue[][] mTongbaoRecords; // [SimulateStepIndex, ExchangeStepIndex]
+        protected ResRecordValue[][][] mResValueRecords; // [SimulateStepIndex, ExchangeStepIndex, ResType]
+        protected ExchangeStepResult[][] mExchangeStepResults; // [SimulateStepIndex, ExchangeStepIndex]
+        protected SimulateStepResult[] mSimulateStepResults; // [SimulateStepIndex]
 
         public virtual void OnSimulateBegin(SimulationType type, int totalSimStep, in IReadOnlyPlayerData playerData)
         {
@@ -47,12 +42,12 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
         public virtual void OnSimulateStepBegin(in SimulateContext context)
         {
-
+            mArrayIndex = context.SimulationStepIndex - mSimulateStepOffset;
         }
 
         public virtual void OnSimulateStepEnd(in SimulateContext context, SimulateStepResult result)
         {
-            mSimulateStepResults[context.SimulationStepIndex] = result;
+            mSimulateStepResults[mArrayIndex] = result;
         }
 
         public virtual void OnExchangeStepBegin(in SimulateContext context)
@@ -62,31 +57,20 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                 return;
             }
 
-            var indexes = new StepIndexes
-            {
-                SimulateStepIndex = context.SimulationStepIndex,
-                ExchangeStepIndex = context.ExchangeStepIndex,
-            };
-
             Tongbao tongbao = context.PlayerData.GetTongbao(context.SlotIndex);
             int tongbaoId = tongbao != null ? tongbao.Id : -1;
 
-            mTongbaoRecords[indexes] = new TongbaoRecordValue
+            mTongbaoRecords[mArrayIndex][context.ExchangeStepIndex] = new TongbaoRecordValue
             {
-                SlotIndex = context.SlotIndex,
-                BeforeId = tongbaoId,
-                AfterId = tongbaoId,
+                SlotIndex = (byte)context.SlotIndex,
+                BeforeId = (short)tongbaoId,
+                AfterId = (short)tongbaoId,
             };
 
+            mResValueRecords[mArrayIndex][context.ExchangeStepIndex] = new ResRecordValue[(int)ResType.Count];
             foreach (var item in context.PlayerData.ResValues)
             {
-                var key = new ResRecordKey
-                {
-                    Indexes = indexes,
-                    ResType = item.Key,
-                };
-
-                mResValueRecords[key] = new ResRecordValue
+                mResValueRecords[mArrayIndex][context.ExchangeStepIndex][(int)item.Key] = new ResRecordValue
                 {
                     BeforeValue = item.Value,
                     AfterValue = item.Value,
@@ -96,54 +80,22 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
         public virtual void OnExchangeStepEnd(in SimulateContext context, ExchangeStepResult result)
         {
+            TotalExecExchangeStep++;
             if (!RecordEachExchange)
             {
                 return;
             }
 
-            var indexes = new StepIndexes
-            {
-                SimulateStepIndex = context.SimulationStepIndex,
-                ExchangeStepIndex = context.ExchangeStepIndex,
-            };
-
-            mExchangeStepResults[indexes] = result;
+            mExchangeStepResults[mArrayIndex][context.ExchangeStepIndex] = result;
 
             Tongbao tongbao = context.PlayerData.GetTongbao(context.SlotIndex);
             int tongbaoId = tongbao != null ? tongbao.Id : -1;
 
-            int beforeId = -1;
-            if (mTongbaoRecords.TryGetValue(indexes, out var record))
-            {
-                beforeId = record.BeforeId;
-            }
-
-            mTongbaoRecords[indexes] = new TongbaoRecordValue
-            {
-                SlotIndex = context.SlotIndex,
-                BeforeId = beforeId,
-                AfterId = tongbaoId,
-            };
+            mTongbaoRecords[mArrayIndex][context.ExchangeStepIndex].AfterId = (short)tongbaoId;
 
             foreach (var item in context.PlayerData.ResValues)
             {
-                var key = new ResRecordKey
-                {
-                    Indexes = indexes,
-                    ResType = item.Key,
-                };
-
-                int beforeValue = 0;
-                if (mResValueRecords.TryGetValue(key, out var resRecord))
-                {
-                    beforeValue = resRecord.BeforeValue;
-                }
-
-                mResValueRecords[key] = new ResRecordValue
-                {
-                    BeforeValue = beforeValue,
-                    AfterValue = item.Value,
-                };
+                mResValueRecords[mArrayIndex][context.ExchangeStepIndex][(int)item.Key].AfterValue = item.Value;
             }
         }
 
@@ -158,25 +110,65 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             return collector;
         }
 
+        public void SetCollectRange(int offset, int length)
+        {
+            mSimulateStepOffset = offset;
+            if (RecordEachExchange)
+            {
+                if (mTongbaoRecords == null || length != mTongbaoRecords.Length)
+                {
+                    mTongbaoRecords = new TongbaoRecordValue[length][];
+                    for (int i = 0; i < length; i++)
+                    {
+                        mTongbaoRecords[i] = new TongbaoRecordValue[ExchangeSimulator.EXCHANGE_STEP_LIMIT];
+                    }
+                }
+                if (mResValueRecords == null || length != mResValueRecords.Length)
+                {
+                    mResValueRecords = new ResRecordValue[length][][];
+                    for (int i = 0; i < length; i++)
+                    {
+                        mResValueRecords[i] = new ResRecordValue[ExchangeSimulator.EXCHANGE_STEP_LIMIT][];
+                        for (int j = 0; j < ExchangeSimulator.EXCHANGE_STEP_LIMIT; j++)
+                        {
+                            mResValueRecords[i][j] = new ResRecordValue[(int)ResType.Count];
+                        }
+                    }
+                }
+                if (mExchangeStepResults == null || length != mExchangeStepResults.Length)
+                {
+                    mExchangeStepResults = new ExchangeStepResult[length][];
+                    for (int i = 0; i < length; i++)
+                    {
+                        mExchangeStepResults[i] = new ExchangeStepResult[ExchangeSimulator.EXCHANGE_STEP_LIMIT];
+                    }
+                }
+            }
+            if (mSimulateStepResults == null || length != mSimulateStepResults.Length)
+            {
+                mSimulateStepResults = new SimulateStepResult[length];
+            }
+        }
+
         public virtual void MergeData(IDataCollector<SimulateContext> other)
         {
             if (other is ExchangeDataCollector collector)
             {
-                foreach (var item in collector.mTongbaoRecords)
+                TotalExecExchangeStep += collector.TotalExecExchangeStep;
+                MergeArray(ref mTongbaoRecords, ref collector.mTongbaoRecords, collector.mSimulateStepOffset);
+                MergeArray(ref mResValueRecords, ref collector.mResValueRecords, collector.mSimulateStepOffset);
+                MergeArray(ref mExchangeStepResults, ref collector.mExchangeStepResults, collector.mSimulateStepOffset);
+                MergeArray(ref mSimulateStepResults, ref collector.mSimulateStepResults, collector.mSimulateStepOffset);
+            }
+        }
+
+        private void MergeArray<T>(ref T[] array, ref T[] other, int offset)
+        {
+            if (other != null)
+            {
+                for (int i = 0; i < other.Length; i++)
                 {
-                    mTongbaoRecords.Add(item.Key, item.Value);
-                }
-                foreach (var item in collector.mResValueRecords)
-                {
-                    mResValueRecords.Add(item.Key, item.Value);
-                }
-                foreach (var item in collector.mExchangeStepResults)
-                {
-                    mExchangeStepResults.Add(item.Key, item.Value);
-                }
-                foreach (var item in collector.mSimulateStepResults)
-                {
-                    mSimulateStepResults.Add(item.Key, item.Value);
+                    array[i + offset] = other[i];
                 }
             }
         }
@@ -186,11 +178,48 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             TotalSimulateStep = 0;
             ExecSimulateStep = 0;
             TotalSimulateTime = 0;
+            TotalExecExchangeStep = 0;
             EstimatedExchangeStep = 0;
-            mTongbaoRecords.Clear();
-            mResValueRecords.Clear();
-            mSimulateStepResults.Clear();
-            mExchangeStepResults.Clear();
+            if (mTongbaoRecords != null)
+            {
+                for (int i = 0; i < mTongbaoRecords.Length; i++)
+                {
+                    for (int j = 0; j < mTongbaoRecords[i].Length; j++)
+                    {
+                        mTongbaoRecords[i][j] = default;
+                    }
+                }
+            }
+            if (mResValueRecords != null)
+            {
+                for (int i = 0; i < mResValueRecords.Length; i++)
+                {
+                    for (int j = 0; j < mResValueRecords[i].Length; j++)
+                    {
+                        for (int k = 0; k < mResValueRecords[i][j].Length; k++)
+                        {
+                            mResValueRecords[i][j][k] = default;
+                        }
+                    }
+                }
+            }
+            if (mExchangeStepResults != null)
+            {
+                for (int i = 0; i < mExchangeStepResults.Length; i++)
+                {
+                    for (int j = 0; j < mExchangeStepResults[i].Length; j++)
+                    {
+                        mExchangeStepResults[i][j] = default;
+                    }
+                }
+            }
+            if (mSimulateStepResults != null)
+            {
+                for (int i = 0; i < mSimulateStepResults.Length; i++)
+                {
+                    mSimulateStepResults[i] = default;
+                }
+            }
         }
     }
 }

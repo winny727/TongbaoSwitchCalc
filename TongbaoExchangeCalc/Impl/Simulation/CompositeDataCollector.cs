@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using TongbaoExchangeCalc.DataModel;
 using TongbaoExchangeCalc.DataModel.Simulation;
 
@@ -109,6 +108,14 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             return collector;
         }
 
+        public void SetCollectRange(int offset, int length)
+        {
+            foreach (var collector in mDataCollectors)
+            {
+                collector.SetCollectRange(offset, length);
+            }
+        }
+
         public void MergeData(IDataCollector<SimulateContext> other)
         {
             if (other is CompositeDataCollector collector)
@@ -117,10 +124,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                 {
                     foreach (var item in mDataCollectors)
                     {
-                        if (item.GetType() == otherItem.GetType())
-                        {
-                            item.MergeData(otherItem);
-                        }
+                        item.MergeData(otherItem);
                     }
                 }
             }

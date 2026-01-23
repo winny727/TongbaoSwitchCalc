@@ -84,6 +84,7 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
             using (CodeTimer ct = CodeTimer.StartNew("Simulate"))
             {
                 mIsSimulating = true;
+                DataCollector?.SetCollectRange(0, TotalSimulationCount);
                 DataCollector?.OnSimulateBegin(SimulationType, TotalSimulationCount, PlayerData);
                 while (SimulationStepIndex < TotalSimulationCount)
                 {
@@ -170,8 +171,12 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
 
                     ITongbaoSelector clonedTongbaoSelector = (ITongbaoSelector)PlayerData.TongbaoSelector.Clone();
                     IRandomGenerator clonedRandom = (IRandomGenerator)PlayerData.Random.Clone();
-                    IDataCollector<SimulateContext> clonedDataCollector = DataCollector.CloneAsEmpty();
-                    dataCollectors.Enqueue(clonedDataCollector);
+                    IDataCollector<SimulateContext> clonedDataCollector = DataCollector?.CloneAsEmpty();
+                    clonedDataCollector?.SetCollectRange(batchStart, batchEnd - batchStart);
+                    if (clonedDataCollector != null)
+                    {
+                        dataCollectors.Enqueue(clonedDataCollector);
+                    }
 
                     PlayerData localPlayerData = new PlayerData(clonedTongbaoSelector, clonedRandom);
                     localPlayerData.CopyFrom(mRevertPlayerData);
@@ -209,6 +214,7 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
             foreach (var item in dataCollectors)
             {
                 DataCollector.MergeData(item);
+                item.ClearData();
             }
         }
 
@@ -261,9 +267,6 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
             已经持有所有期望通宝或在最后一个槽位需要切换到下一个槽位时，停止交换
             优先交换通宝和不交换通宝冲突时，按不交换算
             */
-
-            //TODO 多线程优化
-            //ObjectPool
 
             if (token.IsCancellationRequested)
             {

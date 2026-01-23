@@ -351,7 +351,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             return sb;
         }
 
-        public virtual IDataCollector<SimulateContext> CloneAsEmpty()
+        public IDataCollector<SimulateContext> CloneAsEmpty()
         {
             var collector = new PrintDataCollector
             {
@@ -363,7 +363,12 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             return collector;
         }
 
-        public virtual void MergeData(IDataCollector<SimulateContext> other)
+        public void SetCollectRange(int offset, int length)
+        {
+
+        }
+
+        public void MergeData(IDataCollector<SimulateContext> other)
         {
             if (other is PrintDataCollector collector)
             {

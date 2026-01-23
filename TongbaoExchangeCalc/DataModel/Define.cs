@@ -84,7 +84,7 @@ namespace TongbaoExchangeCalc.DataModel
         }
     }
 
-    public enum TongbaoType
+    public enum TongbaoType : byte
     {
         Unknown = 0,
         Balance = 1, //衡钱
@@ -92,7 +92,7 @@ namespace TongbaoExchangeCalc.DataModel
         Risk = 3, //厉钱
     }
 
-    public enum ResType
+    public enum ResType : byte
     {
         None = 0,
         LifePoint = 1, //生命值
@@ -102,6 +102,8 @@ namespace TongbaoExchangeCalc.DataModel
         PrimalFarmingCandles = 5, //鸿蒙开荒烛火
         Hope = 6, //希望
         Shield = 7, //护盾
+
+        Count,
 
         /*
         HP 目标生命
@@ -116,7 +118,7 @@ namespace TongbaoExchangeCalc.DataModel
          */
     }
 
-    public enum SquadType
+    public enum SquadType : byte
     {
         Flower = 0, //花团锦簇分队
         Tourist = 1, //游客分队
@@ -124,7 +126,7 @@ namespace TongbaoExchangeCalc.DataModel
     }
 
     [Flags]
-    public enum SpecialConditionFlag
+    public enum SpecialConditionFlag : byte
     {
         None = 0,
         Collectible_Fortune = 1 << 0, //福祸相依
