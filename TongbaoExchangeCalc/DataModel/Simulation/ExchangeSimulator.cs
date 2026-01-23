@@ -113,14 +113,7 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
 
                 if (mUseParallel && SimulationStepIndex < TotalSimulationCount)
                 {
-                    try
-                    {
-                        SimulateParallel(SimulationStepIndex, token, progress);
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        //Log("OperationCanceledException");
-                    }
+                    SimulateParallel(SimulationStepIndex, token, progress);
                 }
 
                 mIsSimulating = false;
@@ -141,72 +134,78 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
 
             // 每个 worker 负责的模拟数量（向上取整）
             int batchSize = (remain + workerCount - 1) / workerCount;
-
             var dataCollectors = new IDataCollector<SimulateContext>[workerCount];
 
-            Parallel.For(
-                0,
-                workerCount,
-                new ParallelOptions
-                {
-                    MaxDegreeOfParallelism = workerCount,
-                    CancellationToken = token,
-                },
-                workerIndex =>
-                {
-                    if (token.IsCancellationRequested)
+            try
+            {
+                Parallel.For(
+                    0,
+                    workerCount,
+                    new ParallelOptions
                     {
-                        return;
-                    }
-
-                    int batchStart = startIndex + workerIndex * batchSize;
-                    int batchEnd = Math.Min(batchStart + batchSize, startIndex + remain);
-
-                    if (batchStart >= batchEnd)
-                    {
-                        return;
-                    }
-
-                    //Log($"{batchStart}->{batchEnd}");
-
-                    ITongbaoSelector clonedTongbaoSelector = (ITongbaoSelector)PlayerData.TongbaoSelector.Clone();
-                    IRandomGenerator clonedRandom = (IRandomGenerator)PlayerData.Random.Clone();
-                    IDataCollector<SimulateContext> clonedDataCollector = DataCollector?.CloneAsEmpty();
-                    clonedDataCollector?.SetCollectRange(batchStart, batchEnd - batchStart);
-                    dataCollectors[workerIndex] = clonedDataCollector;
-
-                    PlayerData localPlayerData = new PlayerData(clonedTongbaoSelector, clonedRandom);
-                    localPlayerData.CopyFrom(mRevertPlayerData);
-
-                    var localSimulator = new ExchangeSimulator(localPlayerData, clonedDataCollector)
-                    {
-                        SimulationType = SimulationType,
-                        ExchangeSlotIndex = ExchangeSlotIndex,
-                        ExchangeableSlots = new List<int>(ExchangeableSlots),
-                        UnexchangeableTongbaoIds = new HashSet<int>(UnexchangeableTongbaoIds),
-                        ExpectedTongbaoIds = new HashSet<int>(ExpectedTongbaoIds),
-                        PriorityTongbaoIds = new HashSet<int>(PriorityTongbaoIds),
-                        MinimumLifePoint = MinimumLifePoint,
-                        TotalSimulationCount = 1,
-                    };
-                    localSimulator.CachePlayerData();
-
-                    localSimulator.mIsSimulating = true;
-                    for (int simIndex = batchStart; simIndex < batchEnd; simIndex++)
+                        MaxDegreeOfParallelism = workerCount,
+                        CancellationToken = token,
+                    },
+                    workerIndex =>
                     {
                         if (token.IsCancellationRequested)
                         {
                             return;
                         }
 
-                        localSimulator.mSimulationStepIndex = simIndex; //仅用于Context标识，不代表全局进度
-                        localSimulator.SimulateStep(token);
-                        Interlocked.Increment(ref mSimulationStepIndex); //总的Step+1
-                        progress?.Report(mSimulationStepIndex);
+                        int batchStart = startIndex + workerIndex * batchSize;
+                        int batchEnd = Math.Min(batchStart + batchSize, startIndex + remain);
+
+                        if (batchStart >= batchEnd)
+                        {
+                            return;
+                        }
+
+                        //Log($"{batchStart}->{batchEnd}");
+
+                        ITongbaoSelector clonedTongbaoSelector = (ITongbaoSelector)PlayerData.TongbaoSelector.Clone();
+                        IRandomGenerator clonedRandom = (IRandomGenerator)PlayerData.Random.Clone();
+                        IDataCollector<SimulateContext> clonedDataCollector = DataCollector?.CloneAsEmpty();
+                        clonedDataCollector?.SetCollectRange(batchStart, batchEnd - batchStart);
+                        dataCollectors[workerIndex] = clonedDataCollector;
+
+                        PlayerData localPlayerData = new PlayerData(clonedTongbaoSelector, clonedRandom);
+                        localPlayerData.CopyFrom(mRevertPlayerData);
+
+                        var localSimulator = new ExchangeSimulator(localPlayerData, clonedDataCollector)
+                        {
+                            SimulationType = SimulationType,
+                            ExchangeSlotIndex = ExchangeSlotIndex,
+                            ExchangeableSlots = new List<int>(ExchangeableSlots),
+                            UnexchangeableTongbaoIds = new HashSet<int>(UnexchangeableTongbaoIds),
+                            ExpectedTongbaoIds = new HashSet<int>(ExpectedTongbaoIds),
+                            PriorityTongbaoIds = new HashSet<int>(PriorityTongbaoIds),
+                            MinimumLifePoint = MinimumLifePoint,
+                            TotalSimulationCount = 1,
+                        };
+                        localSimulator.CachePlayerData();
+
+                        localSimulator.mIsSimulating = true;
+                        for (int simIndex = batchStart; simIndex < batchEnd; simIndex++)
+                        {
+                            if (token.IsCancellationRequested)
+                            {
+                                return;
+                            }
+
+                            localSimulator.mSimulationStepIndex = simIndex; //仅用于Context标识，不代表全局进度
+                            localSimulator.SimulateStep(token);
+                            Interlocked.Increment(ref mSimulationStepIndex); //总的Step+1
+                            progress?.Report(mSimulationStepIndex);
+                        }
+                        localSimulator.mIsSimulating = false;
                     }
-                    localSimulator.mIsSimulating = false;
-                }
-            );
+                );
+            }
+            catch (OperationCanceledException)
+            {
+                //Log("OperationCanceledException");
+            }
 
             for (int i = 0; i < dataCollectors.Length; i++)
             {

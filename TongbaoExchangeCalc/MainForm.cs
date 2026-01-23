@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using TongbaoExchangeCalc.DataModel;
 using TongbaoExchangeCalc.DataModel.Simulation;
@@ -29,7 +30,6 @@ namespace TongbaoExchangeCalc
         private readonly List<Control> mSimulatingDisableControls = new List<Control>();
         private IconGridControl mIconGrid;
         private RuleTreeViewController RuleTreeViewController;
-        private string mOutputResult;
         private bool mOutputResultChanged = false;
         private RecordForm mRecordForm;
         private readonly StringBuilder mTempStringBuilder = new StringBuilder();
@@ -374,12 +374,6 @@ namespace TongbaoExchangeCalc
 
             lblCurrent.Text = sb.ToString();
             sb.Clear();
-
-            if (mRecordForm.Visible && mOutputResultChanged)
-            {
-                mRecordForm.Content = mOutputResult ?? string.Empty;
-                mOutputResultChanged = false;
-            }
         }
 
         private void UpdateLockedListView()
@@ -494,14 +488,13 @@ namespace TongbaoExchangeCalc
               .Append(") ")
               .AppendLine(mPrintDataCollector.LastExchangeResult);
 
-            mOutputResult += sb.ToString();
-            mOutputResultChanged = true;
+            mRecordForm.AppendText(sb.ToString());
 
             UpdateTongbaoView(slotIndex);
             UpdateView();
         }
 
-        private async void ExchangeSimulate(SimulationType type)
+        private async Task ExchangeSimulate(SimulationType type)
         {
             if (checkBoxAutoRevert.Checked)
             {
@@ -542,25 +535,34 @@ namespace TongbaoExchangeCalc
             toolStripProgressBar1.Minimum = 0;
             toolStripProgressBar1.Maximum = total;
             toolStripProgressBar1.Value = 0;
-            int lastPermille = -1; // 0.1% = 1‰
-            Progress<int> progress = new Progress<int>((value) =>
+
+            int lastUpdateTick = 0;
+            Progress<int> progress = new Progress<int>(value =>
             {
-                int permille = value * 1000 / total; // 千分比
-                if (permille == lastPermille)
+                int now = Environment.TickCount;
+                if (lastUpdateTick != 0 && now - lastUpdateTick < 50 && value != total)
                 {
                     return;
                 }
 
-                lastPermille = permille;
-
-                float percent = permille / 10f;
+                lastUpdateTick = now;
+                float percent = value * 100f / total;
                 toolStripProgressBar1.Value = value;
                 toolStripStatusLabel1.Text = $"正在进行[{simulationName}]模拟: {value}/{total} ({percent:F1}%)";
             });
+
             await mSimulationController.SimulateAsync(options, progress);
 
-            mOutputResult = mPrintDataCollector.OutputResult;
-            mOutputResultChanged = true;
+            if (mRecordForm.Visible)
+            {
+                mRecordForm.SetStringBuilderText(mPrintDataCollector.OutputResultSB);
+                mOutputResultChanged = false;
+            }
+            else
+            {
+                mOutputResultChanged = true;
+            }
+
             UpdateAllTongbaoView();
             UpdateView();
             UpdateAsyncSimulateView(false);
@@ -594,7 +596,6 @@ namespace TongbaoExchangeCalc
         private void ClearRecord()
         {
             mPrintDataCollector.ClearData();
-            mOutputResult = string.Empty;
             mRecordForm.ClearText();
             mOutputResultChanged = false;
             GC.Collect();
@@ -713,7 +714,7 @@ namespace TongbaoExchangeCalc
             {
                 simType = item.Value;
             }
-            ExchangeSimulate(simType);
+            _ = ExchangeSimulate(simType);
         }
 
         private void btnReset_Click(object sender, EventArgs e)
@@ -748,7 +749,7 @@ namespace TongbaoExchangeCalc
             mRecordForm.Focus();
             if (mOutputResultChanged)
             {
-                mRecordForm.Content = mOutputResult ?? string.Empty;
+                mRecordForm.SetStringBuilderText(mPrintDataCollector.OutputResultSB);
                 mOutputResultChanged = false;
             }
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -7,30 +8,6 @@ namespace TongbaoExchangeCalc
 {
     public partial class RecordForm : Form
     {
-        //public string Title
-        //{
-        //    get
-        //    {
-        //        return this.Text;
-        //    }
-        //    set
-        //    {
-        //        this.Text = value;
-        //    }
-        //}
-
-        public string Content
-        {
-            get
-            {
-                return textBox1.Text;
-            }
-            set
-            {
-                SetText(value);
-            }
-        }
-
         private Action mOnClearClick;
 
         public RecordForm(MainForm mainForm)
@@ -58,14 +35,17 @@ namespace TongbaoExchangeCalc
             _ = SetTextAsync(text);
         }
 
+        public void SetStringBuilderText(StringBuilder sb)
+        {
+            _ = SetStringBuilderTextAsync(sb);
+        }
 
         public void AppendText(string text)
         {
             textBox1.AppendText(text ?? string.Empty);
-            UpdateScroll();
         }
 
-        public async Task SetTextAsync(string text, int chunkSize = 5_000_000)
+        public async Task SetTextAsync(string text, int chunkSize = 10_000_000)
         {
             text ??= string.Empty;
 
@@ -99,6 +79,47 @@ namespace TongbaoExchangeCalc
                 }
             });
         }
+
+        public async Task SetStringBuilderTextAsync(StringBuilder sb, int chunkSize = 10_000_000)
+        {
+            if (InvokeRequired)
+            {
+                await InvokeAsync(() => textBox1.Clear());
+            }
+            else
+            {
+                textBox1.Clear();
+            }
+
+            if (sb == null || sb.Length == 0)
+            {
+                return;
+            }
+
+            await Task.Run(async () =>
+            {
+                int length = sb.Length;
+                int offset = 0;
+
+                char[] buffer = new char[Math.Min(chunkSize, length)];
+
+                while (offset < length)
+                {
+                    int size = Math.Min(buffer.Length, length - offset);
+
+                    sb.CopyTo(offset, buffer, 0, size);
+                    offset += size;
+
+                    string chunk = new string(buffer, 0, size);
+
+                    await InvokeAsync(() =>
+                    {
+                        textBox1.AppendText(chunk);
+                    });
+                }
+            });
+        }
+
 
         public void SetClearCallback(Action callback)
         {
