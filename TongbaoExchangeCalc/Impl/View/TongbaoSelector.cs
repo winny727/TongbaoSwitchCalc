@@ -47,9 +47,9 @@ namespace TongbaoExchangeCalc.Impl.View
             }
             else if (TongbaoSelectMode == TongbaoSelectMode.Specific)
             {
-                foreach (var tongbaoId in tongbaoIds)
+                for (int i = 0; i < tongbaoIds.Count; i++)
                 {
-                    if (tongbaoId == SpecificTongbaoId)
+                    if (tongbaoIds[i] == SpecificTongbaoId)
                     {
                         return SpecificTongbaoId;
                     }

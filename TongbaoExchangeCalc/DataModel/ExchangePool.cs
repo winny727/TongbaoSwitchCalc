@@ -58,8 +58,9 @@ namespace TongbaoExchangeCalc.DataModel
                 return; // 不可交换
             }
 
-            foreach (var tongbaoId in mExchangeOutPools[poolId])
+            for (int i = 0; i < mExchangeOutPools[poolId].Count; i++)
             {
+                int tongbaoId = mExchangeOutPools[poolId][i];
                 TongbaoConfig config = TongbaoConfig.GetTongbaoConfigById(tongbaoId);
                 if (config == null)
                 {
@@ -76,8 +77,9 @@ namespace TongbaoExchangeCalc.DataModel
                 if (config.IsUpgrade)
                 {
                     bool isExistUpgrade = false;
-                    foreach (var upgradeTongbaoId in mExchangeOutPools[config.ExchangeInPool])
+                    for (int j = 0; j < mExchangeOutPools[config.ExchangeInPool].Count; j++)
                     {
+                        int upgradeTongbaoId = mExchangeOutPools[config.ExchangeInPool][j];
                         if (playerData.IsTongbaoExist(upgradeTongbaoId))
                         {
                             isExistUpgrade = true;

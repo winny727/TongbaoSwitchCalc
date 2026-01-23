@@ -27,9 +27,9 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
         public TCollector GetDataCollector<TCollector>() where TCollector : class, IDataCollector<SimulateContext>
         {
-            foreach (var dataCollector in mDataCollectors)
+            for (int i = 0; i < mDataCollectors.Count; i++)
             {
-                if (dataCollector is TCollector collector)
+                if (mDataCollectors[i] is TCollector collector)
                 {
                     return collector;
                 }
@@ -44,75 +44,75 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
         public void OnSimulateBegin(SimulationType type, int totalSimStep, in IReadOnlyPlayerData playerData)
         {
-            foreach (var collector in mDataCollectors)
+            for (int i = 0; i < mDataCollectors.Count; i++)
             {
-                collector.OnSimulateBegin(type, totalSimStep, in playerData);
+                mDataCollectors[i].OnSimulateBegin(type, totalSimStep, in playerData);
             }
         }
 
         public void OnSimulateEnd(int executedSimStep, float simCostTimeMS, in IReadOnlyPlayerData playerData)
         {
-            foreach (var collector in mDataCollectors)
+            for (int i = 0; i < mDataCollectors.Count; i++)
             {
-                collector.OnSimulateEnd(executedSimStep, simCostTimeMS, in playerData);
+                mDataCollectors[i].OnSimulateEnd(executedSimStep, simCostTimeMS, in playerData);
             }
         }
 
         public void OnSimulateParallel(int estimatedLeftExchangeStep, int remainSimStep)
         {
-            foreach (var collector in mDataCollectors)
+            for (int i = 0; i < mDataCollectors.Count; i++)
             {
-                collector.OnSimulateParallel(estimatedLeftExchangeStep, remainSimStep);
+                mDataCollectors[i].OnSimulateParallel(estimatedLeftExchangeStep, remainSimStep);
             }
         }
 
         public void OnSimulateStepBegin(in SimulateContext context)
         {
-            foreach (var collector in mDataCollectors)
+            for (int i = 0; i < mDataCollectors.Count; i++)
             {
-                collector.OnSimulateStepBegin(in context);
+                mDataCollectors[i].OnSimulateStepBegin(in context);
             }
         }
 
         public void OnSimulateStepEnd(in SimulateContext context, SimulateStepResult result)
         {
-            foreach (var collector in mDataCollectors)
+            for (int i = 0; i < mDataCollectors.Count; i++)
             {
-                collector.OnSimulateStepEnd(in context, result);
+                mDataCollectors[i].OnSimulateStepEnd(in context, result);
             }
         }
 
         public void OnExchangeStepBegin(in SimulateContext context)
         {
-            foreach (var collector in mDataCollectors)
+            for (int i = 0; i < mDataCollectors.Count; i++)
             {
-                collector.OnExchangeStepBegin(in context);
+                mDataCollectors[i].OnExchangeStepBegin(in context);
             }
         }
 
         public void OnExchangeStepEnd(in SimulateContext context, ExchangeStepResult result)
         {
-            foreach (var collector in mDataCollectors)
+            for (int i = 0; i < mDataCollectors.Count; i++)
             {
-                collector.OnExchangeStepEnd(in context, result);
+                mDataCollectors[i].OnExchangeStepEnd(in context, result);
             }
         }
 
         public IDataCollector<SimulateContext> CloneAsEmpty()
         {
             var collector = new CompositeDataCollector();
-            foreach (var item in mDataCollectors)
+            foreach (var collectors in mDataCollectors)
             {
-                collector.mDataCollectors.Add(item.CloneAsEmpty());
+                collector.mDataCollectors.Add(collectors.CloneAsEmpty());
             }
             return collector;
         }
 
         public void SetCollectRange(int offset, int length)
         {
-            foreach (var collector in mDataCollectors)
+            for (int i = 0; i < mDataCollectors.Count; i++)
             {
-                collector.SetCollectRange(offset, length);
+                mDataCollectors[i].SetCollectRange(offset, length);
             }
         }
 
@@ -120,11 +120,12 @@ namespace TongbaoExchangeCalc.Impl.Simulation
         {
             if (other is CompositeDataCollector collector)
             {
-                foreach (var otherItem in collector.mDataCollectors)
+                for (int i = 0; i < collector.mDataCollectors.Count; i++)
                 {
-                    foreach (var item in mDataCollectors)
+                    var otherItem = collector.mDataCollectors[i];
+                    for (int j = 0; j < mDataCollectors.Count; j++)
                     {
-                        item.MergeData(otherItem);
+                        mDataCollectors[j].MergeData(otherItem);
                     }
                 }
             }
@@ -132,9 +133,9 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
         public void ClearData()
         {
-            foreach (var collector in mDataCollectors)
+            for (int i = 0; i < mDataCollectors.Count; i++)
             {
-                collector.ClearData();
+                mDataCollectors[i].ClearData();
             }
         }
     }

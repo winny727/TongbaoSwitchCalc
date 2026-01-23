@@ -115,12 +115,13 @@ namespace TongbaoExchangeCalc.DataModel
             float randomValue = (float)random.NextDouble();
             float cumulativeProbability = 0f;
             RandomResDefine randomRes = null;
-            foreach (var item in Define.RandomResDefines)
+            for (int i = 0; i < Define.RandomResDefines.Count; i++)
             {
-                cumulativeProbability += item.Probability;
+                var define = Define.RandomResDefines[i];
+                cumulativeProbability += define.Probability;
                 if (cumulativeProbability > randomValue)
                 {
-                    randomRes = item;
+                    randomRes = define;
                     break;
                 }
             }
