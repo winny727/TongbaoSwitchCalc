@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public interface IPoolItem
+public interface IPoolItem<T>
 {
-    void OnAllocate();
-    void OnRecycle();
+    void OnAllocate(ObjectPool<T> ownerPool);
+    void OnRecycle(ObjectPool<T> ownerPool);
 }
 
 /// <summary>
@@ -85,9 +85,9 @@ public class ObjectPool<T>
         {
             item = mCacheStack.Pop();
         }
-        if (item is IPoolItem poolItem)
+        if (item is IPoolItem<T> poolItem)
         {
-            poolItem.OnAllocate();
+            poolItem.OnAllocate(this);
         }
         return item;
     }
@@ -110,9 +110,9 @@ public class ObjectPool<T>
         {
             if (IsValueType || (notCheckContains || !Contains(item)))
             {
-                if (item is IPoolItem poolItem)
+                if (item is IPoolItem<T> poolItem)
                 {
-                    poolItem.OnRecycle();
+                    poolItem.OnRecycle(this);
                 }
                 mCacheStack.Push(item);
             }

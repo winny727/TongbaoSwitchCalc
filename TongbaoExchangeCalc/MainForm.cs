@@ -25,6 +25,7 @@ namespace TongbaoExchangeCalc
         private int mSelectedTongbaoSlotIndex = -1;
         private bool mCanRevertPlayerData = false;
 
+        private readonly List<Control> mSimulatingDisableControls = new List<Control>();
         private IconGridControl mIconGrid;
         private RuleTreeViewController RuleTreeViewController;
         private string mOutputResult;
@@ -150,6 +151,14 @@ namespace TongbaoExchangeCalc
 
         private void InitView()
         {
+            mSimulatingDisableControls.AddRange(new Control[]
+            {
+                groupBox1, groupBox2, groupBox3, groupBox5,
+                listViewTongbao, btnRandom, btnRandomEmpty, btnClear,
+                checkBoxOptimize, checkBoxAutoRevert, checkBoxEnableRecord,
+                btnExchange, btnReset,
+            });
+
             mIconGrid = new IconGridControl();
             RuleTreeViewController = new RuleTreeViewController(treeViewRule, mPlayerData);
             mRecordForm = new RecordForm(this);
@@ -399,18 +408,10 @@ namespace TongbaoExchangeCalc
         private void UpdateAsyncSimulateView(bool asyncSimulating)
         {
             bool enabled = !asyncSimulating;
-            groupBox1.Enabled = enabled;
-            groupBox2.Enabled = enabled;
-            groupBox3.Enabled = enabled;
-            groupBox5.Enabled = enabled;
-            listViewTongbao.Enabled = enabled;
-            btnRandom.Enabled = enabled;
-            btnClear.Enabled = enabled;
-            checkBoxOptimize.Enabled = enabled;
-            checkBoxAutoRevert.Enabled = enabled;
-            checkBoxEnableRecord.Enabled = enabled;
-            btnExchange.Enabled = enabled;
-            btnReset.Enabled = enabled;
+            foreach (var item in mSimulatingDisableControls)
+            {
+                item.Enabled = enabled;
+            }
             btnSimulation.Text = asyncSimulating ? "停止模拟" : "开始模拟";
         }
 
@@ -583,6 +584,7 @@ namespace TongbaoExchangeCalc
             UpdateAllTongbaoView();
             UpdateView();
             UpdateAsyncSimulateView(false);
+            GC.Collect();
 
             MessageBox.Show(mStatisticDataCollector.GetOutputResult(), "模拟期望", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -613,7 +615,7 @@ namespace TongbaoExchangeCalc
         {
             mPrintDataCollector.ClearData();
             mOutputResult = string.Empty;
-            mRecordForm.Content = string.Empty;
+            mRecordForm.ClearText();
             mOutputResultChanged = false;
             GC.Collect();
         }

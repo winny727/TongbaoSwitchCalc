@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public abstract class RefPoolItem : IPoolItem
+public abstract class RefPoolItem : IPoolItem<RefPoolItem>
 {
     public int RefCount { get; private set; }
-    private bool mIsInPool;
-
-    public event Action OnRefCountZero;
+    public ObjectPool<RefPoolItem> OwnerPool { get; private set; }
+    public bool IsInPool { get; private set; }
 
     public void Ref()
     {
@@ -30,21 +29,22 @@ public abstract class RefPoolItem : IPoolItem
 
     private void TryRecycle()
     {
-        if (mIsInPool)
+        if (IsInPool)
         {
             return;
         }
 
-        OnRefCountZero?.Invoke();
+        OwnerPool?.Recycle(this);
     }
 
-    public void OnAllocate()
+    public void OnAllocate(ObjectPool<RefPoolItem> ownerPool)
     {
         RefCount = 1;
-        mIsInPool = false;
+        IsInPool = false;
+        OwnerPool = ownerPool;
     }
 
-    public void OnRecycle()
+    public void OnRecycle(ObjectPool<RefPoolItem> ownerPool)
     {
         if (RefCount > 0)
         {
@@ -52,6 +52,7 @@ public abstract class RefPoolItem : IPoolItem
         }
 
         RefCount = 0;
-        mIsInPool = true;
+        IsInPool = true;
+        OwnerPool = null;
     }
 }

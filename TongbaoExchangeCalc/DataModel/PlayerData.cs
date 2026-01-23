@@ -143,6 +143,7 @@ namespace TongbaoExchangeCalc.DataModel
             return true;
         }
 
+        // 外部禁止持有，会回收
         public Tongbao GetTongbao(int slotIndex)
         {
             if (TongbaoBox == null)
@@ -217,19 +218,6 @@ namespace TongbaoExchangeCalc.DataModel
                 }
             }
         }
-
-        //internal void ForceSetTongbao(Tongbao tongbao, int slotIndex)
-        //{
-        //    if (TongbaoBox == null)
-        //    {
-        //        return;
-        //    }
-        //    if (slotIndex >= 0 && slotIndex < TongbaoBox.Length)
-        //    {
-        //        TongbaoBox[slotIndex]?.Recycle();
-        //        TongbaoBox[slotIndex] = tongbao;
-        //    }
-        //}
 
         public void RemoveTongbaoAt(int slotIndex)
         {

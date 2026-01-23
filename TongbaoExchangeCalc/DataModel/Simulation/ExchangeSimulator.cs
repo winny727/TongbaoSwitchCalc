@@ -321,32 +321,15 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
                 {
                     if (mExchangeableSlotsPosIndex >= ExchangeableSlots.Count)
                     {
-                        bool hasPriorityTongbao = false;
-
-                        // 如果循环结束还有优先通宝，切回到优先通宝阶段
-                        for (int i = 0; i < ExchangeableSlots.Count; i++)
+                        if (!mPriorityPhaseFinished)
                         {
-                            if (PriorityTongbaoIds.Contains(ExchangeableSlots[i]))
-                            {
-                                mExchangeableSlotsPosIndex = i;
-                                mPriorityPhaseFinished = false;
-                                hasPriorityTongbao = true;
-                                break;
-                            }
+                            mExchangeableSlotsPosIndex = 0;
+                            mPriorityPhaseFinished = true;
                         }
-
-                        if (!hasPriorityTongbao)
+                        else
                         {
-                            if (!mPriorityPhaseFinished)
-                            {
-                                mExchangeableSlotsPosIndex = 0;
-                                mPriorityPhaseFinished = true;
-                            }
-                            else
-                            {
-                                BreakSimulationStep(SimulateStepResult.TargetFilledExchangeableSlots);
-                                return;
-                            }
+                            BreakSimulationStep(SimulateStepResult.TargetFilledExchangeableSlots);
+                            return;
                         }
                     }
 
