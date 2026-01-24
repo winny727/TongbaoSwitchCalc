@@ -76,7 +76,7 @@ namespace TongbaoExchangeCalc
             mStatisticDataCollector = new StatisticDataCollector();
             mCompositeDataCollector = new CompositeDataCollector();
             mCompositeDataCollector.AddDataCollector(mPrintDataCollector); // 简单文本输出
-            //mCompositeDataCollector.AddDataCollector(mExchangeDataCollector); // 详细数据收集 
+            //mCompositeDataCollector.AddDataCollector(mExchangeDataCollector); // 详细数据收集
             mCompositeDataCollector.AddDataCollector(mStatisticDataCollector);
 
             mSimulationController = new SimulationController(mPlayerData, mCompositeDataCollector);

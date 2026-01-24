@@ -85,7 +85,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                         var record = resRecords[k];
                         callback(i, j, new ResValueRecord
                         {
-                            ResType = (ResType)k,
+                            ResType = (ResType)(k + 1),
                             BeforeValue = record.BeforeValue,
                             AfterValue = record.AfterValue,
                         });
@@ -139,6 +139,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             SimulationType = type;
             TotalSimulateStep = totalSimStep;
 
+            // TODO 模拟次数过多时，会创建过大的数组，是否动态扩容？
             // 若省略X条后的多余信息，会将X~LIMIT的资源变化信息存在X+1位置里
             int length = MaxExchangeRecord >= 0 ? MaxExchangeRecord + 1 : ExchangeSimulator.EXCHANGE_STEP_LIMIT;
             if (RecordEachExchange)
@@ -159,7 +160,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                         mResValueRecords[i] = new ResRecordValue[length][];
                         for (int j = 0; j < length; j++)
                         {
-                            mResValueRecords[i][j] = new ResRecordValue[(int)ResType.Count];
+                            mResValueRecords[i][j] = new ResRecordValue[(int)ResType.Count - 1]; // 排除0:None
                         }
                     }
                 }
@@ -202,7 +203,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             {
                 foreach (var item in context.PlayerData.ResValues)
                 {
-                    mResValueRecords[context.SimulationStepIndex][MaxExchangeRecord][(int)item.Key].AfterValue = item.Value;
+                    mResValueRecords[context.SimulationStepIndex][MaxExchangeRecord][(int)item.Key - 1].AfterValue = item.Value;
                 }
             }
         }
@@ -222,7 +223,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
             foreach (var item in context.PlayerData.ResValues)
             {
-                mResValueRecords[context.SimulationStepIndex][context.ExchangeStepIndex][(int)item.Key] = new ResRecordValue
+                mResValueRecords[context.SimulationStepIndex][context.ExchangeStepIndex][(int)item.Key - 1] = new ResRecordValue
                 {
                     BeforeValue = item.Value,
                     AfterValue = item.Value,
@@ -267,7 +268,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
             foreach (var item in context.PlayerData.ResValues)
             {
-                mResValueRecords[context.SimulationStepIndex][context.ExchangeStepIndex][(int)item.Key].AfterValue = item.Value;
+                mResValueRecords[context.SimulationStepIndex][context.ExchangeStepIndex][(int)item.Key - 1].AfterValue = item.Value;
             }
         }
 
