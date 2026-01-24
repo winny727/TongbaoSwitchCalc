@@ -55,8 +55,23 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
     public struct TongbaoRecordValue
     {
-        public short BeforeId; // <10000
-        public short AfterId; // <10000
-        public byte SlotIndex; // 0~12
+        public short BeforeId; // <10000,2B
+        public short AfterId; // <10000,2B
+        public byte SlotIndex; // 0~12,1B
+    }
+
+    public struct TongbaoRecord
+    {
+        public int SlotIndex;
+        public int BeforeTongbaoId;
+        public int AfterTongbaoId;
+    }
+
+    public struct ResValueRecord
+    {
+        public ResType ResType;
+        public int BeforeValue;
+        public int AfterValue;
+        public readonly int ChangedValue => AfterValue - BeforeValue;
     }
 }

@@ -27,6 +27,112 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             MaxExchangeRecord = maxExchangeRecord;
         }
 
+        // SimulateStepIndex, ExchangeStepIndex
+        public void ForEachTongbaoRecords(Action<int, int, TongbaoRecord> callback)
+        {
+            if (mTongbaoRecords == null || callback == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < mTongbaoRecords.Length; i++)
+            {
+                var records = mTongbaoRecords[i];
+                if (records == null || records.Length <= 0)
+                {
+                    continue;
+                }
+
+                for (int j = 0; j < records.Length; j++)
+                {
+                    var record = records[j];
+                    callback(i, j, new TongbaoRecord
+                    {
+                        SlotIndex = record.SlotIndex,
+                        BeforeTongbaoId = record.BeforeId,
+                        AfterTongbaoId = record.AfterId,
+                    });
+                }
+            }
+        }
+
+        // SimulateStepIndex, ExchangeStepIndex
+        public void ForEachResValueRecords(Action<int, int, ResValueRecord> callback)
+        {
+            if (mResValueRecords == null || callback == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < mResValueRecords.Length; i++)
+            {
+                var records = mResValueRecords[i];
+                if (records == null || records.Length <= 0)
+                {
+                    continue;
+                }
+
+                for (int j = 0; j < records.Length; j++)
+                {
+                    var resRecords = records[j];
+                    if (resRecords == null || resRecords.Length <= 0)
+                    {
+                        continue;
+                    }
+
+                    for (int k = 0; k < resRecords.Length; k++)
+                    {
+                        var record = resRecords[k];
+                        callback(i, j, new ResValueRecord
+                        {
+                            ResType = (ResType)k,
+                            BeforeValue = record.BeforeValue,
+                            AfterValue = record.AfterValue,
+                        });
+                    }
+                }
+            }
+        }
+
+        // SimulateStepIndex, ExchangeStepIndex
+        public void ForEachExchangeStepResults(Action<int, int, ExchangeStepResult> callback)
+        {
+            if (mExchangeStepResults == null || callback == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < mExchangeStepResults.Length; i++)
+            {
+                var records = mExchangeStepResults[i];
+                if (records == null || records.Length <= 0)
+                {
+                    continue;
+                }
+
+                for (int j = 0; j < records.Length; j++)
+                {
+                    var record = records[j];
+                    callback(i, j, record);
+                }
+            }
+        }
+
+        // SimulateStepIndex
+        public void ForEachSimulateStepResults(Action<int, SimulateStepResult> callback)
+        {
+            if (mSimulateStepResults == null || callback == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < mSimulateStepResults.Length; i++)
+            {
+                var record = mSimulateStepResults[i];
+                callback(i, record);
+            }
+        }
+
         public virtual void OnSimulateBegin(SimulationType type, int totalSimStep, in IReadOnlyPlayerData playerData)
         {
             ClearData();
