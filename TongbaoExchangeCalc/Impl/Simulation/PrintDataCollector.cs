@@ -178,7 +178,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                           .AppendLine("次模拟结束========");
 
             mTempResBefore[context.SimulationStepIndex].Clear();
-            mResDictPool.Recycle(mTempResBefore[context.SimulationStepIndex]);
+            mResDictPool.Recycle(mTempResBefore[context.SimulationStepIndex], true);
             mTempResBefore.Remove(context.SimulationStepIndex);
             mTempBeforeTongbaoName.Remove(context.SimulationStepIndex);
         }
@@ -368,7 +368,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
             foreach (var item in mTempResBefore)
             {
-                mResDictPool.Recycle(item.Value);
+                mResDictPool.Recycle(item.Value, true);
             }
             mTempResBefore.Clear();
         }

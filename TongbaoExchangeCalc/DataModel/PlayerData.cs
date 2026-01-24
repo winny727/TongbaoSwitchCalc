@@ -151,7 +151,7 @@ namespace TongbaoExchangeCalc.DataModel
         {
             if (tongbao != null)
             {
-                mTongbaoPool.Recycle(tongbao);
+                mTongbaoPool.Recycle(tongbao, true);
             }
         }
 
