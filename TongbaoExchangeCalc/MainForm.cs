@@ -70,12 +70,13 @@ namespace TongbaoExchangeCalc
 
         private void InitSimulationData()
         {
-            mPrintDataCollector = new PrintDataCollector();
-            mExchangeDataCollector = new ExchangeDataCollector();
+            // 单轮循环内交换次数超过2000就不收集详细信息
+            mPrintDataCollector = new PrintDataCollector(2000);
+            mExchangeDataCollector = new ExchangeDataCollector(2000);
             mStatisticDataCollector = new StatisticDataCollector();
             mCompositeDataCollector = new CompositeDataCollector();
-            mCompositeDataCollector.AddDataCollector(mPrintDataCollector);
-            //mCompositeDataCollector.AddDataCollector(mExchangeDataCollector);
+            mCompositeDataCollector.AddDataCollector(mPrintDataCollector); // 简单文本输出
+            //mCompositeDataCollector.AddDataCollector(mExchangeDataCollector); // 详细数据收集 
             mCompositeDataCollector.AddDataCollector(mStatisticDataCollector);
 
             mSimulationController = new SimulationController(mPlayerData, mCompositeDataCollector);

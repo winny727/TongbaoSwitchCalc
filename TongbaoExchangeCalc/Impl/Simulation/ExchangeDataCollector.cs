@@ -8,6 +8,8 @@ namespace TongbaoExchangeCalc.Impl.Simulation
     public class ExchangeDataCollector : IDataCollector<SimulateContext>
     {
         public bool RecordEachExchange { get; set; } = true;
+        public int MaxExchangeRecord { get; set; } = -1; // 交换次数过多则省略，-1表示无限制
+        public bool OmitExcessiveExchanges => MaxExchangeRecord >= 0; // 省略过多的交换信息
         public SimulationType SimulationType { get; protected set; }
         public int TotalSimulateStep { get; protected set; }
         public int ExecSimulateStep { get; protected set; }
@@ -20,12 +22,19 @@ namespace TongbaoExchangeCalc.Impl.Simulation
         protected ExchangeStepResult[][] mExchangeStepResults; // [SimulateStepIndex, ExchangeStepIndex]
         protected SimulateStepResult[] mSimulateStepResults; // [SimulateStepIndex]
 
+        public ExchangeDataCollector(int maxExchangeRecord = -1)
+        {
+            MaxExchangeRecord = maxExchangeRecord;
+        }
+
         public virtual void OnSimulateBegin(SimulationType type, int totalSimStep, in IReadOnlyPlayerData playerData)
         {
             ClearData();
             SimulationType = type;
             TotalSimulateStep = totalSimStep;
 
+            // 若省略X条后的多余信息，会将X~LIMIT的资源变化信息存在X+1位置里
+            int length = MaxExchangeRecord >= 0 ? MaxExchangeRecord + 1 : ExchangeSimulator.EXCHANGE_STEP_LIMIT;
             if (RecordEachExchange)
             {
                 if (mTongbaoRecords == null || totalSimStep != mTongbaoRecords.Length)
@@ -33,7 +42,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                     mTongbaoRecords = new TongbaoRecordValue[totalSimStep][];
                     for (int i = 0; i < totalSimStep; i++)
                     {
-                        mTongbaoRecords[i] = new TongbaoRecordValue[ExchangeSimulator.EXCHANGE_STEP_LIMIT];
+                        mTongbaoRecords[i] = new TongbaoRecordValue[length];
                     }
                 }
                 if (mResValueRecords == null || totalSimStep != mResValueRecords.Length)
@@ -41,8 +50,8 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                     mResValueRecords = new ResRecordValue[totalSimStep][][];
                     for (int i = 0; i < totalSimStep; i++)
                     {
-                        mResValueRecords[i] = new ResRecordValue[ExchangeSimulator.EXCHANGE_STEP_LIMIT][];
-                        for (int j = 0; j < ExchangeSimulator.EXCHANGE_STEP_LIMIT; j++)
+                        mResValueRecords[i] = new ResRecordValue[length][];
+                        for (int j = 0; j < length; j++)
                         {
                             mResValueRecords[i][j] = new ResRecordValue[(int)ResType.Count];
                         }
@@ -53,7 +62,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                     mExchangeStepResults = new ExchangeStepResult[totalSimStep][];
                     for (int i = 0; i < totalSimStep; i++)
                     {
-                        mExchangeStepResults[i] = new ExchangeStepResult[ExchangeSimulator.EXCHANGE_STEP_LIMIT];
+                        mExchangeStepResults[i] = new ExchangeStepResult[length];
                     }
                 }
             }
@@ -82,11 +91,39 @@ namespace TongbaoExchangeCalc.Impl.Simulation
         public virtual void OnSimulateStepEnd(in SimulateContext context, SimulateStepResult result)
         {
             mSimulateStepResults[context.SimulationStepIndex] = result;
+
+            if (OmitExcessiveExchanges)
+            {
+                foreach (var item in context.PlayerData.ResValues)
+                {
+                    mResValueRecords[context.SimulationStepIndex][MaxExchangeRecord][(int)item.Key].AfterValue = item.Value;
+                }
+            }
         }
 
         public virtual void OnExchangeStepBegin(in SimulateContext context)
         {
             if (!RecordEachExchange)
+            {
+                return;
+            }
+
+            // >: 多记录一次资源变化，可用于最终计算差值
+            if (OmitExcessiveExchanges && context.ExchangeStepIndex > MaxExchangeRecord)
+            {
+                return;
+            }
+
+            foreach (var item in context.PlayerData.ResValues)
+            {
+                mResValueRecords[context.SimulationStepIndex][context.ExchangeStepIndex][(int)item.Key] = new ResRecordValue
+                {
+                    BeforeValue = item.Value,
+                    AfterValue = item.Value,
+                };
+            }
+
+            if (OmitExcessiveExchanges && context.ExchangeStepIndex >= MaxExchangeRecord)
             {
                 return;
             }
@@ -100,21 +137,17 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                 BeforeId = (short)tongbaoId,
                 AfterId = (short)tongbaoId,
             };
-
-            foreach (var item in context.PlayerData.ResValues)
-            {
-                mResValueRecords[context.SimulationStepIndex][context.ExchangeStepIndex][(int)item.Key] = new ResRecordValue
-                {
-                    BeforeValue = item.Value,
-                    AfterValue = item.Value,
-                };
-            }
         }
 
         public virtual void OnExchangeStepEnd(in SimulateContext context, ExchangeStepResult result)
         {
             TotalExecExchangeStep++;
             if (!RecordEachExchange)
+            {
+                return;
+            }
+
+            if (OmitExcessiveExchanges && context.ExchangeStepIndex >= MaxExchangeRecord)
             {
                 return;
             }
@@ -137,6 +170,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             var collector = new ExchangeDataCollector
             {
                 RecordEachExchange = RecordEachExchange,
+                MaxExchangeRecord = MaxExchangeRecord,
                 SimulationType = SimulationType,
                 TotalSimulateStep = TotalSimulateStep,
             };

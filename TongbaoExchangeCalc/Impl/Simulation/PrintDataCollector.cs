@@ -9,14 +9,13 @@ namespace TongbaoExchangeCalc.Impl.Simulation
     public class PrintDataCollector : IDataCollector<SimulateContext>
     {
         public bool RecordEachExchange { get; set; } = true;
-        public bool OmitExcessiveExchanges { get; set; } = true; // 省略过多的交换信息
+        public int MaxExchangeRecord { get; set; } = -1; // 交换次数过多则省略，-1表示无限制
+        public bool OmitExcessiveExchanges => MaxExchangeRecord >= 0; // 省略过多的交换信息
 
         private SimulationType mSimulationType;
         private int mTotalSimulateStep;
         private readonly Dictionary<int, string> mTempBeforeTongbaoName = new Dictionary<int, string>();
         private readonly Dictionary<int, Dictionary<ResType, int>> mTempResBefore = new Dictionary<int, Dictionary<ResType, int>>(); // key: simulationStepIndex
-
-        private const int OMIITED_EXCHANGE_INDEX = 2000; // 交换次数过多则省略
 
         private readonly ObjectPool<Dictionary<ResType, int>> mResDictPool = new ObjectPool<Dictionary<ResType, int>>();
 
@@ -53,6 +52,11 @@ namespace TongbaoExchangeCalc.Impl.Simulation
         // 避免大量模拟时字符串拼接导致频繁GC，用StringBuilder
         public StringBuilder OutputResultSB { get; private set; } = new StringBuilder();
         public string OutputResult => OutputResultSB.ToString();
+
+        public PrintDataCollector(int maxExchangeRecord = -1)
+        {
+            MaxExchangeRecord = maxExchangeRecord;
+        }
 
         //因为外部可以单步调用OnExchangeStepBegin/OnExchangeStepEnd，这里提供个接口初始化
         public void InitSimulateStep(int simulationStepIndex)
@@ -128,23 +132,18 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                               .Append(context.ExchangeStepIndex + 1)
                               .AppendLine("次交换");
 
-                if (IsResChanged(context))
-                {
-                    OutputResultSB.Append('(');
-                    AppendResChangedResult(OutputResultSB, context);
-                    OutputResultSB.Append(')')
-                                  .AppendLine();
-                }
+                AppendResChangedResult(OutputResultSB, context);
+                OutputResultSB.AppendLine();
             }
-            else if (OmitExcessiveExchanges && context.ExchangeStepIndex > OMIITED_EXCHANGE_INDEX)
+            else if (OmitExcessiveExchanges && context.ExchangeStepIndex > MaxExchangeRecord)
             {
                 OutputResultSB.Append('(')
                               .Append(context.SimulationStepIndex + 1)
                               .Append('|');
 
-                if (OMIITED_EXCHANGE_INDEX != context.ExchangeStepIndex)
+                if (MaxExchangeRecord != context.ExchangeStepIndex)
                 {
-                    OutputResultSB.Append(OMIITED_EXCHANGE_INDEX + 1)
+                    OutputResultSB.Append(MaxExchangeRecord + 1)
                                   .Append('-')
                                   .Append(context.ExchangeStepIndex + 1);
                 }
@@ -155,16 +154,11 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
                 OutputResultSB.Append(") ")
                               .Append("交换次数过多，省略了")
-                              .Append(context.ExchangeStepIndex - OMIITED_EXCHANGE_INDEX + 1)
+                              .Append(context.ExchangeStepIndex - MaxExchangeRecord + 1)
                               .Append("次交换信息");
 
-                if (IsResChanged(context))
-                {
-                    OutputResultSB.Append('(');
-                    AppendResChangedResult(OutputResultSB, context);
-                    OutputResultSB.Append(')')
-                                  .AppendLine();
-                }
+                AppendResChangedResult(OutputResultSB, context);
+                OutputResultSB.AppendLine();
             }
 
             string breakReason = SimulationDefine.GetSimulateStepEndReason(result);
@@ -190,7 +184,8 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                 return;
             }
 
-            if (OmitExcessiveExchanges && context.ExchangeStepIndex >= OMIITED_EXCHANGE_INDEX + 1) // 多记录一次，用于最终计算差值
+            // >: 多记录一次，用于最终计算差值
+            if (OmitExcessiveExchanges && context.ExchangeStepIndex > MaxExchangeRecord)
             {
                 return;
             }
@@ -205,7 +200,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                 return;
             }
 
-            if (OmitExcessiveExchanges && context.ExchangeStepIndex >= OMIITED_EXCHANGE_INDEX)
+            if (OmitExcessiveExchanges && context.ExchangeStepIndex >= MaxExchangeRecord)
             {
                 return;
             }
@@ -233,9 +228,8 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                               .Append(beforeTongbaoName)
                               .Append("]交换为[")
                               .Append(afterTongbao.Name)
-                              .Append("] (");
+                              .Append(']');
                 AppendResChangedResult(OutputResultSB, context);
-                OutputResultSB.Append(')');
             }
             else
             {
@@ -284,21 +278,6 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             }
         }
 
-        private bool IsResChanged(in SimulateContext context)
-        {
-            foreach (var item in context.PlayerData.ResValues)
-            {
-                ResType type = item.Key;
-                mTempResBefore[context.SimulationStepIndex].TryGetValue(type, out int beforeValue);
-                int afterValue = item.Value;
-                if (beforeValue != afterValue)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         private StringBuilder AppendResChangedResult(StringBuilder sb, in SimulateContext context)
         {
             // PlayerData的项只增加不删除，所以这里不需要考虑并集
@@ -311,9 +290,13 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                 int changedValue = afterValue - beforeValue;
                 if (beforeValue != afterValue)
                 {
-                    if (!isEmpty)
+                    if (isEmpty)
                     {
                         sb.Append("，");
+                    }
+                    else
+                    {
+                        sb.Append('(');
                     }
                     sb.Append(Define.GetResName(type));
 
@@ -331,6 +314,10 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                     isEmpty = false;
                 }
             }
+            if (!isEmpty)
+            {
+                sb.Append(')');
+            }
             return sb;
         }
 
@@ -339,7 +326,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             var collector = new PrintDataCollector
             {
                 RecordEachExchange = RecordEachExchange,
-                OmitExcessiveExchanges = OmitExcessiveExchanges,
+                MaxExchangeRecord = MaxExchangeRecord,
                 mSimulationType = mSimulationType,
                 mTotalSimulateStep = mTotalSimulateStep,
             };
