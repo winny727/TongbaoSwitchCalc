@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -84,7 +83,6 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
             using (CodeTimer ct = CodeTimer.StartNew("Simulate"))
             {
                 mIsSimulating = true;
-                DataCollector?.SetCollectRange(0, TotalSimulationCount);
                 DataCollector?.OnSimulateBegin(SimulationType, TotalSimulationCount, PlayerData);
                 while (SimulationStepIndex < TotalSimulationCount)
                 {
@@ -166,7 +164,7 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
                         ITongbaoSelector clonedTongbaoSelector = (ITongbaoSelector)PlayerData.TongbaoSelector.Clone();
                         IRandomGenerator clonedRandom = (IRandomGenerator)PlayerData.Random.Clone();
                         IDataCollector<SimulateContext> clonedDataCollector = DataCollector?.CloneAsEmpty();
-                        clonedDataCollector?.SetCollectRange(batchStart, batchEnd - batchStart);
+                        clonedDataCollector?.ShareContainer(DataCollector);
                         dataCollectors[workerIndex] = clonedDataCollector;
 
                         PlayerData localPlayerData = new PlayerData(clonedTongbaoSelector, clonedRandom);
@@ -209,11 +207,7 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
 
             for (int i = 0; i < dataCollectors.Length; i++)
             {
-                if (dataCollectors[i] != null)
-                {
-                    DataCollector.MergeData(dataCollectors[i]);
-                    dataCollectors[i].ClearData();
-                }
+                DataCollector.MergeData(dataCollectors[i]);
             }
         }
 

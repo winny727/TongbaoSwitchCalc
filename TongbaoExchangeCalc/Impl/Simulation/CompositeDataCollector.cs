@@ -108,11 +108,18 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             return collector;
         }
 
-        public void SetCollectRange(int offset, int length)
+        public void ShareContainer(IDataCollector<SimulateContext> other)
         {
-            for (int i = 0; i < mDataCollectors.Count; i++)
+            if (other is CompositeDataCollector collector)
             {
-                mDataCollectors[i].SetCollectRange(offset, length);
+                for (int i = 0; i < collector.mDataCollectors.Count; i++)
+                {
+                    var otherItem = collector.mDataCollectors[i];
+                    for (int j = 0; j < mDataCollectors.Count; j++)
+                    {
+                        mDataCollectors[j].ShareContainer(otherItem);
+                    }
+                }
             }
         }
 

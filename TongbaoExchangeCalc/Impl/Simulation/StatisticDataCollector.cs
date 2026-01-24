@@ -164,7 +164,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             return collector;
         }
 
-        public void SetCollectRange(int offset, int length)
+        public void ShareContainer(IDataCollector<SimulateContext> other)
         {
 
         }

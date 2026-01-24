@@ -18,7 +18,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
         private const int OMIITED_EXCHANGE_INDEX = 2000; // 交换次数过多则省略
 
-        private readonly Stack<Dictionary<ResType, int>> mResDictPool = new Stack<Dictionary<ResType, int>>();
+        private readonly ObjectPool<Dictionary<ResType, int>> mResDictPool = new ObjectPool<Dictionary<ResType, int>>();
 
         private int mLastExchangeResultStartIndex = -1;
         private int mLastExchangeResultEndIndex = -1;
@@ -54,30 +54,12 @@ namespace TongbaoExchangeCalc.Impl.Simulation
         public StringBuilder OutputResultSB { get; private set; } = new StringBuilder();
         public string OutputResult => OutputResultSB.ToString();
 
-        private Dictionary<ResType, int> AllocateResDict()
-        {
-            if (mResDictPool.Count > 0)
-            {
-                return mResDictPool.Pop();
-            }
-            return new Dictionary<ResType, int>();
-        }
-
-        private void RecycleResDict(Dictionary<ResType, int> resDict)
-        {
-            if (resDict != null && !mResDictPool.Contains(resDict))
-            {
-                resDict.Clear();
-                mResDictPool.Push(resDict);
-            }
-        }
-
         //因为外部可以单步调用OnExchangeStepBegin/OnExchangeStepEnd，这里提供个接口初始化
         public void InitSimulateStep(int simulationStepIndex)
         {
             if (!mTempResBefore.ContainsKey(simulationStepIndex))
             {
-                mTempResBefore.Add(simulationStepIndex, AllocateResDict());
+                mTempResBefore.Add(simulationStepIndex, mResDictPool.Allocate());
             }
         }
 
@@ -114,7 +96,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
         public void OnSimulateStepBegin(in SimulateContext context)
         {
-            mTempResBefore.Add(context.SimulationStepIndex, AllocateResDict());
+            mTempResBefore.Add(context.SimulationStepIndex, mResDictPool.Allocate());
             if (!RecordEachExchange)
             {
                 RecordCurrentExchange(context);
@@ -195,7 +177,8 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                           .Append(mTotalSimulateStep)
                           .AppendLine("次模拟结束========");
 
-            RecycleResDict(mTempResBefore[context.SimulationStepIndex]);
+            mTempResBefore[context.SimulationStepIndex].Clear();
+            mResDictPool.Recycle(mTempResBefore[context.SimulationStepIndex]);
             mTempResBefore.Remove(context.SimulationStepIndex);
             mTempBeforeTongbaoName.Remove(context.SimulationStepIndex);
         }
@@ -363,7 +346,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             return collector;
         }
 
-        public void SetCollectRange(int offset, int length)
+        public void ShareContainer(IDataCollector<SimulateContext> other)
         {
 
         }
@@ -385,7 +368,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
             foreach (var item in mTempResBefore)
             {
-                RecycleResDict(item.Value);
+                mResDictPool.Recycle(item.Value);
             }
             mTempResBefore.Clear();
         }
