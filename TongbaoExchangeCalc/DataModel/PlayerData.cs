@@ -12,7 +12,6 @@ namespace TongbaoExchangeCalc.DataModel
         private readonly Dictionary<ResType, int> mResValues = new Dictionary<ResType, int>(); // 资源数值
 
         public IReadOnlyDictionary<ResType, int> ResValues => mResValues; // 资源数值只读接口
-        internal Dictionary<ResType, int> ResValuesInternal => mResValues; // 高性能资源遍历读取接口，IReadOnlyDictionary在foreach会有GC
         public Tongbao[] TongbaoBox { get; private set; } // 钱盒
         public SquadType SquadType { get; private set; } // 分队类型
         public int ExchangeCount { get; set; } // 已交换次数

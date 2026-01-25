@@ -268,7 +268,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
             var resDict = mTempResBefore[context.SimulationStepIndex];
             resDict.Clear();
-            foreach (var item in context.PlayerData.ResValuesInternal)
+            foreach (var item in context.PlayerData.ResValues)
             {
                 resDict.Add(item.Key, item.Value);
             }
@@ -278,7 +278,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
         {
             // PlayerData的项只增加不删除，所以这里不需要考虑并集
             bool isEmpty = true;
-            foreach (var item in context.PlayerData.ResValuesInternal)
+            foreach (var item in context.PlayerData.ResValues)
             {
                 ResType type = item.Key;
                 mTempResBefore[context.SimulationStepIndex].TryGetValue(type, out int beforeValue);

@@ -153,9 +153,10 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
                 unsafe
                 {
-                    foreach (var item in context.PlayerData.ResValuesInternal)
+                    for (int i = 0; i < (int)ResType.Count - 1; i++)
                     {
-                        record.ResRecords[(int)item.Key - 1] = (Int16)item.Value;
+                        int resValue = context.PlayerData.GetResValue((ResType)(i + 1));
+                        record.ResRecords[i] = (short)resValue;
                     }
                 }
 
@@ -197,9 +198,10 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
             unsafe
             {
-                foreach (var item in context.PlayerData.ResValuesInternal)
+                for (int i = 0; i < (int)ResType.Count - 1; i++)
                 {
-                    record.ResRecords[(int)item.Key - 1] = (Int16)item.Value;
+                    int resValue = context.PlayerData.GetResValue((ResType)(i + 1));
+                    record.ResRecords[i] = (short)resValue;
                 }
             }
 

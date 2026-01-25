@@ -77,7 +77,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
         {
             var resDict = mTempResBefore[context.SimulationStepIndex];
             resDict.Clear();
-            foreach (var item in context.PlayerData.ResValuesInternal)
+            foreach (var item in context.PlayerData.ResValues)
             {
                 resDict.Add(item.Key, item.Value);
             }
@@ -88,7 +88,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             if (result == ExchangeStepResult.Success)
             {
                 mTotalExchangeStep++;
-                foreach (var item in context.PlayerData.ResValuesInternal)
+                foreach (var item in context.PlayerData.ResValues)
                 {
                     ResType type = item.Key;
                     int afterValue = item.Value;
