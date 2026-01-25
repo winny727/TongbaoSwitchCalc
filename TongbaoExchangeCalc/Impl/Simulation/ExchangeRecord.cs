@@ -1,70 +1,35 @@
 ﻿using System;
+using System.Collections.Generic;
 using TongbaoExchangeCalc.DataModel;
+using TongbaoExchangeCalc.DataModel.Simulation;
 
 namespace TongbaoExchangeCalc.Impl.Simulation
 {
-    //public struct StepIndexes : IEquatable<StepIndexes>
-    //{
-    //    public int SimulateStepIndex;
-    //    public int ExchangeStepIndex;
-
-    //    public bool Equals(StepIndexes other)
-    //    {
-    //        return SimulateStepIndex == other.SimulateStepIndex && ExchangeStepIndex == other.ExchangeStepIndex;
-    //    }
-
-    //    public override readonly int GetHashCode()
-    //    {
-    //        unchecked
-    //        {
-    //            int hash = 17;
-    //            hash = hash * 31 + SimulateStepIndex;
-    //            hash = hash * 31 + ExchangeStepIndex;
-    //            return hash;
-    //        }
-    //    }
-    //}
-
-    //public struct ResRecordKey : IEquatable<ResRecordKey>
-    //{
-    //    public StepIndexes Indexes;
-    //    public ResType ResType;
-
-    //    public bool Equals(ResRecordKey other)
-    //    {
-    //        return Indexes.Equals(other.Indexes) && ResType == other.ResType;
-    //    }
-
-    //    public override readonly int GetHashCode()
-    //    {
-    //        unchecked
-    //        {
-    //            int hash = 17;
-    //            hash = hash * 31 + Indexes.GetHashCode();
-    //            hash = hash * 31 + (int)ResType;
-    //            return hash;
-    //        }
-    //    }
-    //}
-
-    public struct ResRecordValue
+    public struct SimulationRecord
     {
-        public int BeforeValue; // <100000
-        public int AfterValue; // <100000
+        public List<ExchangeResultRecord> ExchangeRecords; // [ExchangeStepIndex]
+        public SimulateStepResult SimulateStepResult;
     }
 
-    public struct TongbaoRecordValue
+    public unsafe struct ExchangeResultRecord
     {
-        public short BeforeId; // <10000,2B
-        public short AfterId; // <10000,2B
+        public short TongbaoId; // <10000,2B, value: tongbaoId after exchange
         public byte SlotIndex; // 0~12,1B
+        public ExchangeStepResult ExchangeStepResult; // 1B
+
+        // 无GC
+        public fixed short ResRecords[(byte)ResType.Count - 1]; // index: (byte)ResType-1, value: resValue after exchange
     }
 
-    public struct TongbaoRecord
+    public struct ExchangeRecord
     {
+        public int SimulationStepIndex;
+        public int ExchangeStepIndex;
         public int SlotIndex;
         public int BeforeTongbaoId;
         public int AfterTongbaoId;
+        public ResValueRecord[] ResValueRecords;
+        public ExchangeStepResult ExchangeStepResult;
     }
 
     public struct ResValueRecord

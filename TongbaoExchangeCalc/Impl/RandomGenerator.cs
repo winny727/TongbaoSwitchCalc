@@ -8,17 +8,17 @@ namespace TongbaoExchangeCalc.Impl
     {
         private readonly Random mRandom = new Random();
 
-        public virtual int Next(int minValue, int maxValue)
+        public int Next(int minValue, int maxValue)
         {
             return mRandom.Next(minValue, maxValue);
         }
 
-        public virtual double NextDouble()
+        public double NextDouble()
         {
             return mRandom.NextDouble();
         }
 
-        public virtual object Clone()
+        public object Clone()
         {
             return new RandomGenerator();
         }

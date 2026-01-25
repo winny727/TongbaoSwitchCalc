@@ -39,13 +39,13 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             }
         }
 
-        public void OnSimulateBegin(SimulationType type, int totalSimStep, in IReadOnlyPlayerData playerData)
+        public void OnSimulateBegin(SimulationType type, int totalSimStep, PlayerData playerData)
         {
             ClearData();
             mTotalSimulateStep = totalSimStep;
         }
 
-        public void OnSimulateEnd(int executedSimStep, float simCostTimeMS, in IReadOnlyPlayerData playerData)
+        public void OnSimulateEnd(int executedSimStep, float simCostTimeMS, PlayerData playerData)
         {
             mExecSimulateStep = executedSimStep;
             mTotalSimulateTime = simCostTimeMS;
@@ -77,7 +77,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
         {
             var resDict = mTempResBefore[context.SimulationStepIndex];
             resDict.Clear();
-            foreach (var item in context.PlayerData.ResValues)
+            foreach (var item in context.PlayerData.ResValuesInternal)
             {
                 resDict.Add(item.Key, item.Value);
             }
@@ -88,7 +88,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             if (result == ExchangeStepResult.Success)
             {
                 mTotalExchangeStep++;
-                foreach (var item in context.PlayerData.ResValues)
+                foreach (var item in context.PlayerData.ResValuesInternal)
                 {
                     ResType type = item.Key;
                     int afterValue = item.Value;

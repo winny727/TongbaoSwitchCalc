@@ -37,10 +37,6 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                     for (int i = 0; i < length; i++)
                     {
                         int index = i + mLastExchangeResultStartIndex;
-                        //if (index >= 0 && index < mOutputResult.Length)
-                        //{
-                        //    chars[i] = mOutputResult[index];
-                        //}
                         chars[i] = OutputResultSB[index];
                     }
                     return new string(chars);
@@ -67,7 +63,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             }
         }
 
-        public void OnSimulateBegin(SimulationType type, int totalSimStep, in IReadOnlyPlayerData playerData)
+        public void OnSimulateBegin(SimulationType type, int totalSimStep, PlayerData playerData)
         {
             ClearData();
             mSimulationType = type;
@@ -80,7 +76,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                           .AppendLine("次模拟");
         }
 
-        public void OnSimulateEnd(int executedSimStep, float simCostTimeMS, in IReadOnlyPlayerData playerData)
+        public void OnSimulateEnd(int executedSimStep, float simCostTimeMS, PlayerData playerData)
         {
             OutputResultSB.Append('[')
                           .Append(SimulationDefine.GetSimulationName(mSimulationType))
@@ -272,7 +268,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
             var resDict = mTempResBefore[context.SimulationStepIndex];
             resDict.Clear();
-            foreach (var item in context.PlayerData.ResValues)
+            foreach (var item in context.PlayerData.ResValuesInternal)
             {
                 resDict.Add(item.Key, item.Value);
             }
@@ -282,7 +278,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
         {
             // PlayerData的项只增加不删除，所以这里不需要考虑并集
             bool isEmpty = true;
-            foreach (var item in context.PlayerData.ResValues)
+            foreach (var item in context.PlayerData.ResValuesInternal)
             {
                 ResType type = item.Key;
                 mTempResBefore[context.SimulationStepIndex].TryGetValue(type, out int beforeValue);

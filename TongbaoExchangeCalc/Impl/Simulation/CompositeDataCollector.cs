@@ -42,19 +42,19 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             mDataCollectors.Clear();
         }
 
-        public void OnSimulateBegin(SimulationType type, int totalSimStep, in IReadOnlyPlayerData playerData)
+        public void OnSimulateBegin(SimulationType type, int totalSimStep, PlayerData playerData)
         {
             for (int i = 0; i < mDataCollectors.Count; i++)
             {
-                mDataCollectors[i].OnSimulateBegin(type, totalSimStep, in playerData);
+                mDataCollectors[i].OnSimulateBegin(type, totalSimStep, playerData);
             }
         }
 
-        public void OnSimulateEnd(int executedSimStep, float simCostTimeMS, in IReadOnlyPlayerData playerData)
+        public void OnSimulateEnd(int executedSimStep, float simCostTimeMS, PlayerData playerData)
         {
             for (int i = 0; i < mDataCollectors.Count; i++)
             {
-                mDataCollectors[i].OnSimulateEnd(executedSimStep, simCostTimeMS, in playerData);
+                mDataCollectors[i].OnSimulateEnd(executedSimStep, simCostTimeMS, playerData);
             }
         }
 

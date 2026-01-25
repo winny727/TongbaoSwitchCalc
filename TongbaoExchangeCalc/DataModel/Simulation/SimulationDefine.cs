@@ -113,9 +113,9 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
         public int SimulationStepIndex { get; private set; }
         public int ExchangeStepIndex { get; private set; }
         public int SlotIndex { get; private set; }
-        public IReadOnlyPlayerData PlayerData { get; private set; }
+        public PlayerData PlayerData { get; private set; }
 
-        public SimulateContext(int simulationStepIndex, int exchangeStepIndex, int slotIndex, IReadOnlyPlayerData playerData)
+        public SimulateContext(int simulationStepIndex, int exchangeStepIndex, int slotIndex, PlayerData playerData)
         {
             SimulationStepIndex = simulationStepIndex;
             ExchangeStepIndex = exchangeStepIndex;
