@@ -17,7 +17,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
         public byte SlotIndex; // 0~12,1B
         public ExchangeStepResult ExchangeStepResult; // 1B
 
-        // 无GC
+        // 确定数组大小，用的时候不用new
         public fixed short ResRecords[(byte)ResType.Count - 1]; // index: (byte)ResType-1, value: resValue after exchange
     }
 
