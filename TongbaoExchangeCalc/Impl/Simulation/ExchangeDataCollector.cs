@@ -69,7 +69,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
                     unsafe
                     {
-                        for (int k = 0; k < retRecord.ResValueRecords.Length; k++)
+                        for (int k = 0; k < (int)ResType.Count - 1; k++)
                         {
                             ResType resType = (ResType)(k + 1);
                             int beforeValue;
@@ -156,7 +156,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                     for (int i = 0; i < (int)ResType.Count - 1; i++)
                     {
                         int resValue = context.PlayerData.GetResValue((ResType)(i + 1));
-                        record.ResRecords[i] = (short)resValue;
+                        record.ResRecords[i] = (Int16)resValue;
                     }
                 }
 
@@ -201,7 +201,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                 for (int i = 0; i < (int)ResType.Count - 1; i++)
                 {
                     int resValue = context.PlayerData.GetResValue((ResType)(i + 1));
-                    record.ResRecords[i] = (short)resValue;
+                    record.ResRecords[i] = (Int16)resValue;
                 }
             }
 
