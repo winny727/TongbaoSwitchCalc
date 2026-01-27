@@ -175,7 +175,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
                 var record = new ExchangeResultRecord
                 {
-                    SlotIndex = (sbyte)context.SlotIndex,
+                    SlotIndex = (byte)context.SlotIndex,
                     TongbaoId = (Int16)tongbaoId,
                     ExchangeStepResult = mLastExchangeStepResult,
                 };
@@ -226,7 +226,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
             var record = new ExchangeResultRecord
             {
-                SlotIndex = (sbyte)context.SlotIndex,
+                SlotIndex = (byte)context.SlotIndex,
                 TongbaoId = (Int16)tongbaoId,
                 ExchangeStepResult = mLastExchangeStepResult,
             };

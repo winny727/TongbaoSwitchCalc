@@ -14,8 +14,8 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
     public unsafe struct ExchangeResultRecord
     {
-        public Int16 TongbaoId; // <10000,2B, value: tongbaoId after exchange
-        public sbyte SlotIndex; // 0~12,1B
+        public Int16 TongbaoId; // <10000,2B, value: tongbaoId after exchange TODO 全部ID能压缩到255以下就用sbyte
+        public byte SlotIndex; // 0~12,1B
         public ExchangeStepResult ExchangeStepResult; // 1B
 
         // 确定数组大小，用的时候不用new
