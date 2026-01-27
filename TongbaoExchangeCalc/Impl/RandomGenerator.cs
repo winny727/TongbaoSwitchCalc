@@ -6,7 +6,8 @@ namespace TongbaoExchangeCalc.Impl
 {
     public class RandomGenerator : IRandomGenerator
     {
-        private readonly Random mRandom = new Random();
+        // 保证多线程下同一时间创建的随机数生成器是不同种子
+        private readonly Random mRandom = new Random(Guid.NewGuid().GetHashCode());
 
         public int Next(int minValue, int maxValue)
         {
