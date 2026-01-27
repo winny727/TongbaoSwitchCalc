@@ -5,6 +5,9 @@ using TongbaoExchangeCalc.DataModel.Simulation;
 
 namespace TongbaoExchangeCalc.Impl.Simulation
 {
+    /// <summary>
+    /// 线程安全的高性能模拟数据收集器
+    /// </summary>
     public class ExchangeDataCollector : IDataCollector<SimulateContext>
     {
         public bool RecordEachExchange { get; set; } = true;
