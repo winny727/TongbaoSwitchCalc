@@ -23,8 +23,8 @@ namespace TongbaoExchangeCalc
 
         private PrintDataCollector mPrintDataCollector;
         private ExchangeDataCollector mExchangeDataCollector;
-        private StatisticDataCollector mStatisticDataCollector;
-        private CompositeDataCollector mCompositeDataCollector;
+        //private StatisticDataCollector mStatisticDataCollector;
+        //private CompositeDataCollector mCompositeDataCollector;
 
         private int mSelectedTongbaoSlotIndex = -1;
         private bool mCanRevertPlayerData = false;
@@ -74,17 +74,21 @@ namespace TongbaoExchangeCalc
         {
             // 单轮循环内交换次数超过2000就不收集详细信息
             //mPrintDataCollector = new PrintDataCollector(2000);
+            //mExchangeDataCollector = new ExchangeDataCollector(2000);
+
+            // 旧逻辑，需要同时使用多个Collector的时候就用CompositeDataCollector合在一起用
+            //mStatisticDataCollector = new StatisticDataCollector();
+            //mCompositeDataCollector = new CompositeDataCollector();
+            //mCompositeDataCollector.AddDataCollector(mPrintDataCollector); // 简单文本输出
+            //mCompositeDataCollector.AddDataCollector(mExchangeDataCollector); // 详细数据收集
+            //mCompositeDataCollector.AddDataCollector(mStatisticDataCollector); // 数据统计
+            //mSimulationController = new SimulationController(mPlayerData, new SimulationTimer(), mCompositeDataCollector);
+
+            // 新版逻辑改为先用ExchangeDataCollector收集数据再用ExchangeDataParser解析并构建为文本结果
             mPrintDataCollector = new PrintDataCollector(); // 单次交换的简单文本输出还是用原来的PrintDataCollector
             mExchangeDataCollector = new ExchangeDataCollector(2000);
-            mStatisticDataCollector = new StatisticDataCollector();
-            mCompositeDataCollector = new CompositeDataCollector();
-            //mCompositeDataCollector.AddDataCollector(mPrintDataCollector); // 简单文本输出
-            mCompositeDataCollector.AddDataCollector(mExchangeDataCollector); // 详细数据收集
-            mCompositeDataCollector.AddDataCollector(mStatisticDataCollector); // TODO 改为通过mExchangeDataCollector获取
-
             mExchangeDataParser = new ExchangeDataParser(mExchangeDataCollector);
-            mSimulationController = new SimulationController(mPlayerData, mCompositeDataCollector);
-            //mSimulationController = new SimulationController(mPlayerData, mExchangeDataCollector);
+            mSimulationController = new SimulationController(mPlayerData, new SimulationTimer(), mExchangeDataCollector);
         }
 
         private void InitPlayerData()
@@ -500,10 +504,10 @@ namespace TongbaoExchangeCalc
             var simumateProgress = CreateProgress($"正在进行[{simulationName}]模拟", total);
             await mSimulationController.SimulateAsync(options, simumateProgress);
 
-            var resultProgress = CreateProgress($"正在构建详细交换结果", total);
-            await mExchangeDataParser.BuildOutputResultAsync(resultProgress);
+            var resultProgress = CreateProgress($"正在构建详细模拟结果信息", total);
+            await mExchangeDataParser.BuildResultAsync(resultProgress);
 
-            //DebugCompareOutputResult();
+            //DebugCompareOutputResult(); // 测试
 
             toolStripStatusLabel1.Text = $"[{simulationName}]模拟结束";
 
@@ -523,7 +527,8 @@ namespace TongbaoExchangeCalc
             UpdateAsyncSimulateView(false);
             GC.Collect();
 
-            MessageBox.Show(mStatisticDataCollector.GetOutputResult(), "模拟期望", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //MessageBox.Show(mStatisticDataCollector.GetOutputResult(), "模拟期望", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(mExchangeDataParser.StatisticResult, "模拟期望", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             toolStripStatusLabel1.Text = "单击选中通宝，双击添加/更改通宝";
             toolStripProgressBar1.Value = 0;
@@ -551,7 +556,7 @@ namespace TongbaoExchangeCalc
         private void ClearRecord()
         {
             mPrintDataCollector.ClearData();
-            mExchangeDataParser.Clear();
+            mExchangeDataParser.ClearData();
             mRecordForm.ClearText();
             mOutputResultChanged = false;
             GC.Collect();
@@ -637,6 +642,8 @@ namespace TongbaoExchangeCalc
             // 测试代码，用于对比两种打印是否相同
             string result1 = mExchangeDataParser.OutputResult;
             string result2 = mPrintDataCollector.OutputResult;
+            //string result1 = mExchangeDataParser.StatisticResult;
+            //string result2 = mStatisticDataCollector.GetOutputResult();
             for (int i = 0; i < result1.Length; i++)
             {
                 if (result1[i] != result2[i])

@@ -120,7 +120,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                               .Append(", 模拟耗时: ")
                               .Append(mTotalSimulateTime)
                               .Append("ms")
-                              .Append(", 总交换次数: ")
+                              .Append(", 成功交换总次数: ")
                               .Append(mTotalExchangeStep)
                               .AppendLine()
                               .AppendLine();

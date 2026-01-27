@@ -12,13 +12,17 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
         private CancellationTokenSource mCancellationTokenSource;
         public bool IsAsyncSimulating => mCancellationTokenSource != null;
 
-        public SimulationController(PlayerData playerData, IDataCollector<SimulateContext> dataCollector = null)
+        public SimulationController(PlayerData playerData, ISimulationTimer timer, IDataCollector<SimulateContext> dataCollector = null)
         {
             if (playerData == null)
             {
                 throw new ArgumentNullException(nameof(playerData));
             }
-            mExchangeSimulator = new ExchangeSimulator(playerData, dataCollector);
+            if (timer == null)
+            {
+                throw new ArgumentNullException(nameof(timer));
+            }
+            mExchangeSimulator = new ExchangeSimulator(playerData, timer, dataCollector);
         }
 
         public void Simulate(SimulationOptions options)

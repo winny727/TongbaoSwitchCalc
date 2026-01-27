@@ -39,5 +39,6 @@ namespace TongbaoExchangeCalc.Impl.Simulation
         public int BeforeValue;
         public int AfterValue;
         public readonly int ChangedValue => AfterValue - BeforeValue;
+        public readonly bool IsValueChanged => BeforeValue != AfterValue;
     }
 }

@@ -8,6 +8,7 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
     public class ExchangeSimulator
     {
         public PlayerData PlayerData { get; private set; }
+        public ISimulationTimer Timer { get; private set; }
         public IDataCollector<SimulateContext> DataCollector { get; private set; }
 
         public SimulationType SimulationType { get; set; } = SimulationType.LifePointLimit;
@@ -41,9 +42,10 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
 
         //private void Log(string msg) => System.Diagnostics.Debug.WriteLine(msg);
 
-        public ExchangeSimulator(PlayerData playerData, IDataCollector<SimulateContext> collector = null)
+        public ExchangeSimulator(PlayerData playerData, ISimulationTimer timer, IDataCollector<SimulateContext> collector = null)
         {
             PlayerData = playerData ?? throw new ArgumentNullException(nameof(playerData));
+            Timer = timer ?? throw new ArgumentNullException(nameof(timer));
             DataCollector = collector;
 
             mRevertPlayerData = new PlayerData(playerData.TongbaoSelector, playerData.Random);
@@ -80,45 +82,45 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
             mSimulateStepResult = SimulateStepResult.Success;
             mUseParallel = false;
             CachePlayerData();
-            using (CodeTimer ct = CodeTimer.StartNew("Simulate"))
+            progress?.Report(0);
+            mIsSimulating = true;
+            DataCollector?.OnSimulateBegin(SimulationType, TotalSimulationCount, PlayerData);
+            Timer.Start();
+            while (SimulationStepIndex < TotalSimulationCount)
             {
-                progress?.Report(0);
-                mIsSimulating = true;
-                DataCollector?.OnSimulateBegin(SimulationType, TotalSimulationCount, PlayerData);
-                while (SimulationStepIndex < TotalSimulationCount)
+                if (token.IsCancellationRequested)
                 {
-                    if (token.IsCancellationRequested)
-                    {
-                        break;
-                    }
-
-                    SimulateStep(token);
-                    mSimulationStepIndex++;
-                    progress?.Report(SimulationStepIndex);
-
-                    if (!UseMultiThreadOptimize)
-                    {
-                        continue;
-                    }
-
-                    int estimatedLeftExchangeStep = ExchangeStepIndex * (TotalSimulationCount - SimulationStepIndex);
-                    if (!mUseParallel && estimatedLeftExchangeStep >= OptimizeThreshold)
-                    {
-                        mUseParallel = true;
-                        DataCollector?.OnSimulateParallel(estimatedLeftExchangeStep, SimulationStepIndex);
-                        break;
-                    }
+                    break;
                 }
 
-                if (mUseParallel && SimulationStepIndex < TotalSimulationCount)
+                SimulateStep(token);
+                mSimulationStepIndex++;
+                progress?.Report(SimulationStepIndex);
+
+                if (!UseMultiThreadOptimize)
                 {
-                    SimulateParallel(SimulationStepIndex, token, progress);
+                    continue;
                 }
 
-                mIsSimulating = false;
-                DataCollector?.OnSimulateEnd(SimulationStepIndex, (float)ct.ElapsedMilliseconds, PlayerData);
-                progress?.Report(SimulationStepIndex + 1); // Count = Index + 1
+                int estimatedLeftExchangeStep = ExchangeStepIndex * (TotalSimulationCount - SimulationStepIndex);
+                if (!mUseParallel && estimatedLeftExchangeStep >= OptimizeThreshold)
+                {
+                    mUseParallel = true;
+                    DataCollector?.OnSimulateParallel(estimatedLeftExchangeStep, SimulationStepIndex);
+                    break;
+                }
             }
+
+            if (mUseParallel && SimulationStepIndex < TotalSimulationCount)
+            {
+                SimulateParallel(SimulationStepIndex, token, progress);
+            }
+
+            float time = Timer.Stop(); // ms
+            mIsSimulating = false;
+            DataCollector?.OnSimulateEnd(SimulationStepIndex, time, PlayerData);
+            progress?.Report(SimulationStepIndex + 1); // Count = Index + 1
+
         }
 
         private void SimulateParallel(int startIndex, CancellationToken token, IProgress<int> progress = null)
@@ -172,7 +174,7 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
                         PlayerData localPlayerData = new PlayerData(clonedTongbaoSelector, clonedRandom);
                         localPlayerData.CopyFrom(mRevertPlayerData);
 
-                        var localSimulator = new ExchangeSimulator(localPlayerData, clonedDataCollector)
+                        var localSimulator = new ExchangeSimulator(localPlayerData, Timer, clonedDataCollector)
                         {
                             SimulationType = SimulationType,
                             ExchangeSlotIndex = ExchangeSlotIndex,
