@@ -8,7 +8,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
     /// <summary>
     /// 线程安全的高性能模拟数据收集器
     /// </summary>
-    public class ExchangeDataCollector : IDataCollector<SimulateContext>
+    public class ExchangeDataCollector : IDataCollector<SimulateContext>, IShareContainer<SimulateContext>
     {
         public bool RecordEachExchange { get; set; } = true;
         public int MaxExchangeRecord { get; set; } = -1; // 交换次数过多则省略，-1表示无限制

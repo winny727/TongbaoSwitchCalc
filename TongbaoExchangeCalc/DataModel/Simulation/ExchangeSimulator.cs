@@ -168,7 +168,10 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
                         ITongbaoSelector clonedTongbaoSelector = (ITongbaoSelector)PlayerData.TongbaoSelector.Clone();
                         IRandomGenerator clonedRandom = (IRandomGenerator)PlayerData.Random.Clone();
                         IDataCollector<SimulateContext> clonedDataCollector = DataCollector?.CloneAsEmpty();
-                        clonedDataCollector?.ShareContainer(DataCollector);
+                        if (clonedDataCollector is IShareContainer<SimulateContext> shareContainer)
+                        {
+                            shareContainer.ShareContainer(DataCollector);
+                        }
                         dataCollectors[workerIndex] = clonedDataCollector;
 
                         PlayerData localPlayerData = new PlayerData(clonedTongbaoSelector, clonedRandom);

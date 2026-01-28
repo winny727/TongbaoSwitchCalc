@@ -333,11 +333,6 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             return collector;
         }
 
-        public void ShareContainer(IDataCollector<SimulateContext> other)
-        {
-
-        }
-
         public void MergeData(IDataCollector<SimulateContext> other)
         {
             if (other is PrintDataCollector collector)

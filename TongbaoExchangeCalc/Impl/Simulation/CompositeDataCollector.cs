@@ -108,21 +108,6 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             return collector;
         }
 
-        public void ShareContainer(IDataCollector<SimulateContext> other)
-        {
-            if (other is CompositeDataCollector collector)
-            {
-                for (int i = 0; i < collector.mDataCollectors.Count; i++)
-                {
-                    var otherItem = collector.mDataCollectors[i];
-                    for (int j = 0; j < mDataCollectors.Count; j++)
-                    {
-                        mDataCollectors[j].ShareContainer(otherItem);
-                    }
-                }
-            }
-        }
-
         public void MergeData(IDataCollector<SimulateContext> other)
         {
             if (other is CompositeDataCollector collector)

@@ -17,8 +17,12 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
         void OnExchangeStepBegin(in TContext context);
         void OnExchangeStepEnd(in TContext context, ExchangeStepResult result); 
         IDataCollector<TContext> CloneAsEmpty(); // 保留参数克隆但不克隆数据
-        void ShareContainer(IDataCollector<TContext> other); // 把other的容器share到this
         void MergeData(IDataCollector<TContext> other); // 把other的数据合并到this
         void ClearData(); // 清理数据
+    }
+
+    public interface IShareContainer<TContext> where TContext : struct
+    {
+        void ShareContainer(IDataCollector<TContext> other); // 把other的容器share到this
     }
 }
