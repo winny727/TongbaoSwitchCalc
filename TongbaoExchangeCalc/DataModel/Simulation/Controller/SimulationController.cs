@@ -22,7 +22,8 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
             {
                 throw new ArgumentNullException(nameof(timer));
             }
-            mExchangeSimulator = new ExchangeSimulator(playerData, timer, dataCollector);
+            //mExchangeSimulator = new ExchangeSimulator(playerData, timer, dataCollector);
+            mExchangeSimulator = new ParallelExchangeSimulator(playerData, timer, dataCollector);
         }
 
         public void Simulate(SimulationOptions options)
@@ -48,7 +49,7 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
 
             try
             {
-                await Task.Run(() => SimulateInternal(mCancellationTokenSource.Token, progress));
+                await Task.Run(() => SimulateInternal(mCancellationTokenSource.Token, progress), mCancellationTokenSource.Token);
             }
             finally
             {
@@ -69,7 +70,14 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
 
         private void SimulateInternal(CancellationToken token, IProgress<int> progress = null)
         {
-            mExchangeSimulator.Simulate(token, progress);
+            if (mExchangeSimulator is ParallelExchangeSimulator parallelSimulator)
+            {
+                parallelSimulator.Simulate(token, progress);
+            }
+            else
+            {
+                mExchangeSimulator.Simulate();
+            }
         }
 
         private void ApplySimulationOptions(ExchangeSimulator simulator, SimulationOptions options)
@@ -83,7 +91,10 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
             simulator.TotalSimulationCount = options.TotalSimulationCount;
             simulator.MinimumLifePoint = options.MinimumLifePoint;
             simulator.ExchangeSlotIndex = options.ExchangeSlotIndex;
-            simulator.UseMultiThreadOptimize = options.UseMultiThreadOptimize;
+            if (simulator is ParallelExchangeSimulator parallelSimulator)
+            {
+                parallelSimulator.UseMultiThreadOptimize = options.UseMultiThreadOptimize;
+            }
             options.RuleController?.ApplySimulationRule(simulator); // ApplyRule
         }
     }
