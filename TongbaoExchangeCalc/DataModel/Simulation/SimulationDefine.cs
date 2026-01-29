@@ -124,14 +124,14 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
         }
     }
 
-    public enum SimulationType : byte
+    public enum SimulationType : sbyte
     {
         LifePointLimit = 0, // 高级交换：根据目标生命确定一轮模拟；
         ExpectationTongbao = 1, // 期望通宝：不限制血量，根据是否交换出期望通宝确定一轮模拟（除非次数超过上限）；
         ExpectationTongbao_Limited = 2, // 期望通宝：限制血量，根据是否交换出期望通宝确定一轮模拟（除非次数超过上限）；
     }
 
-    public enum SimulateStepResult : byte
+    public enum SimulateStepResult : sbyte
     {
         Success = 0,
         LifePointLimitReached = 1,
@@ -142,7 +142,7 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
         CancellationRequested = 6,
     }
 
-    public enum ExchangeStepResult : byte
+    public enum ExchangeStepResult : sbyte
     {
         Success = 0,
         SelectedEmpty = 1,
@@ -152,7 +152,7 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
         UnknownError = 5,
     }
 
-    public enum SimulationRuleType : byte
+    public enum SimulationRuleType : sbyte
     {
         UnexchangeableTongbao = 0, // 不可交换通宝，交换出不可交换通宝就切换槽位
         ExpectationTongbao = 1, // 期望通宝，交换出所有期望通宝就停止交换
