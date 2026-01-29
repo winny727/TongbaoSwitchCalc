@@ -65,7 +65,7 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
             {
                 return "无效规则，通宝配置错误";
             }
-            return $"交换出{config.Name}就停止";
+            return $"交换出[{Define.GetTongbaoTypeName(config.Type)}-{config.Name}]就停止";
         }
     }
 
@@ -97,7 +97,7 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
             {
                 return "无效规则，通宝配置错误";
             }
-            return $"期望获得{config.Name}";
+            return $"期望获得[{Define.GetTongbaoTypeName(config.Type)}-{config.Name}]";
         }
     }
 
@@ -159,7 +159,7 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
             {
                 return "无效规则，通宝配置错误";
             }
-            return $"优先交换{config.Name}";
+            return $"优先交换[{Define.GetTongbaoTypeName(config.Type)}-{config.Name}]";
         }
     }
 }

@@ -153,8 +153,11 @@ namespace TongbaoExchangeCalc
             foreach (var id in Helper.GetUpgradeSelectTongbaoIds())
             {
                 TongbaoConfig config = TongbaoConfig.GetTongbaoConfigById(id);
-                if (config == null) continue;
-                comboBoxMultiSel.Items.Add(new ComboBoxItem<TongbaoSelectMode>(config.Name, TongbaoSelectMode.Specific, config));
+                if (config != null)
+                {
+                    string name = Helper.GetTongbaoFullName(id);
+                    comboBoxMultiSel.Items.Add(new ComboBoxItem<TongbaoSelectMode>(name, TongbaoSelectMode.Specific, config));
+                }
             }
             comboBoxMultiSel.SelectedIndex = 0;
 
@@ -410,7 +413,7 @@ namespace TongbaoExchangeCalc
                 if (!tongbao.CanExchange())
                 {
                     mPrintDataCollector?.OnExchangeStepEnd(new SimulateContext(0, mPlayerData.ExchangeCount, slotIndex, mPlayerData), ExchangeStepResult.TongbaoUnexchangeable);
-                    MessageBox.Show($"交换失败，选中通宝[{Helper.GetTongbaoName(tongbao.Id)}]无法交换。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"交换失败，选中通宝[{Helper.GetTongbaoFullName(tongbao.Id)}]无法交换。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 

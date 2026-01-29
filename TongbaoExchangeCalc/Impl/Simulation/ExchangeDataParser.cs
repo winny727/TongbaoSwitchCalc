@@ -423,8 +423,8 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
         private string GetTongbaoName(int tongbaoId)
         {
-            return Helper.GetTongbaoName(tongbaoId);
-            //return Helper.GetTongbaoFullName(tongbaoId);
+            //return Helper.GetTongbaoName(tongbaoId);
+            return Helper.GetTongbaoFullName(tongbaoId);
         }
     }
 }

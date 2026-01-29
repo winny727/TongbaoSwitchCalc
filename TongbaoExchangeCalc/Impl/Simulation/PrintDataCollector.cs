@@ -14,7 +14,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
         private SimulationType mSimulationType;
         private int mTotalSimulateStep;
-        private readonly Dictionary<int, string> mTempBeforeTongbaoName = new Dictionary<int, string>();
+        private readonly Dictionary<int, int> mTempBeforeTongbaoId = new Dictionary<int, int>();
         private readonly Dictionary<int, Dictionary<ResType, int>> mTempResBefore = new Dictionary<int, Dictionary<ResType, int>>(); // key: simulationStepIndex
 
         private readonly ObjectPool<Dictionary<ResType, int>> mResDictPool = new ObjectPool<Dictionary<ResType, int>>();
@@ -170,7 +170,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             mTempResBefore[context.SimulationStepIndex].Clear();
             mResDictPool.Recycle(mTempResBefore[context.SimulationStepIndex], true);
             mTempResBefore.Remove(context.SimulationStepIndex);
-            mTempBeforeTongbaoName.Remove(context.SimulationStepIndex);
+            mTempBeforeTongbaoId.Remove(context.SimulationStepIndex);
         }
 
         public void OnExchangeStepBegin(in SimulateContext context)
@@ -212,19 +212,20 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             mLastExchangeResultStartIndex = OutputResultSB.Length;
             mLastExchangeResultEndIndex = OutputResultSB.Length;
 
-            mTempBeforeTongbaoName.TryGetValue(context.SimulationStepIndex, out var beforeTongbaoName);
+            mTempBeforeTongbaoId.TryGetValue(context.SimulationStepIndex, out var beforeTongbaoId);
 
             if (result == ExchangeStepResult.Success)
             {
                 Tongbao afterTongbao = context.PlayerData.GetTongbao(context.SlotIndex);
+                int afterTongbaoId = afterTongbao?.Id ?? -1;
 
                 OutputResultSB.Append("将位置[")
                               .Append(context.SlotIndex + 1)
-                              .Append("]上的[")
-                              .Append(beforeTongbaoName)
-                              .Append("]交换为[")
-                              .Append(afterTongbao.Name)
-                              .Append(']');
+                              .Append("]上的[");
+                Helper.AppendTongbaoFullName(OutputResultSB, beforeTongbaoId);
+                OutputResultSB.Append("]交换为[");
+                Helper.AppendTongbaoFullName(OutputResultSB, afterTongbaoId);
+                OutputResultSB.Append(']');
                 AppendResChangedResult(OutputResultSB, context);
             }
             else
@@ -238,7 +239,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                         break;
                     case ExchangeStepResult.TongbaoUnexchangeable:
                         OutputResultSB.Append("交换失败，通宝[")
-                                      .Append(beforeTongbaoName)
+                                      .Append(beforeTongbaoId)
                                       .Append("]不可交换");
                         break;
                     case ExchangeStepResult.LifePointNotEnough:
@@ -246,7 +247,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                         break;
                     case ExchangeStepResult.ExchangeableTongbaoNotExist:
                         OutputResultSB.Append("交换失败，通宝[")
-                                      .Append(beforeTongbaoName)
+                                      .Append(beforeTongbaoId)
                                       .Append("]无可交换通宝");
                         break;
                     case ExchangeStepResult.UnknownError:
@@ -264,7 +265,8 @@ namespace TongbaoExchangeCalc.Impl.Simulation
         private void RecordCurrentExchange(in SimulateContext context)
         {
             Tongbao beforeTongbao = context.PlayerData.GetTongbao(context.SlotIndex);
-            mTempBeforeTongbaoName[context.SimulationStepIndex] = beforeTongbao?.Name;
+            int beforeTongbaoId = beforeTongbao?.Id ?? -1;
+            mTempBeforeTongbaoId[context.SimulationStepIndex] = beforeTongbaoId;
 
             var resDict = mTempResBefore[context.SimulationStepIndex];
             resDict.Clear();
@@ -345,7 +347,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
         {
             mLastExchangeResultStartIndex = -1;
             mLastExchangeResultEndIndex = -1;
-            mTempBeforeTongbaoName.Clear();
+            mTempBeforeTongbaoId.Clear();
             OutputResultSB.Clear();
 
             foreach (var item in mTempResBefore)

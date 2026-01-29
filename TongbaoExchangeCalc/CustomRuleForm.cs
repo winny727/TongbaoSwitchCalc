@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using TongbaoExchangeCalc.DataModel;
 using TongbaoExchangeCalc.DataModel.Simulation;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace TongbaoExchangeCalc
 {
@@ -22,27 +23,27 @@ namespace TongbaoExchangeCalc
 
         private void InitView()
         {
-            label1.Text = SimulationDefine.GetSimulationRuleName(Type);
+            this.Text = $"自定义规则 - {SimulationDefine.GetSimulationRuleName(Type)}";
 
             switch (Type)
             {
                 case SimulationRuleType.UnexchangeableTongbao:
-                    label2.Text = "不可交换通宝";
+                    label2.Text = "选择不可交换通宝:";
                     label4.Text = "模拟时若交换出不可交换通宝，切换到下一个可交换槽位；通常不可交换通宝为目标通宝或降级通宝";
                     InitTongbaoIdView();
                     break;
                 case SimulationRuleType.ExpectationTongbao:
-                    label2.Text = "期望获得通宝";
+                    label2.Text = "选择期望获得通宝:";
                     label4.Text = "持有所有期望通宝时停止此轮模拟";
                     InitTongbaoIdView();
                     break;
                 case SimulationRuleType.ExchangeableSlot:
-                    label2.Text = "可交换钱盒槽位索引";
+                    label2.Text = "输入可交换钱盒槽位索引:";
                     label4.Text = "模拟时会按顺序在可交换钱盒槽位中交换";
                     InitSlotIndexView();
                     break;
                 case SimulationRuleType.PriorityExchangeTongbao:
-                    label2.Text = "优先交换通宝";
+                    label2.Text = "选择优先交换通宝:";
                     label4.Text = "模拟时会先将所有可交换槽位内的优先交换通宝用于交换";
                     InitTongbaoIdView();
                     break;
@@ -102,16 +103,11 @@ namespace TongbaoExchangeCalc
 
         private void UpdateTongbaoInfo(int id)
         {
-            pictureBox1.Image = new Bitmap(Helper.GetTongbaoImage(id), new Size(pictureBox1.Width, pictureBox1.Height));
-            TongbaoConfig config = TongbaoConfig.GetTongbaoConfigById(id);
-            if (config != null)
-            {
-                label3.Text = config.Name;
-            }
-            else
-            {
-                label3.Text = "未选择";
-            }
+            var image = Helper.GetTongbaoImage(id);
+            pictureBox1.Image = image != null ? new Bitmap(image, new Size(pictureBox1.Width, pictureBox1.Height)) : null;
+
+            string name = Helper.GetTongbaoFullName(id);
+            label3.Text = !string.IsNullOrEmpty(name) ? name : "未选择";
         }
 
         private T GetArg<T>(int index)

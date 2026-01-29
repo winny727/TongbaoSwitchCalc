@@ -47,7 +47,6 @@ namespace TongbaoExchangeCalc
             TongbaoConfig config = TongbaoConfig.GetTongbaoConfigById(id);
             if (config != null)
             {
-                string typeName = Define.GetTongbaoTypeName(config.Type);
                 return config.Name;
             }
             return string.Empty;
@@ -382,7 +381,8 @@ namespace TongbaoExchangeCalc
                         continue;
                     }
 
-                    sb.AppendLine().Append(GetTongbaoFullName(tongbaoId));
+                    sb.AppendLine();
+                    AppendTongbaoFullName(sb, tongbaoId);
 
                     if (playerData == null)
                     {
@@ -403,7 +403,9 @@ namespace TongbaoExchangeCalc
                             int upgradeTongbaoId = upgradeTongbaoIds[j];
                             if (playerData.IsTongbaoExist(upgradeTongbaoId))
                             {
-                                sb.Append($"(升级后通宝[{GetTongbaoName(upgradeTongbaoId)}]已在钱盒)");
+                                sb.Append("(升级后通宝[");
+                                AppendTongbaoFullName(sb, upgradeTongbaoId);
+                                sb.Append("]已在钱盒)");
                                 break;
                             }
                         }

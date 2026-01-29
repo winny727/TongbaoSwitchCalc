@@ -5,7 +5,7 @@ using TongbaoExchangeCalc.DataModel;
 using TongbaoExchangeCalc.DataModel.Simulation;
 
 
-namespace TongbaoExchangeCalc.View
+namespace TongbaoExchangeCalc.Impl.View
 {
     public class RuleTreeViewController : ISimulationRuleController
     {
@@ -183,7 +183,7 @@ namespace TongbaoExchangeCalc.View
                     }
                     else if (newRule != null)
                     {
-                        MessageBox.Show("自定义规则添加失败，自定义规则与已有规则冲突", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("自定义规则添加失败，已存在相同规则", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
             }
@@ -261,8 +261,16 @@ namespace TongbaoExchangeCalc.View
                 {
                     SimulationRule newRule = SimulationDefine.CreateSimulationRule(rule.Type, customRuleForm.SelectedParams);
                     collection.RemoveAt(index);
-                    collection.Insert(index, newRule);
-                    UpdateRuleTreeView();
+                    if (collection.Insert(index, newRule))
+                    {
+                        UpdateRuleTreeView();
+                    }
+                    else
+                    {
+                        collection.Insert(index, rule); // 还原
+                        UpdateRuleTreeView();
+                        MessageBox.Show("自定义规则修改失败，已存在相同规则", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                 }
             }
         }
