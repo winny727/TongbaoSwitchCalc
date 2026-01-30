@@ -126,7 +126,7 @@ namespace TongbaoExchangeCalc.DataModel
                     if (tongbao != null)
                     {
                         TongbaoBox[i] = CreateTongbao(tongbao.Id);
-                        TongbaoBox[i].ApplyRandomRes(tongbao.RandomResType, tongbao.RandomResCount);
+                        TongbaoBox[i].ApplyRandomRes(tongbao.RandomRes);
                     }
                 }
             }
@@ -223,14 +223,20 @@ namespace TongbaoExchangeCalc.DataModel
                 DestroyTongbao(TongbaoBox[slotIndex]);
                 TongbaoBox[slotIndex] = tongbao;
                 // 添加通宝自带效果
-                if (tongbao.ExtraResType != ResType.None && tongbao.ExtraResCount > 0)
+                for (int i = 0; i < tongbao.ExtraResTypes.Count && i < tongbao.ExtraResCounts.Count; i++)
                 {
-                    AddResValue(tongbao.ExtraResType, tongbao.ExtraResCount);
+                    ResType resType = tongbao.ExtraResTypes[i];
+                    int resCount = tongbao.ExtraResCounts[i];
+                    if (resType != ResType.None && resCount > 0)
+                    {
+                        AddResValue(resType, resCount);
+                    }
                 }
                 // 添加通宝品相效果
-                if (tongbao.RandomResType != ResType.None && tongbao.RandomResCount > 0)
+                var randomRes = tongbao.RandomRes;
+                if (randomRes != null && randomRes.ResType != ResType.None && randomRes.ResCount != 0)
                 {
-                    AddResValue(tongbao.RandomResType, tongbao.RandomResCount);
+                    AddResValue(randomRes.ResType, randomRes.ResCount);
                 }
                 // 福祸相依
                 if (HasSpecialCondition(SpecialConditionFlag.Collectible_Fortune))
@@ -324,7 +330,24 @@ namespace TongbaoExchangeCalc.DataModel
                 {
                     mResValues.Add(type, 0);
                 }
-                mResValues[type] += value;
+                int beforeValue = mResValues[type];
+                int afterValue = beforeValue + value;
+                if (type == ResType.LifePoint)
+                {
+                    if (beforeValue > 0 && afterValue <= 0)
+                    {
+                        afterValue = 1;
+                    }
+                }
+                else
+                {
+                    if (beforeValue >= 0 && afterValue < 0)
+                    {
+                        afterValue = 0;
+                    }
+                }
+                mResValues[type] = afterValue;
+
                 if (Define.ParentResType.TryGetValue(type, out var parentResType))
                 {
                     AddResValue(parentResType, value);
@@ -400,7 +423,7 @@ namespace TongbaoExchangeCalc.DataModel
                 {
                     // 升级通宝保留品相重复触发一次
                     newTongbao = CreateTongbao(newTongbaoId);
-                    newTongbao?.ApplyRandomRes(tongbao.RandomResType, tongbao.RandomResCount);
+                    newTongbao?.ApplyRandomRes(tongbao.RandomRes);
                 }
                 else
                 {
@@ -408,11 +431,10 @@ namespace TongbaoExchangeCalc.DataModel
                 }
                 if (newTongbao != null)
                 {
+                    AddResValue(ResType.LifePoint, -costLifePoint);
                     InsertTongbao(newTongbao, slotIndex);
 
                     ExchangeCount++;
-                    AddResValue(ResType.LifePoint, -costLifePoint);
-
                     return true;
                 }
             }

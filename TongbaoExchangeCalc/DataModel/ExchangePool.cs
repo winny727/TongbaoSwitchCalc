@@ -6,10 +6,25 @@ namespace TongbaoExchangeCalc.DataModel
     public static class ExchangePool
     {
         private static readonly Dictionary<int, List<int>> mExchangeOutPools = new Dictionary<int, List<int>>(); // <poolId, <out tongbaoId>>
+        private static readonly Dictionary<int, List<int>> mMutexTongbaoIds = new Dictionary<int, List<int>>(); // <poolId, <out tongbaoId>>
 
-        internal static void SetupTongbaoExchangePool(TongbaoConfig config)
+        internal static void SetupTongbaoConfig(TongbaoConfig config)
         {
-            if (config == null || config.ExchangeOutPools == null)
+            if (config == null)
+            {
+                return;
+            }
+
+            if (config.MutexGroup > 0)
+            {
+                if (!mMutexTongbaoIds.ContainsKey(config.MutexGroup))
+                {
+                    mMutexTongbaoIds[config.MutexGroup] = new List<int>();
+                }
+                mMutexTongbaoIds[config.MutexGroup].Add(config.Id);
+            }
+
+            if (config.ExchangeOutPools == null)
             {
                 return;
             }
@@ -33,6 +48,15 @@ namespace TongbaoExchangeCalc.DataModel
         public static IReadOnlyList<int> GetExchangeOutTongbaoIds(int poolId)
         {
             if (mExchangeOutPools.TryGetValue(poolId, out var tongbaoIds))
+            {
+                return tongbaoIds;
+            }
+            return null;
+        }
+
+        public static IReadOnlyList<int> GetMutexTongbaoIds(int mutexId)
+        {
+            if (mMutexTongbaoIds.TryGetValue(mutexId, out var tongbaoIds))
             {
                 return tongbaoIds;
             }
@@ -73,21 +97,25 @@ namespace TongbaoExchangeCalc.DataModel
                     continue;
                 }
 
-                // 排除钱盒里该通宝升级后的通宝
-                if (config.IsUpgrade)
+                // 排除钱盒里的互斥通宝
+                if (config.MutexGroup > 0)
                 {
-                    bool isExistUpgrade = false;
-                    var upgradeTongbaoIds = GetExchangeOutTongbaoIds(config.ExchangeInPool);
-                    for (int j = 0; j < upgradeTongbaoIds.Count; j++)
+                    bool isMutexExist = false;
+                    var mutexTongbaoIds = GetMutexTongbaoIds(config.MutexGroup);
+                    for (int j = 0; j < mutexTongbaoIds.Count; j++)
                     {
-                        int upgradeTongbaoId = upgradeTongbaoIds[j];
-                        if (playerData.IsTongbaoExist(upgradeTongbaoId))
+                        int mutexTongbaoId = mutexTongbaoIds[j];
+                        if (mutexTongbaoId == tongbao.Id || mutexTongbaoId == tongbaoId)
                         {
-                            isExistUpgrade = true;
+                            continue;
+                        }
+                        if (playerData.IsTongbaoExist(mutexTongbaoId))
+                        {
+                            isMutexExist = true;
                             break;
                         }
                     }
-                    if (isExistUpgrade)
+                    if (isMutexExist)
                     {
                         continue;
                     }

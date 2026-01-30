@@ -5,11 +5,13 @@ namespace TongbaoExchangeCalc.DataModel
 {
     public static class Define
     {
-        public static readonly IReadOnlyList<RandomResDefine> RandomResDefines = new List<RandomResDefine>()
+        public static readonly IReadOnlyList<RandomRes> RandomResDefines = new List<RandomRes>()
         {
-            new RandomResDefine(0.0393f, ResType.Shield, 2),
-            new RandomResDefine(0.0291f, ResType.Hope, 1),
-            new RandomResDefine(0.0094f, ResType.Candles, 1),
+            new RandomRes("锈色", 0f, ResType.OriginiumIngots, 0), // 投出时，每经过一个节点，获得源石锭+1
+            new RandomRes("存护", 0.0393f, ResType.Shield, 2), // 加入钱盒时，获得护盾值+2
+            new RandomRes("入幻", 0.0291f, ResType.Hope, 1), // 加入钱盒时，获得希望+1
+            new RandomRes("引光", 0.0094f, ResType.Candles, 1), // 加入钱盒时，获得烛火+1
+            new RandomRes("巡游", 0f, ResType.Coupon, 0), // 投出时，每完成一场战斗，获得票券+1
         };
 
         // 不同分队的钱盒容量/交换消耗生命值
@@ -102,6 +104,7 @@ namespace TongbaoExchangeCalc.DataModel
         PrimalFarmingCandles = 5, //鸿蒙开荒烛火
         Hope = 6, //希望
         Shield = 7, //护盾
+        //Collectible = 8, //收藏品
 
         Count,
 
@@ -132,14 +135,16 @@ namespace TongbaoExchangeCalc.DataModel
         Collectible_Fortune = 1 << 0, //福祸相依
     }
 
-    public class RandomResDefine
+    public class RandomRes
     {
+        public readonly string Name;
         public readonly float Probability;
         public readonly ResType ResType;
         public readonly int ResCount;
 
-        public RandomResDefine(float probability, ResType resType, int resCount)
+        public RandomRes(string name, float probability, ResType resType, int resCount)
         {
+            Name = name;
             Probability = probability;
             ResType = resType;
             ResCount = resCount;

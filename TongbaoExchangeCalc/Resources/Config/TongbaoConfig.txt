@@ -1,77 +1,107 @@
-Id	Name	Description	ImgPath	Type	ExchangeInPool	ExchangeOutPools	IsUpgrade	ExtraResType	ExtraResCount	备注
-1001	大炎通宝		rogue_5_copper_B_01$0.png	Balance	1	0				
-1002	奇土生金		rogue_5_copper_B_06$0.png	Balance	1	1				
-1003	水生木护		rogue_5_copper_B_07$0.png	Balance	1	1				
-1004	金寒水衍		rogue_5_copper_B_08$0.png	Balance	1	1				
-1005	投木炎延		rogue_5_copper_B_10$0.png	Balance	1	1				
-1006	苦寒		rogue_5_copper_F_01$0.png	Balance	1	1				
-1007	匪风		rogue_5_copper_F_02$0.png	Balance	1	1				
-1008	霖雨		rogue_5_copper_F_03$0.png	Balance	1	1				
-1009	霹雳		rogue_5_copper_F_04$0.png	Balance	1	1				
-1010	旱热		rogue_5_copper_F_05$0.png	Balance	1	1				
-1011	虹霓		rogue_5_copper_F_06$0.png	Balance	1	1				
-1012	雾凇		rogue_5_copper_F_07$0.png	Balance	1	1				
-1013	霜雪		rogue_5_copper_F_08$0.png	Balance	1	1				
-1014	志欲遂		rogue_5_copper_F_13$0.png	Balance	1	2				
-1015	慧避灾		rogue_5_copper_F_14$0.png	Balance	1	2				
-1016	挪移		rogue_5_copper_F_28$0.png	Balance	1	1				
-1017	迅步		rogue_5_copper_F_29$0.png	Balance	1	1				
-1018	重铠		rogue_5_copper_F_31$0.png	Balance	1	1				
-1019	庆丰收		rogue_5_copper_R_01$0.png	Balance	2	2		LifePoint	2	
-1020	塞上月		rogue_5_copper_R_02$0.png	Balance	2	2				
-1021	军屯垦		rogue_5_copper_R_04$0.png	Balance	2	2				
-1022	诡意代币		rogue_5_copper_R_06$0.png	Balance	2	0		OriginiumIngots	10	
-1023	债难偿		rogue_5_copper_R_13$0.png	Balance	2	2		LifePoint	6	
-1024	触锁代币		rogue_5_copper_R_14$0.png	Balance	2	2|3				
-1025	移山繁		rogue_5_copper_U_2$0.png	Balance	2	4				
-1026	天下先		rogue_5_copper_U_4$0.png	Balance	2	5				
-1027	初有文		rogue_5_copper_U_5$0.png	Balance	6	2	1			
-1028	勤运体		rogue_5_copper_U_7$0.png	Balance	7	2	1			
-1029	鸿蒙开荒		rogue_5_copper_S_2$0.png	Balance	3	3		PrimalFarmingCandles	2	
-2001	火灼土沃		rogue_5_copper_B_09$0.png	Flower	1	1				
-2002	驰道长		rogue_5_copper_F_09$0.png	Flower	1	2				
-2003	武人之争		rogue_5_copper_F_10$0.png	Flower	1	3				
-2004	百业俱兴		rogue_5_copper_F_11$0.png	Flower	1	3				
-2005	聚力则强		rogue_5_copper_R_03$0.png	Flower	3	3				
-2006	茧成绢		rogue_5_copper_R_08$0.png	Flower	3	3				
-2007	平沙之盾		rogue_5_copper_R_10$0.png	Flower	3	2|3				
-2008	火上之灶		rogue_5_copper_R_11$0.png	Flower	3	3				
-2009	界园行		rogue_5_copper_R_12$0.png	Flower	2	2				
-2010	延识镇木		rogue_5_copper_R_15$0.png	Flower	2	2|3				
-2011	载道远		rogue_5_copper_U_6$0.png	Flower	2	6				
-2012	修性情		rogue_5_copper_U_8$0.png	Flower	2	7				
-2013	心无患		rogue_5_copper_U_9$0.png	Flower	2	7				
-2014	鸭爵金币		rogue_5_copper_S_1$0.png	Flower	3	3				
-2015	己任重		rogue_5_copper_S_3$0.png	Flower	2	2				
-2016	圣诏封神		rogue_5_copper_S_4$0.png	Flower	3	0				
-2017	神秘商贾		rogue_5_copper_S_5$0.png	Flower	3	3		Coupon	4	
-2018	孜孜不倦		rogue_5_copper_S_8$0.png	Flower	3	3				
-3001	西廉贞		rogue_5_copper_B_02$0.png	Risk	1	0				
-3002	北刺面		rogue_5_copper_B_03$0.png	Risk	1	0				
-3003	南见山		rogue_5_copper_B_04$0.png	Risk	1	0				
-3004	东缺角		rogue_5_copper_B_05$0.png	Risk	1	0				
-3005	寒窗志		rogue_5_copper_F_12$0.png	Risk	1	2				
-3006	战血流		rogue_5_copper_F_15$0.png	Risk	2	2				
-3007	遇良弈		rogue_5_copper_F_16$0.png	Risk	2	2				
-3008	隐市忧		rogue_5_copper_F_17$0.png	Risk	2	2				
-3009	法与律		rogue_5_copper_F_18$0.png	Risk	2	2				
-3010	两江春		rogue_5_copper_F_19$0.png	Risk	2	2				
-3011	凡物变		rogue_5_copper_F_20$0.png	Risk	2	2				
-3012	人间长存		rogue_5_copper_F_21$0.png	Risk	3	3				
-3013	神农守		rogue_5_copper_F_22$0.png	Risk	2	2				
-3014	梦奇物		rogue_5_copper_F_23$0.png	Risk	2	2				
-3015	一字落		rogue_5_copper_F_24$0.png	Risk	2	2				
-3016	待机缘		rogue_5_copper_F_25$0.png	Risk	2	2				
-3017	画人间		rogue_5_copper_F_26$0.png	Risk	2	2				
-3018	恣狂情		rogue_5_copper_F_27$0.png	Risk	2	2				
-3019	生材百相		rogue_5_copper_F_30$0.png	Risk	2	2				
-3020	火机		rogue_5_copper_F_32$0.png	Risk	1	1				
-3021	岁醒天时		rogue_5_copper_P_01$0.png	Risk	0	0				
-3022	无皎之昧		rogue_5_copper_P_02$0.png	Risk	0	0				
-3023	安硕鼷		rogue_5_copper_R_05$0.png	Risk	2	2				
-3024	合乎礼		rogue_5_copper_R_07$0.png	Risk	2	2		OriginiumIngots	30	
-3025	黑子伏		rogue_5_copper_R_09$0.png	Risk	2	2|3				
-3026	移山难		rogue_5_copper_U_1$0.png	Risk	4	2	1			
-3027	朝闻道		rogue_5_copper_U_3$0.png	Risk	5	0	1			
-3028	诛邪雷法		rogue_5_copper_S_6$0.png	Risk	3	3				
-3029	商路难行		rogue_5_copper_S_7$0.png	Risk	3	3				
+Id	Name	Description	Type	Rarity	DlcVersion	ImgPath	ExchangeInPool	ExchangeOutPools	IsUpgrade	MutexGroup	ExtraResTypes	ExtraResCounts	备注
+1001	大炎通宝	普通又空白，什么也没有	Balance	1		rogue_5_copper_B_01$0.png	1	0					
+1002	西廉贞	投出时，精英及领袖敌人的生命值、攻击力+10%，在险路恶敌及岁兽残识中攻击力、生命值额外+20％	Risk	1		rogue_5_copper_B_02$0.png	1	0					
+1003	北刺面	投出时，精英及领袖敌人的移动速度+10%，在险路恶敌及岁兽残识中移动速度额外+20％	Risk	1		rogue_5_copper_B_03$0.png	1	0					
+1004	南见山	投出时，精英及领袖敌人的防御力+15%，在险路恶敌及岁兽残识中防御力额外+35％	Risk	1		rogue_5_copper_B_04$0.png	1	0					
+1005	东缺角	投出时，精英及领袖敌人的法术抗性+10，在险路恶敌及岁兽残识中法术抗性额外+20	Risk	1		rogue_5_copper_B_05$0.png	1	0					
+1006	奇土生金	投出时，立即获得源石锭+4（下次投钱前变化为大炎通宝）	Balance	1		rogue_5_copper_B_06$0.png	1	1					
+1007	水生木护	投出时，立即获得护盾值+2（下次投钱前变化为大炎通宝）	Balance	1		rogue_5_copper_B_07$0.png	1	1					
+1008	金寒水衍	投出时，立即获得希望+1（下次投钱前变化为大炎通宝）	Balance	1		rogue_5_copper_B_08$0.png	1	1					
+1009	火灼土沃	投出时，立即获得目标生命上限+1（下次投钱前变化为大炎通宝）	Flower	1		rogue_5_copper_B_09$0.png	1	1					
+1010	投木炎延	投出时，所有敌人最大生命值-30%（下次投钱前变化为大炎通宝）	Balance	1		rogue_5_copper_B_10$0.png	1	1					
+2001	苦寒	投出时，使战斗中位于最右边一列化境地块上的干员攻击力+60%	Balance	1		rogue_5_copper_F_01$0.png	1	1					
+2002	匪风	投出时，使战斗中位于最右边一列化境地块上的干员攻击速度+60	Balance	1		rogue_5_copper_F_02$0.png	1	1					
+2003	霖雨	投出时，使战斗中位于最右边一列化境地块上的干员生命值+100%	Balance	1		rogue_5_copper_F_03$0.png	1	1					
+2004	霹雳	投出时，使战斗中位于最右边一列化境地块上的干员防御力+100%	Balance	1		rogue_5_copper_F_04$0.png	1	1					
+2005	旱热	投出时，使战斗中位于最左边一列化境地块上的干员防御力+100%	Balance	1		rogue_5_copper_F_05$0.png	1	1					
+2006	虹霓	投出时，使战斗中位于最左边一列化境地块上的干员攻击速度+60	Balance	1		rogue_5_copper_F_06$0.png	1	1					
+2007	雾凇	投出时，使战斗中位于最左边一列化境地块上的干员生命值+100%	Balance	1		rogue_5_copper_F_07$0.png	1	1					
+2008	霜雪	投出时，使战斗中位于最左边一列化境地块上的干员攻击力+60%	Balance	1		rogue_5_copper_F_08$0.png	1	1					
+2009	驰道长	投出时，使战斗中位于最左边和最右边一列化境地块上的干员攻击力+30%，攻击速度+30	Flower	1		rogue_5_copper_F_09$0.png	1	2					
+2010	武人之争	投出时，所有我方单位的攻击力+20%，每额外投出一次，所有我方单位的攻击力额外+20％（最多叠加两次）	Flower	1		rogue_5_copper_F_10$0.png	1	3					
+2011	百业俱兴	投出时，所有我方单位的生命值+25%，每额外投出一次，所有我方单位的生命值额外+25％（最多叠加三次）	Flower	1		rogue_5_copper_F_11$0.png	1	3					
+2012	寒窗志	投出时，所有我方干员的防御力+200，但部署后冻结5秒。每额外投出一次，所有我方干员的防御力额外+100	Risk	1		rogue_5_copper_F_12$0.png	1	2					
+2013	志欲遂	投出时，所有我方单位的攻击速度+80，每额外投出一次，攻击速度加成效果-20（最多减少至0）	Balance	1		rogue_5_copper_F_13$0.png	1	2					
+2014	慧避灾	投出时，所有我方单位在部署时获得4层护盾，每额外投出一次，获得护盾层数-1（最多减少至0）	Balance	1		rogue_5_copper_F_14$0.png	1	2					
+2015	战血流	投出时，所有敌方单位的最大生命值-45%，我方单位的最大生命值-25%	Risk	2		rogue_5_copper_F_15$0.png	2	2					
+2016	遇良弈	投出时，所有敌方单位的攻击力+25%，我方单位的攻击力+60%	Risk	2		rogue_5_copper_F_16$0.png	2	2					
+2017	隐市忧	投出时，所有我方单位获得55%的物理法术闪避，所有敌人攻击速度+25	Risk	2		rogue_5_copper_F_17$0.png	2	2					
+2018	法与律	投出时，所有我方单位再部署时间-65％，但我方可同时部署人数-2	Risk	2		rogue_5_copper_F_18$0.png	2	2					
+2019	两江春	投出时，所有敌人的最大生命值+50%，但受到阻挡时每秒受到5%当前生命值的法术伤害	Risk	2		rogue_5_copper_F_19$0.png	2	2					
+2020	凡物变	投出时，每5秒，所有敌人的移动速度+35％或-70％	Risk	2		rogue_5_copper_F_20$0.png	2	2					
+2021	人间长存	投出时，干员首次被击倒不撤退，原地再部署并随机选择部署方向	Risk	3		rogue_5_copper_F_21$0.png	3	3					
+2022	神农守	投出时，所有我方干员造成伤害时获得2点技力，但技力恢复速度-1/秒	Risk	2		rogue_5_copper_F_22$0.png	2	2					
+2023	梦奇物	投出时，所有我方干员的技力消耗-40%，但技能会自动开启	Risk	2		rogue_5_copper_F_23$0.png	2	2					
+2024	一字落	投出时，初始的部署费用+99，费用自然回复速度降低50%	Risk	2		rogue_5_copper_F_24$0.png	2	2					
+2025	待机缘	投出时，击败敌人后获得10点部署费用，费用自然回复速度降低50%	Risk	2		rogue_5_copper_F_25$0.png	2	2					
+2026	画人间	在界园投出时，所有我方单位的攻击速度-20；在岁兽残识投出时，所有我方单位的攻击速度+60	Risk	2		rogue_5_copper_F_26$0.png	2	2					
+2027	恣狂情	投出时，每10秒，所有我方干员获得20点技力或失去10点技力	Risk	2		rogue_5_copper_F_27$0.png	2	2					
+2028	挪移	投出时，化境地块上的干员撤离时返还的部署费用变为100%	Balance	1	1	rogue_5_copper_F_28$0.png	1	1					
+2029	迅步	投出时，化境地块上的干员被击倒或撤离时，再部署时间-30%	Balance	1	1	rogue_5_copper_F_29$0.png	1	1					
+2030	生材百相	投出时，战斗开始时打乱所有干员的攻击力	Risk	2	1	rogue_5_copper_F_30$0.png	2	2					
+2031	重铠	投出时，所有我方干员防御力+50%，生命+50%，但部署费用+5	Balance	1	1	rogue_5_copper_F_31$0.png	1	1					
+2032	火机	投出时，所有我方干员攻击力+30%，但再部署时间+30%	Risk	1	1	rogue_5_copper_F_32$0.png	1	1					
+3001	岁醒天时	投出时，除部署在化境上的我方单位外，所有其他我方单位和敌方单位每秒受到100点真实伤害	Risk		1	rogue_5_copper_P_01$0.png	0	0					
+3002	无皎之昧	投出时，战斗中刮起随机方向的沙尘暴，位于沙尘暴中的我方单位攻击力降低60％。所有我方单位攻击速度+80	Risk		1	rogue_5_copper_P_02$0.png	0	0					
+4001	庆丰收	加入钱盒时，立即获得目标生命上限+2，投出时，安全的角落出现额外选项	Balance	2		rogue_5_copper_R_01$0.png	2	2			LifePoint	2	
+4002	塞上月	投出时，立即获得护盾值+1，每次战斗后目标生命-1，护盾值+1	Balance	2		rogue_5_copper_R_02$0.png	2	2					
+4003	聚力则强	投出时，进入战斗后获得一个特殊的战术道具	Flower	3		rogue_5_copper_R_03$0.png	3	3					
+4004	军屯垦	投出时，每次经过非战斗节点，获得3点源石锭及1点希望	Balance	2		rogue_5_copper_R_04$0.png	2	2					
+4005	安硕鼷	投出时，击败雕伥后，额外获得票券。雕伥最大生命值大幅提升	Risk	2		rogue_5_copper_R_05$0.png	2	2					
+4006	诡意代币	加入钱盒时，立即获得源石锭+10。投出时，诡意行商及易与节点更易出现稀有商品且商品售价降低	Balance	2		rogue_5_copper_R_06$0.png	2	0			OriginiumIngots	10	
+4007	合乎礼	加入钱盒时，立即获得源石锭+30，每次投出时，源石锭-10	Risk	2		rogue_5_copper_R_07$0.png	2	2			OriginiumIngots	30	
+4008	茧成绢	投出时，每有4点源石锭，获得1点源石锭	Flower	3		rogue_5_copper_R_08$0.png	3	3					
+4009	黑子伏	位于钱盒内时，战斗后获得的指挥经验+30%；投出时，所有敌人的移动速度+30%，攻击力+30%（下次投钱前变化为大炎通宝）	Risk	2		rogue_5_copper_R_09$0.png	2	2|3		1			
+4010	平沙之盾	投出时，每有1点护盾值，所有我方单位的最大生命值+5%	Flower	3		rogue_5_copper_R_10$0.png	3	2|3					
+4011	火上之灶	投出时，每有2点源石锭，所有我方单位的攻速+3	Flower	3		rogue_5_copper_R_11$0.png	3	3					
+4012	界园行	位于钱盒内时，从先行一步返回的干员带回更多票券；在界园投出时可以刷新节点且必定出现先行一步，可使用1次	Flower	2	1	rogue_5_copper_R_12$0.png	2	2					
+4013	债难偿	加入钱盒时，获得6目标生命值上限；投出时，每经过一个非战斗节点，失去1目标生命值上限（不会低于1）	Balance	2	1	rogue_5_copper_R_13$0.png	2	2			LifePoint	6	
+4014	触锁代币	在界园投出时可以刷新节点且必定出现诡意行商，可使用1次	Balance	2	1	rogue_5_copper_R_14$0.png	2	2|3					
+4015	延识镇木	在界园投出时可以刷新节点且必定出现一个进入是非境的误入奇境，可使用1次	Flower	2	1	rogue_5_copper_R_15$0.png	2	2|3					
+5001	移山难	投出时，所有敌方单位防御力+2000，但每次受到伤害时防御力-100（最多叠加25次），可在筹谋中升级	Risk	2		rogue_5_copper_U_1$0.png	4	2	1	2			
+5002	移山繁	投出时，所有敌方单位防御力+2000，但每次受到伤害时防御力-150（最多叠加25次）	Balance	2		rogue_5_copper_U_2$0.png	2	4		1			
+5003	朝闻道	投出时，每场战斗使随机一名干员的生命值、攻击力、初始技力、部署费用+100%。可在筹谋中升级	Risk	2		rogue_5_copper_U_3$0.png	5	0	1				
+5004	天下先	投出时，每场战斗开始时使随机两名干员的生命值、攻击力、初始技力、部署费用+100%	Balance	2		rogue_5_copper_U_4$0.png	2	5		2			
+5005	初有文	在界园投出时，生效期间可刷新节点一次。可在筹谋中升级	Balance	2		rogue_5_copper_U_5$0.png	6	2	1	3			
+5006	载道远	每次投出时，使下次进入岁兽残识时随机一个节点变为已探索状态。在界园投出时，生效期间可刷新节点两次	Flower	2		rogue_5_copper_U_6$0.png	2	6		3			
+5007	勤运体	投出时，战斗结束后额外掉落1点目标生命值，可在筹谋中升级	Balance	2		rogue_5_copper_U_7$0.png	7	2	1	4			
+5008	修性情	投出时，目标生命值上限+2，战斗结束后额外掉落2点目标生命值	Flower	2		rogue_5_copper_U_8$0.png	2	7		4			
+5009	心无患	投出时，战斗结束后额外掉落1点目标生命值，经过非战斗节点时目标生命值上限+1	Flower	2		rogue_5_copper_U_9$0.png	2	7		4			
+6001	鸭爵金币	投出时，使作战及紧急作战战斗中必定出现一名属性大幅度提升的鸭爵、高普尼克、流泪小子或圆仔。（下次投钱前变化为大炎通宝）	Flower	3		rogue_5_copper_S_1$0.png	3	3					
+6002	鸿蒙开荒	在界园投出时，立即获得4张票券。在岁兽残识投出时，剩余烛火+2（下次投钱前变化为大炎通宝）	Balance	3		rogue_5_copper_S_2$0.png	3	3			PrimalFarmingCandles	2	
+6003	己任重	投出时，非因指挥等级提升获得源石锭，护盾值，希望时，获得数量+1（下次投钱前变化为大炎通宝）	Flower	2		rogue_5_copper_S_3$0.png	2	2					
+6004	圣诏封神	投出时，使战斗结束后获得的招募券变化为6星随机直升临时招募券（下次投钱前变化为大炎通宝）	Flower	3		rogue_5_copper_S_4$0.png	3	0					
+6005	神秘商贾	加入钱盒时，票券+4。投出时，购买道具及在失与得交换收藏品时，希望+1（下次投钱前变化为大炎通宝）	Flower	3		rogue_5_copper_S_5$0.png	3	3			Coupon	4	
+6006	诛邪雷法	投出时，战斗中对随机一格化境降下落雷，对首个部署在该地块上的干员和周围敌人造成9次伤害。落雷结束后若该干员未被击倒，则战斗结束后成为伺烛客	Risk	3		rogue_5_copper_S_6$0.png	3	3					
+6007	商路难行	位于钱盒内时，当前节点获得纵向通路。投出时，源石锭-5	Risk	3		rogue_5_copper_S_7$0.png	3	3					
+6008	孜孜不倦	位于钱盒内时，每经过一个节点，获得2源石锭（下次投钱前变化为-大炎通宝）	Flower	3	1	rogue_5_copper_S_8$0.png	3	3					
+7001	争商机	投出时，源石锭-30。每投出一枚厉钱，源石锭+15。	Risk		2	rogue_5_copper_E_01.png							
+7002	诸灾有迹	投出时，使钱盒里未被投出的通宝变化为随机厉钱，回到钱盒时变化为大炎通宝	Risk		2	rogue_5_copper_E_02.png							
+7003	贵有衡	投出时，我方干员攻击力+10％。钱盒里每有一枚衡钱，我方干员攻击力额外+10％	Balance		2	rogue_5_copper_E_03.png							
+7004	得见繁花	回到钱盒时，使当前已投出的通宝变化为随机花钱	Flower		2	rogue_5_copper_E_04.png							
+7005	分久必合	投出时，使战斗中最后部署的干员攻击力+50％，攻击速度+50，生命值+50％，初始技力+10	Flower		2	rogue_5_copper_E_05.png							
+7006	兴水利	加入钱盒时，目标生命值-10。投出时，目标生命上限+3	Risk		2	rogue_5_copper_E_06.png					LifePoint	-10	
+7007	南武盛景	投出时，敌方单位攻击力+20％。携带期间每经过一个战斗节点，失去时可获得一个收藏品（最多获得5个）	Risk		2	rogue_5_copper_E_07.png							
+7008	百灶盛景	投出时，希望+1。携带期间每经过一个非战斗节点，失去时可获得一个收藏品（最多获得5个）	Flower		2	rogue_5_copper_E_08.png							
+7009	龙门盛景	投出时，源石锭+8。失去时，消耗至多60源石锭，每消耗12源石锭，获得一个随机收藏品	Flower		2	rogue_5_copper_E_09.png							
+7010	勾吴盛景	失去时，获得3个收藏品。每投出一次，使失去时获得的收藏品数量-1（最多减至0）	Risk	3	2	rogue_5_copper_E_10.png	0						
+7011	大荒盛景	每投出一次，失去时可获得一个收藏品（最多获得5个）	Flower		2	rogue_5_copper_E_11.png							
+7012	溯外道	投出时，我方攻击速度+80。每次交换通宝时，攻击速度加成效果-10（至多减少至0）	Balance		2	rogue_5_copper_E_12.png							
+7013	溯正道	投出时，我方攻击速度+10。每次交换通宝时，攻击速度加成效果+10（至多叠加至+80）	Balance		2	rogue_5_copper_E_13.png							
+7014	麟天师	投出时，目标生命值+2且每场战斗获得1点临时生命值	Flower		2	rogue_5_copper_E_14.png							
+7015	右迁	投出时，所有干员的部署费用-5	Flower		2	rogue_5_copper_E_15.png							
+7016	录武官	投出时，敌方单位每次受到伤害时，法术抗性-2	Flower		2	rogue_5_copper_E_16.png							
+7017	柳伥作	投出时，所有我方干员攻击力-35％，攻速+60	Risk		2	rogue_5_copper_E_17.png							
+7018	备用梁	投出时，在失与得交换收藏品时可获得额外收藏品	Flower		2	rogue_5_copper_E_18.png							
+7019	捕风(左)	投出时，干员部署方向朝左时，攻速+40	Balance	1	2	rogue_5_copper_E_19.png	0			5			
+7020	捕风(右)	投出时，干员部署方向朝右时，攻速+40	Balance	1	2	rogue_5_copper_E_20.png	0			5			
+7021	捕风(上)	投出时，干员部署方向朝上时，攻速+40	Balance	1	2	rogue_5_copper_E_21.png	0			5			
+7022	捕风(下)	投出时，干员部署方向朝下时，攻速+40	Balance	1	2	rogue_5_copper_E_22.png	0			5			
+7023	钱盒底板	加入钱盒时，源石锭+2。不会被投出	Balance	2	2	rogue_5_copper_E_23.png	0	0			OriginiumIngots	2	
+7024	锦囊秒购	投出时，目标生命值降至1。每失去2目标生命值，获得一个随机收藏品。回到钱盒时变为大炎通宝	Flower		2	rogue_5_copper_E_24.png							
+7025	左秉烛	投出时，目标生命值-2，我方干员攻击力+200。每额外投出一次，我方干员攻击力额外+100（最多叠加至+1000）	Risk		2	rogue_5_copper_E_25.png							
+7026	药食	投出时，我方干员生命值-45％，但部署时获得6层护盾	Risk		2	rogue_5_copper_E_26.png							
+7027	见灵光	位于钱盒中时，战斗不再获得指挥经验。投出时，指挥等级+1	Risk		2	rogue_5_copper_E_27.png							
+7028	烽火台	不会被投出。离开钱盒时，获得4目标生命值、4希望及4票券	Flower	2	2	rogue_5_copper_E_28.png	0						
+7029	孤芳自赏	投出时，敌人重量-1，所有干员技能结束时较大力度推开攻击范围内的目标	Risk		2	rogue_5_copper_E_29.png							
+7030	天命难违	投出时，敌人重量-1，所有干员技能开启时较大力度将目标拖拽至自己面前	Risk		2	rogue_5_copper_E_30.png							

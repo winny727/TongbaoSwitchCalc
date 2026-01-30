@@ -215,26 +215,32 @@ namespace TongbaoExchangeCalc
                 int id = line.GetValue<int>("Id");
                 string name = line.GetValue("Name");
                 string description = line.GetValue("Description");
+                int rarity = line.GetValue<int>("Rarity");
+                int dlcVersion = line.GetValue<int>("DlcVersion");
                 string imgPath = line.GetValue("ImgPath");
                 TongbaoType type = line.GetValue<TongbaoType>("Type");
                 int exchangeInPool = line.GetValue<int>("ExchangeInPool");
                 List<int> exchangeOutPools = ParseList<int>(line.GetValue("ExchangeOutPools"));
                 bool isUpgrade = line.GetValue<int>("IsUpgrade") != 0;
-                ResType extraResType = line.GetValue<ResType>("ExtraResType");
-                int extraResCount = line.GetValue<int>("ExtraResCount");
+                int mutexGroup = line.GetValue<int>("MutexGroup");
+                List<ResType> extraResType = ParseList<ResType>(line.GetValue("ExtraResTypes"));
+                List<int> extraResCount = ParseList<int>(line.GetValue("ExtraResCounts"));
 
                 TongbaoConfig tongbao = new TongbaoConfig
                 {
                     Id = id,
                     Name = name,
                     Description = description,
+                    Rarity = rarity,
+                    DlcVersion = dlcVersion,
                     ImgPath = imgPath,
                     Type = type,
                     ExchangeInPool = exchangeInPool,
                     ExchangeOutPools = exchangeOutPools,
                     IsUpgrade = isUpgrade,
-                    ExtraResType = extraResType,
-                    ExtraResCount = extraResCount,
+                    MutexGroup = mutexGroup,
+                    ExtraResTypes = extraResType,
+                    ExtraResCounts = extraResCount,
                 };
 
                 TongbaoConfig.AddTongbaoConfig(tongbao);
@@ -402,16 +408,20 @@ namespace TongbaoExchangeCalc
                         sb.Append("(该通宝已在钱盒)");
                     }
 
-                    if (config.IsUpgrade)
+                    if (config.MutexGroup > 0)
                     {
-                        var upgradeTongbaoIds = ExchangePool.GetExchangeOutTongbaoIds(config.ExchangeInPool);
-                        for (int j = 0; j < upgradeTongbaoIds.Count; j++)
+                        var mutexTongbaoIds = ExchangePool.GetMutexTongbaoIds(config.MutexGroup);
+                        for (int i = 0; i < mutexTongbaoIds.Count; i++)
                         {
-                            int upgradeTongbaoId = upgradeTongbaoIds[j];
-                            if (playerData.IsTongbaoExist(upgradeTongbaoId))
+                            int mutexTongbaoId = mutexTongbaoIds[i];
+                            if (mutexTongbaoId == tongbao.Id || mutexTongbaoId == tongbaoId)
                             {
-                                sb.Append("(升级后通宝[");
-                                AppendTongbaoFullName(sb, upgradeTongbaoId);
+                                continue;
+                            }
+                            if (playerData.IsTongbaoExist(mutexTongbaoId))
+                            {
+                                sb.Append("(互斥通宝[");
+                                AppendTongbaoFullName(sb, mutexTongbaoId);
                                 sb.Append("]已在钱盒)");
                                 break;
                             }

@@ -9,13 +9,16 @@ namespace TongbaoExchangeCalc.DataModel
         public int Id;
         public string Name;
         public string Description;
+        public int Rarity;
+        public int DlcVersion;
         public string ImgPath;
         public TongbaoType Type;
         public int ExchangeInPool; //交换前池子ID
         public List<int> ExchangeOutPools; //交换后池子ID列表
         public bool IsUpgrade; //是否升级通宝
-        public ResType ExtraResType; //通宝自带效果
-        public int ExtraResCount;
+        public int MutexGroup;
+        public List<ResType> ExtraResTypes; //通宝自带效果
+        public List<int> ExtraResCounts;
 
         private static readonly Dictionary<int, TongbaoConfig> mTongbaoConfigDict = new Dictionary<int, TongbaoConfig>();
 
@@ -26,8 +29,14 @@ namespace TongbaoExchangeCalc.DataModel
                 return;
             }
 
+            // TODO 临时处理 dlc2的先不存
+            if (config.DlcVersion >= 2)
+            {
+                return;
+            }
+
             mTongbaoConfigDict[config.Id] = config;
-            ExchangePool.SetupTongbaoExchangePool(config);
+            ExchangePool.SetupTongbaoConfig(config);
         }
 
         public static TongbaoConfig GetTongbaoConfigById(int id)
@@ -56,15 +65,17 @@ namespace TongbaoExchangeCalc.DataModel
         public int Id { get; private set; }
         public string Name { get; private set; }
         public string Description { get; private set; }
+        public int Rarity { get; private set; }
+        public int DlcVersion { get; private set; }
         public string ImgPath { get; private set; }
         public TongbaoType Type { get; private set; }
         public int ExchangeInPool { get; private set; } //交换前池子ID
         public List<int> ExchangeOutPools { get; private set; } //交换后池子ID列表
         public bool IsUpgrade { get; private set; } //是否升级通宝
-        public ResType ExtraResType { get; private set; } //通宝自带效果
-        public int ExtraResCount { get; private set; }
-        public ResType RandomResType { get; private set; } //品相效果
-        public int RandomResCount { get; private set; }
+        public int MutexGroup { get; private set; }
+        public List<ResType> ExtraResTypes { get; private set; } //通宝自带效果
+        public List<int> ExtraResCounts { get; private set; }
+        public RandomRes RandomRes {  get; private set; }
 
         public bool CanExchange()
         {
@@ -88,25 +99,33 @@ namespace TongbaoExchangeCalc.DataModel
             tongbao.Id = config.Id;
             tongbao.Name = config.Name;
             tongbao.Description = config.Description;
+            tongbao.Rarity = config.Rarity;
+            tongbao.DlcVersion = config.DlcVersion;
             tongbao.ImgPath = config.ImgPath;
             tongbao.Type = config.Type;
             tongbao.ExchangeInPool = config.ExchangeInPool;
             tongbao.ExchangeOutPools = config.ExchangeOutPools;
             tongbao.IsUpgrade = config.IsUpgrade;
-            tongbao.ExtraResType = config.ExtraResType;
-            tongbao.ExtraResCount = config.ExtraResCount;
+            tongbao.MutexGroup = config.MutexGroup;
+            tongbao.ExtraResTypes = config.ExtraResTypes;
+            tongbao.ExtraResCounts = config.ExtraResCounts;
             tongbao.SetupRandomRes(random);
         }
 
-        public void ApplyRandomRes(ResType resType, int recCount)
+        public void ApplyRandomRes(RandomRes randomRes)
         {
-            RandomResType = resType;
-            RandomResCount = recCount;
+            if (randomRes != null && randomRes.ResType == ResType.None)
+            {
+                RandomRes = null;
+                return;
+            }
+
+            RandomRes = randomRes;
         }
 
         private void SetupRandomRes(IRandomGenerator random)
         {
-            ApplyRandomRes(ResType.None, 0);
+            ApplyRandomRes(null);
             if (random == null)
             {
                 return;
@@ -114,7 +133,7 @@ namespace TongbaoExchangeCalc.DataModel
 
             float randomValue = (float)random.NextDouble();
             float cumulativeProbability = 0f;
-            RandomResDefine randomRes = null;
+            RandomRes randomRes = null;
             for (int i = 0; i < Define.RandomResDefines.Count; i++)
             {
                 var define = Define.RandomResDefines[i];
@@ -127,7 +146,7 @@ namespace TongbaoExchangeCalc.DataModel
             }
             if (randomRes != null)
             {
-                ApplyRandomRes(randomRes.ResType, randomRes.ResCount);
+                ApplyRandomRes(randomRes);
             }
         }
     }

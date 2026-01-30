@@ -27,7 +27,7 @@ namespace TongbaoExchangeCalc
 
         public int SelectedId { get; private set; }
         public List<int> SelectedIds { get; private set; } = new List<int>();
-        public RandomResDefine SelectedRandomRes { get; private set; }
+        public RandomRes SelectedRandomRes { get; private set; }
         public bool IsSelected => SelectedIds.Count > 0;
 
         private readonly List<int> mExchangeTongbaoIdList = new List<int>();
@@ -94,12 +94,12 @@ namespace TongbaoExchangeCalc
             {
                 comboBox1.DisplayMember = "Key";
                 comboBox1.ValueMember = "Value";
-                comboBox1.Items.Add(new ComboBoxItem<RandomResDefine>("无品相", new RandomResDefine(0, ResType.None, 0)));
-                comboBox1.Items.Add(new ComboBoxItem<RandomResDefine>("根据实际概率随机品相", null));
+                comboBox1.Items.Add(new ComboBoxItem<RandomRes>("无品相", new RandomRes("无品相", 0, ResType.None, 0)));
+                comboBox1.Items.Add(new ComboBoxItem<RandomRes>("根据实际概率随机品相", null));
                 foreach (var item in Define.RandomResDefines)
                 {
                     string key = $"品相: {Define.GetResName(item.ResType)}+{item.ResCount}";
-                    comboBox1.Items.Add(new ComboBoxItem<RandomResDefine>(key, item));
+                    comboBox1.Items.Add(new ComboBoxItem<RandomRes>(key, item));
                 }
                 comboBox1.SelectedIndex = 0;
             }
@@ -229,7 +229,7 @@ namespace TongbaoExchangeCalc
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ComboBoxItem<RandomResDefine> item = comboBox1.SelectedItem as ComboBoxItem<RandomResDefine>;
+            ComboBoxItem<RandomRes> item = comboBox1.SelectedItem as ComboBoxItem<RandomRes>;
             SelectedRandomRes = item?.Value;
         }
 

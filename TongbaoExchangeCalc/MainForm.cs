@@ -242,13 +242,16 @@ namespace TongbaoExchangeCalc
                   .Append(slotIndex + 1)
                   .Append(']');
                 Helper.AppendTongbaoFullName(sb, tongbao.Id);
-                if (tongbao.RandomResType != ResType.None)
+                var randomRes = tongbao.RandomRes;
+                if (randomRes != null && randomRes.ResType != ResType.None)
                 {
                     sb.AppendLine()
                       .Append('(')
-                      .Append(Define.GetResName(tongbao.RandomResType))
+                      .Append(randomRes.Name)
+                      .Append(": ")
+                      .Append(Define.GetResName(randomRes.ResType))
                       .Append('+')
-                      .Append(tongbao.RandomResCount)
+                      .Append(randomRes.ResCount)
                       .Append(')');
                 }
                 item.Text = sb.ToString();
@@ -265,6 +268,16 @@ namespace TongbaoExchangeCalc
                 item.ToolTipText = Helper.GetTongbaoToolTip(mPlayerData, null);
             }
             sb.Clear();
+        }
+
+        private void UpdateAllTongbaoToolTip()
+        {
+            for (int i = 0; i < listViewTongbao.Items.Count; i++)
+            {
+                ListViewItem item = listViewTongbao.Items[i];
+                Tongbao tongbao = mPlayerData.GetTongbao(i);
+                item.ToolTipText = Helper.GetTongbaoToolTip(mPlayerData, tongbao);
+            }
         }
 
         private void UpdateView()
@@ -361,17 +374,17 @@ namespace TongbaoExchangeCalc
                 mPlayerData.RemoveTongbaoAt(slotIndex);
             }
             UpdateTongbaoView(slotIndex);
+            UpdateAllTongbaoToolTip();
             UpdateView();
         }
 
-        private void OnSelectNewCustomTongbao(int id, int slotIndex,
-            ResType randomResType = ResType.None, int randomResCount = 0)
+        private void OnSelectNewCustomTongbao(int id, int slotIndex, RandomRes randomRes = null)
         {
             mCanRevertPlayerData = false;
             Tongbao tongbao = mPlayerData.CreateTongbao(id);
             if (tongbao != null)
             {
-                tongbao.ApplyRandomRes(randomResType, randomResCount);
+                tongbao.ApplyRandomRes(randomRes);
                 mPlayerData.InsertTongbao(tongbao, slotIndex);
             }
             else
@@ -379,6 +392,7 @@ namespace TongbaoExchangeCalc
                 mPlayerData.RemoveTongbaoAt(slotIndex);
             }
             UpdateTongbaoView(slotIndex);
+            UpdateAllTongbaoToolTip();
             UpdateView();
         }
 
@@ -442,6 +456,7 @@ namespace TongbaoExchangeCalc
             mRecordForm.AppendText(sb.ToString());
 
             UpdateTongbaoView(slotIndex);
+            UpdateAllTongbaoToolTip();
             UpdateView();
         }
 
@@ -723,9 +738,14 @@ namespace TongbaoExchangeCalc
                 {
                     if (selectorForm.SelectedRandomRes != null)
                     {
-                        ResType resType = selectorForm.SelectedRandomRes.ResType;
-                        int resCount = selectorForm.SelectedRandomRes.ResCount;
-                        OnSelectNewCustomTongbao(selectorForm.SelectedId, slotIndex, resType, resCount);
+                        if (selectorForm.SelectedRandomRes.ResType == ResType.None)
+                        {
+                            OnSelectNewCustomTongbao(selectorForm.SelectedId, slotIndex);
+                        }
+                        else
+                        {
+                            OnSelectNewCustomTongbao(selectorForm.SelectedId, slotIndex, selectorForm.SelectedRandomRes);
+                        }
                     }
                     else
                     {
