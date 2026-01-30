@@ -369,7 +369,10 @@ namespace TongbaoExchangeCalc
 
             StringBuilder sb = new StringBuilder();
 
-            sb.Append("双击修改通宝");
+            sb.AppendLine("双击修改通宝")
+              .AppendLine()
+              .Append("效果: ")
+              .AppendLine(tongbao.Description);
             var exchangeOutTongbaoIds = ExchangePool.GetExchangeOutTongbaoIds(tongbao.ExchangeInPool);
             if (tongbao.CanExchange() && exchangeOutTongbaoIds != null && exchangeOutTongbaoIds.Count > 0)
             {
