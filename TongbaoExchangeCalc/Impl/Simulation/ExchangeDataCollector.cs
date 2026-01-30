@@ -168,7 +168,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             mSimulationRecords[context.SimulationStepIndex].FinalExchangeStepIndex = (short)context.ExchangeStepIndex;
 
             // 若省略X条后的多余信息，会将X~LIMIT的资源变化信息存在X+1位置里
-            if (OmitExcessiveExchanges && context.ExchangeStepIndex >= MaxExchangeRecord)
+            if (!RecordEachExchange || (OmitExcessiveExchanges && context.ExchangeStepIndex >= MaxExchangeRecord))
             {
                 Tongbao tongbao = context.PlayerData.GetTongbao(context.SlotIndex);
                 int tongbaoId = tongbao != null ? tongbao.Id : -1;

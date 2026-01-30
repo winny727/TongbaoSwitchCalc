@@ -126,7 +126,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                               .Append(") ")
                               .Append("总共经过了")
                               .Append(context.ExchangeStepIndex + 1)
-                              .AppendLine("次交换");
+                              .Append("次交换");
 
                 AppendResChangedResult(OutputResultSB, context);
                 OutputResultSB.AppendLine();
@@ -149,7 +149,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                 }
 
                 OutputResultSB.Append(") ")
-                              .Append("交换次数过多，省略了")
+                              .Append("省略了")
                               .Append(context.ExchangeStepIndex - MaxExchangeRecord + 1)
                               .Append("次交换信息");
 
@@ -293,7 +293,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                 {
                     if (isEmpty)
                     {
-                        sb.Append('(');
+                        sb.Append(" (");
                     }
                     else
                     {

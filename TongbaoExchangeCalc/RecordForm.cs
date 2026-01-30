@@ -9,11 +9,46 @@ namespace TongbaoExchangeCalc
     public partial class RecordForm : Form
     {
         private Action mOnClearClick;
+        private int mTextVersion = 0;
+        private bool mIsProcessing;
+        private readonly Queue<Func<Task>> mTaskQueue = new Queue<Func<Task>>(); // 用于保存任务
 
         public RecordForm(MainForm mainForm)
         {
             InitializeComponent();
             this.Icon = mainForm.Icon;
+        }
+
+        private async Task ExecuteNextTask()
+        {
+            Func<Task> task = null;
+
+            if (mIsProcessing || mTaskQueue.Count == 0)
+                return;
+
+            mIsProcessing = true;
+            task = mTaskQueue.Dequeue();
+
+            try
+            {
+                if (task != null)
+                    await task();
+            }
+            catch (Exception ex)
+            {
+                Helper.Log(ex);
+            }
+            finally
+            {
+                mIsProcessing = false;
+                _ = ExecuteNextTask();
+            }
+        }
+
+        private void AddTaskToQueue(Func<Task> task)
+        {
+            mTaskQueue.Enqueue(task);
+            _ = ExecuteNextTask();
         }
 
         public void UpdateScroll()
@@ -27,41 +62,62 @@ namespace TongbaoExchangeCalc
 
         public void ClearText()
         {
+            mTextVersion++;
             textBox1.Clear();
         }
 
         public void SetText(string text)
         {
-            _ = SetTextAsync(text);
-        }
-
-        public void SetStringBuilderText(StringBuilder sb)
-        {
-            _ = SetStringBuilderTextAsync(sb);
+            AddTaskToQueue(() => SetTextAsync(text));
         }
 
         public void AppendText(string text)
         {
-            textBox1.AppendText(text ?? string.Empty);
+            AddTaskToQueue(() => SetTextAsync(text, false));
         }
 
-        public async Task SetTextAsync(string text, int chunkSize = 10_000_000)
+        public void SetStringBuilderText(StringBuilder sb)
         {
-            text ??= string.Empty;
+            AddTaskToQueue(() => SetStringBuilderTextAsync(sb));
+        }
 
-            // 先清空（UI 线程）
-            if (InvokeRequired)
+        public void AppendStringBuilderText(StringBuilder sb)
+        {
+            AddTaskToQueue(() => SetStringBuilderTextAsync(sb, false));
+        }
+
+        public async Task SetTextAsync(string text, bool clear = true, int chunkSize = 10_000_000)
+        {
+            int version = mTextVersion;
+
+            if (clear)
             {
-                await InvokeAsync(() => textBox1.Clear());
-            }
-            else
-            {
-                textBox1.Clear();
+                if (InvokeRequired)
+                {
+                    await InvokeAsync(() =>
+                    {
+                        if (version != mTextVersion) return;
+                        textBox1.Clear();
+                    });
+                }
+                else
+                {
+                    textBox1.Clear();
+                }
             }
 
-            // 后台线程分块
+            if (string.IsNullOrEmpty(text))
+            {
+                return;
+            }
+
             await Task.Run(async () =>
             {
+                if (version != mTextVersion)
+                {
+                    return;
+                }
+
                 int length = text.Length;
                 int offset = 0;
 
@@ -71,24 +127,33 @@ namespace TongbaoExchangeCalc
                     string chunk = text.Substring(offset, size);
                     offset += size;
 
-                    // 回 UI 线程追加
                     await InvokeAsync(() =>
                     {
+                        if (version != mTextVersion) return;
                         textBox1.AppendText(chunk);
                     });
                 }
             });
         }
 
-        public async Task SetStringBuilderTextAsync(StringBuilder sb, int chunkSize = 10_000_000)
+        public async Task SetStringBuilderTextAsync(StringBuilder sb, bool clear = true, int chunkSize = 10_000_000)
         {
-            if (InvokeRequired)
+            int version = mTextVersion;
+
+            if (clear)
             {
-                await InvokeAsync(() => textBox1.Clear());
-            }
-            else
-            {
-                textBox1.Clear();
+                if (InvokeRequired)
+                {
+                    await InvokeAsync(() =>
+                    {
+                        if (version != mTextVersion) return;
+                        textBox1.Clear();
+                    });
+                }
+                else
+                {
+                    textBox1.Clear();
+                }
             }
 
             if (sb == null || sb.Length == 0)
@@ -98,6 +163,11 @@ namespace TongbaoExchangeCalc
 
             await Task.Run(async () =>
             {
+                if (version != mTextVersion)
+                {
+                    return;
+                }
+
                 int length = sb.Length;
                 int offset = 0;
 
@@ -114,6 +184,7 @@ namespace TongbaoExchangeCalc
 
                     await InvokeAsync(() =>
                     {
+                        if (version != mTextVersion) return;
                         textBox1.AppendText(chunk);
                     });
                 }

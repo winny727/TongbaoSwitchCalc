@@ -455,5 +455,10 @@ namespace TongbaoExchangeCalc
         {
             System.Diagnostics.Debug.WriteLine(msg);
         }
+
+        public static void Log(object msg)
+        {
+            System.Diagnostics.Debug.WriteLine(msg);
+        }
     }
 }

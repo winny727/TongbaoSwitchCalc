@@ -303,22 +303,29 @@ namespace TongbaoExchangeCalc
 
             if (tongbao == null)
             {
-                sb.AppendLine("选中通宝:");
+                sb.AppendLine("选中通宝:")
+                  .AppendLine()
+                  .AppendLine("(无)")
+                  .AppendLine();
             }
             else
             {
-                sb.Append("选中通宝:[")
+                sb.AppendLine("选中通宝:")
+                  .AppendLine()
+                  .Append('[')
                   .Append(slotIndex + 1)
                   .Append(']');
                 Helper.AppendTongbaoFullName(sb, tongbao.Id);
-                sb.AppendLine();
+                sb.AppendLine()
+                  .AppendLine();
             }
 
-            sb.Append("当前交换次数: ")
+            sb.Append("交换次数: ")
               .Append(mPlayerData.ExchangeCount)
+              .AppendLine()
               .AppendLine();
 
-            sb.Append("下次交换消耗生命值: ")
+            sb.Append("消耗生命值: ")
               .Append(mPlayerData.NextExchangeCostLifePoint);
 
             lblCurrent.Text = sb.ToString();
@@ -476,6 +483,8 @@ namespace TongbaoExchangeCalc
             mCanRevertPlayerData = true;
             mPrintDataCollector.RecordEachExchange = checkBoxEnableRecord.Checked;
             mExchangeDataCollector.RecordEachExchange = checkBoxEnableRecord.Checked;
+            mPrintDataCollector.MaxExchangeRecord = (int)numMaxRecord.Value;
+            mExchangeDataCollector.MaxExchangeRecord = (int)numMaxRecord.Value;
             mTongbaoSelector.TongbaoSelectMode = TongbaoSelectMode.Default;
             if (comboBoxMultiSel.SelectedItem is ComboBoxItem<TongbaoSelectMode> cbItem)
             {
@@ -517,9 +526,7 @@ namespace TongbaoExchangeCalc
 
             if (mRecordForm.Visible)
             {
-                //mRecordForm.SetStringBuilderText(mPrintDataCollector.OutputResultSB);
-                mRecordForm.SetStringBuilderText(mExchangeDataParser.OutputResultSB);
-                mOutputResultChanged = false;
+                SetRecordFormText();
             }
             else
             {
@@ -531,6 +538,7 @@ namespace TongbaoExchangeCalc
             UpdateAsyncSimulateView(false);
             GC.Collect();
 
+            //TODO
             //MessageBox.Show(mStatisticDataCollector.GetOutputResult(), "模拟期望", MessageBoxButtons.OK, MessageBoxIcon.Information);
             MessageBox.Show(mExchangeDataParser.StatisticResult, "模拟期望", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -600,6 +608,15 @@ namespace TongbaoExchangeCalc
                 if (value < numeric.Minimum) value = numeric.Minimum;
                 numeric.Value = value;
             }
+        }
+
+        private void SetRecordFormText()
+        {
+            //mRecordForm.SetStringBuilderText(mPrintDataCollector.OutputResultSB);
+            mRecordForm.SetStringBuilderText(mExchangeDataParser.OutputResultSB);
+            mRecordForm.AppendText($"{new string('=', 64)}{Environment.NewLine}");
+            mRecordForm.AppendStringBuilderText(mExchangeDataParser.StatisticResultSB);
+            mOutputResultChanged = false;
         }
 
         #region DebugTest
@@ -675,6 +692,12 @@ namespace TongbaoExchangeCalc
         private void checkBoxFortune_CheckedChanged(object sender, EventArgs e)
         {
             mPlayerData.SetSpecialCondition(SpecialConditionFlag.Collectible_Fortune, checkBoxFortune.Checked);
+        }
+
+        private void checkBoxEnableRecord_CheckedChanged(object sender, EventArgs e)
+        {
+            label11.Enabled = checkBoxEnableRecord.Checked;
+            numMaxRecord.Enabled = checkBoxEnableRecord.Checked;
         }
 
         // 选择通宝槽位
@@ -780,9 +803,7 @@ namespace TongbaoExchangeCalc
             mRecordForm.Focus();
             if (mOutputResultChanged)
             {
-                //mRecordForm.SetStringBuilderText(mPrintDataCollector.OutputResultSB);
-                mRecordForm.SetStringBuilderText(mExchangeDataParser.OutputResultSB);
-                mOutputResultChanged = false;
+                SetRecordFormText();
             }
         }
 

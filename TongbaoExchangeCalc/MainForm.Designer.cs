@@ -62,7 +62,9 @@
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.label13 = new System.Windows.Forms.Label();
             this.comboBoxMultiSel = new System.Windows.Forms.ComboBox();
+            this.checkBoxOptimize = new System.Windows.Forms.CheckBox();
             this.label9 = new System.Windows.Forms.Label();
+            this.checkBoxEnableRecord = new System.Windows.Forms.CheckBox();
             this.numMinHp = new System.Windows.Forms.NumericUpDown();
             this.comboBoxSimMode = new System.Windows.Forms.ComboBox();
             this.label10 = new System.Windows.Forms.Label();
@@ -73,14 +75,14 @@
             this.btnRemove = new System.Windows.Forms.Button();
             this.btnAdd = new System.Windows.Forms.Button();
             this.treeViewRule = new System.Windows.Forms.TreeView();
-            this.checkBoxEnableRecord = new System.Windows.Forms.CheckBox();
             this.btnRandom = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
-            this.checkBoxOptimize = new System.Windows.Forms.CheckBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.btnRandomEmpty = new System.Windows.Forms.Button();
+            this.label11 = new System.Windows.Forms.Label();
+            this.numMaxRecord = new System.Windows.Forms.NumericUpDown();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numSimCnt)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -95,6 +97,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numMinHp)).BeginInit();
             this.groupBox5.SuspendLayout();
             this.statusStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numMaxRecord)).BeginInit();
             this.SuspendLayout();
             // 
             // comboBoxSquad
@@ -226,7 +229,7 @@
             this.groupBox2.Controls.Add(this.numIngots);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.numHp);
-            this.groupBox2.Location = new System.Drawing.Point(424, 12);
+            this.groupBox2.Location = new System.Drawing.Point(218, 12);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(230, 126);
             this.groupBox2.TabIndex = 5;
@@ -390,23 +393,25 @@
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.lblRes);
-            this.groupBox4.Location = new System.Drawing.Point(660, 12);
+            this.groupBox4.Location = new System.Drawing.Point(454, 12);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(128, 126);
+            this.groupBox4.Size = new System.Drawing.Size(125, 126);
             this.groupBox4.TabIndex = 7;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "实时资源监测";
             // 
             // lblCurrent
             // 
-            this.lblCurrent.Location = new System.Drawing.Point(518, 334);
+            this.lblCurrent.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lblCurrent.Location = new System.Drawing.Point(402, 339);
             this.lblCurrent.Name = "lblCurrent";
-            this.lblCurrent.Size = new System.Drawing.Size(164, 40);
+            this.lblCurrent.Size = new System.Drawing.Size(105, 100);
             this.lblCurrent.TabIndex = 8;
+            this.lblCurrent.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // btnExchange
             // 
-            this.btnExchange.Location = new System.Drawing.Point(688, 334);
+            this.btnExchange.Location = new System.Drawing.Point(602, 23);
             this.btnExchange.Name = "btnExchange";
             this.btnExchange.Size = new System.Drawing.Size(100, 23);
             this.btnExchange.TabIndex = 11;
@@ -416,7 +421,7 @@
             // 
             // btnSimulation
             // 
-            this.btnSimulation.Location = new System.Drawing.Point(688, 363);
+            this.btnSimulation.Location = new System.Drawing.Point(602, 52);
             this.btnSimulation.Name = "btnSimulation";
             this.btnSimulation.Size = new System.Drawing.Size(100, 23);
             this.btnSimulation.TabIndex = 12;
@@ -426,7 +431,7 @@
             // 
             // btnReset
             // 
-            this.btnReset.Location = new System.Drawing.Point(688, 392);
+            this.btnReset.Location = new System.Drawing.Point(602, 81);
             this.btnReset.Name = "btnReset";
             this.btnReset.Size = new System.Drawing.Size(100, 23);
             this.btnReset.TabIndex = 13;
@@ -436,7 +441,7 @@
             // 
             // btnRecord
             // 
-            this.btnRecord.Location = new System.Drawing.Point(688, 421);
+            this.btnRecord.Location = new System.Drawing.Point(602, 110);
             this.btnRecord.Name = "btnRecord";
             this.btnRecord.Size = new System.Drawing.Size(100, 23);
             this.btnRecord.TabIndex = 14;
@@ -446,17 +451,22 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.numMaxRecord);
+            this.groupBox3.Controls.Add(this.label11);
             this.groupBox3.Controls.Add(this.label13);
             this.groupBox3.Controls.Add(this.comboBoxMultiSel);
+            this.groupBox3.Controls.Add(this.checkBoxOptimize);
             this.groupBox3.Controls.Add(this.label9);
+            this.groupBox3.Controls.Add(this.checkBoxAutoRevert);
+            this.groupBox3.Controls.Add(this.checkBoxEnableRecord);
             this.groupBox3.Controls.Add(this.numMinHp);
             this.groupBox3.Controls.Add(this.label2);
             this.groupBox3.Controls.Add(this.comboBoxSimMode);
             this.groupBox3.Controls.Add(this.numSimCnt);
             this.groupBox3.Controls.Add(this.label10);
-            this.groupBox3.Location = new System.Drawing.Point(218, 12);
+            this.groupBox3.Location = new System.Drawing.Point(518, 212);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(200, 126);
+            this.groupBox3.Size = new System.Drawing.Size(200, 231);
             this.groupBox3.TabIndex = 5;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "模拟设置";
@@ -479,6 +489,18 @@
             this.comboBoxMultiSel.Size = new System.Drawing.Size(130, 20);
             this.comboBoxMultiSel.TabIndex = 11;
             // 
+            // checkBoxOptimize
+            // 
+            this.checkBoxOptimize.AutoSize = true;
+            this.checkBoxOptimize.Checked = true;
+            this.checkBoxOptimize.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxOptimize.Location = new System.Drawing.Point(6, 126);
+            this.checkBoxOptimize.Name = "checkBoxOptimize";
+            this.checkBoxOptimize.Size = new System.Drawing.Size(144, 16);
+            this.checkBoxOptimize.TabIndex = 19;
+            this.checkBoxOptimize.Text = "开启多线程优化(测试)";
+            this.checkBoxOptimize.UseVisualStyleBackColor = true;
+            // 
             // label9
             // 
             this.label9.AutoSize = true;
@@ -487,6 +509,19 @@
             this.label9.Size = new System.Drawing.Size(53, 12);
             this.label9.TabIndex = 6;
             this.label9.Text = "最小生命";
+            // 
+            // checkBoxEnableRecord
+            // 
+            this.checkBoxEnableRecord.AutoSize = true;
+            this.checkBoxEnableRecord.Checked = true;
+            this.checkBoxEnableRecord.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxEnableRecord.Location = new System.Drawing.Point(6, 170);
+            this.checkBoxEnableRecord.Name = "checkBoxEnableRecord";
+            this.checkBoxEnableRecord.Size = new System.Drawing.Size(168, 28);
+            this.checkBoxEnableRecord.TabIndex = 16;
+            this.checkBoxEnableRecord.Text = "模拟时记录每次交换\r\n(需消耗更多时间处理数据)";
+            this.checkBoxEnableRecord.UseVisualStyleBackColor = true;
+            this.checkBoxEnableRecord.CheckedChanged += new System.EventHandler(this.checkBoxEnableRecord_CheckedChanged);
             // 
             // numMinHp
             // 
@@ -534,7 +569,7 @@
             this.checkBoxAutoRevert.AutoSize = true;
             this.checkBoxAutoRevert.Checked = true;
             this.checkBoxAutoRevert.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxAutoRevert.Location = new System.Drawing.Point(518, 399);
+            this.checkBoxAutoRevert.Location = new System.Drawing.Point(6, 148);
             this.checkBoxAutoRevert.Name = "checkBoxAutoRevert";
             this.checkBoxAutoRevert.Size = new System.Drawing.Size(132, 16);
             this.checkBoxAutoRevert.TabIndex = 11;
@@ -548,9 +583,9 @@
             this.groupBox5.Controls.Add(this.btnRemove);
             this.groupBox5.Controls.Add(this.btnAdd);
             this.groupBox5.Controls.Add(this.treeViewRule);
-            this.groupBox5.Location = new System.Drawing.Point(518, 144);
+            this.groupBox5.Location = new System.Drawing.Point(724, 12);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(270, 184);
+            this.groupBox5.Size = new System.Drawing.Size(270, 431);
             this.groupBox5.TabIndex = 12;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "自定义模拟策略";
@@ -600,24 +635,14 @@
             this.treeViewRule.CheckBoxes = true;
             this.treeViewRule.Location = new System.Drawing.Point(6, 49);
             this.treeViewRule.Name = "treeViewRule";
-            this.treeViewRule.Size = new System.Drawing.Size(258, 117);
+            this.treeViewRule.Size = new System.Drawing.Size(258, 376);
             this.treeViewRule.TabIndex = 0;
-            // 
-            // checkBoxEnableRecord
-            // 
-            this.checkBoxEnableRecord.AutoSize = true;
-            this.checkBoxEnableRecord.Location = new System.Drawing.Point(518, 419);
-            this.checkBoxEnableRecord.Name = "checkBoxEnableRecord";
-            this.checkBoxEnableRecord.Size = new System.Drawing.Size(168, 28);
-            this.checkBoxEnableRecord.TabIndex = 16;
-            this.checkBoxEnableRecord.Text = "模拟时记录每次交换\r\n(需消耗更多时间处理数据)";
-            this.checkBoxEnableRecord.UseVisualStyleBackColor = true;
             // 
             // btnRandom
             // 
-            this.btnRandom.Location = new System.Drawing.Point(375, 351);
+            this.btnRandom.Location = new System.Drawing.Point(321, 350);
             this.btnRandom.Name = "btnRandom";
-            this.btnRandom.Size = new System.Drawing.Size(120, 23);
+            this.btnRandom.Size = new System.Drawing.Size(75, 23);
             this.btnRandom.TabIndex = 17;
             this.btnRandom.Text = "全部随机";
             this.btnRandom.UseVisualStyleBackColor = true;
@@ -625,23 +650,13 @@
             // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(375, 409);
+            this.btnClear.Location = new System.Drawing.Point(321, 408);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(120, 23);
+            this.btnClear.Size = new System.Drawing.Size(75, 23);
             this.btnClear.TabIndex = 18;
             this.btnClear.Text = "全部清除";
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
-            // 
-            // checkBoxOptimize
-            // 
-            this.checkBoxOptimize.AutoSize = true;
-            this.checkBoxOptimize.Location = new System.Drawing.Point(518, 377);
-            this.checkBoxOptimize.Name = "checkBoxOptimize";
-            this.checkBoxOptimize.Size = new System.Drawing.Size(144, 16);
-            this.checkBoxOptimize.TabIndex = 19;
-            this.checkBoxOptimize.Text = "开启多线程优化(测试)";
-            this.checkBoxOptimize.UseVisualStyleBackColor = true;
             // 
             // statusStrip1
             // 
@@ -650,7 +665,7 @@
             this.toolStripProgressBar1});
             this.statusStrip1.Location = new System.Drawing.Point(0, 446);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(800, 23);
+            this.statusStrip1.Size = new System.Drawing.Size(1002, 23);
             this.statusStrip1.TabIndex = 20;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -667,27 +682,50 @@
             // 
             // btnRandomEmpty
             // 
-            this.btnRandomEmpty.Location = new System.Drawing.Point(375, 380);
+            this.btnRandomEmpty.Location = new System.Drawing.Point(321, 379);
             this.btnRandomEmpty.Name = "btnRandomEmpty";
-            this.btnRandomEmpty.Size = new System.Drawing.Size(120, 23);
+            this.btnRandomEmpty.Size = new System.Drawing.Size(75, 23);
             this.btnRandomEmpty.TabIndex = 21;
-            this.btnRandomEmpty.Text = "随机填充空槽位";
+            this.btnRandomEmpty.Text = "空位随机";
             this.btnRandomEmpty.UseVisualStyleBackColor = true;
             this.btnRandomEmpty.Click += new System.EventHandler(this.btnRandomEmpty_Click);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(62, 206);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(101, 12);
+            this.label11.TabIndex = 20;
+            this.label11.Text = "次交换后省略记录";
+            // 
+            // numMaxRecord
+            // 
+            this.numMaxRecord.Location = new System.Drawing.Point(6, 204);
+            this.numMaxRecord.Maximum = new decimal(new int[] {
+            9999,
+            0,
+            0,
+            0});
+            this.numMaxRecord.Name = "numMaxRecord";
+            this.numMaxRecord.Size = new System.Drawing.Size(50, 21);
+            this.numMaxRecord.TabIndex = 21;
+            this.numMaxRecord.Value = new decimal(new int[] {
+            2000,
+            0,
+            0,
+            0});
             // 
             // MainForm
             // 
             this.AcceptButton = this.btnExchange;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 469);
+            this.ClientSize = new System.Drawing.Size(1002, 469);
             this.Controls.Add(this.btnRandomEmpty);
             this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.checkBoxOptimize);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.btnRandom);
-            this.Controls.Add(this.checkBoxEnableRecord);
-            this.Controls.Add(this.checkBoxAutoRevert);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.btnRecord);
             this.Controls.Add(this.lblCurrent);
@@ -724,6 +762,7 @@
             this.groupBox5.ResumeLayout(false);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numMaxRecord)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -783,5 +822,7 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
         private System.Windows.Forms.Button btnRandomEmpty;
+        private System.Windows.Forms.NumericUpDown numMaxRecord;
+        private System.Windows.Forms.Label label11;
     }
 }

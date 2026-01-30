@@ -27,6 +27,8 @@ namespace TongbaoExchangeCalc.Impl.Simulation
         public StringBuilder StatisticResultSB { get; private set; } = new StringBuilder();
         public string StatisticResult => StatisticResultSB.ToString();
 
+        private CodeTimer mCodeTimer;
+
 
         public ExchangeDataParser(ExchangeDataCollector collector)
         {
@@ -35,11 +37,11 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
         public async Task BuildResultAsync(IProgress<int> progress = null)
         {
+            mCodeTimer = CodeTimer.StartNew("BuildResult");
             mCancellationTokenSource = new CancellationTokenSource();
             mAsyncProgress = progress;
             try
             {
-                using CodeTimer ct = new CodeTimer("BuildResult");
                 await Task.Run(BuildResult, mCancellationTokenSource.Token);
             }
             finally
@@ -49,6 +51,8 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                     OutputResultSB.AppendLine("交换结果未解析完成: 用户取消");
                     StatisticResultSB.AppendLine("数据统计结果未解析完成: 用户取消");
                 }
+                mCodeTimer?.Dispose();
+                mCodeTimer = null;
                 mCancellationTokenSource?.Dispose();
                 mCancellationTokenSource = null;
                 mAsyncProgress = null;
@@ -68,6 +72,8 @@ namespace TongbaoExchangeCalc.Impl.Simulation
         {
             var sb = OutputResultSB;
             var collector = mExchangeDataCollector;
+
+            using CodeTimer ct = CodeTimer.StartNew("BuildResult");
 
             ClearDataInternal();
             mAsyncProgress?.Report(0);
@@ -91,13 +97,16 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                 mAsyncProgress?.Report(i);
             }
 
+            float buildResultTime = mCodeTimer.ElapsedMilliseconds;
+
             sb.Append('[')
               .Append(SimulationDefine.GetSimulationName(collector.SimulationType))
               .Append("]模拟完成，模拟次数: ")
               .Append(collector.ExecSimulateStep)
               .Append(", 模拟耗时: ")
               .Append(collector.TotalSimulateTime)
-              .AppendLine("ms");
+              .AppendLine("ms")
+              .AppendLine();
 
             BuildStatisticResult();
 
@@ -109,21 +118,27 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             var sb = StatisticResultSB;
             var collector = mExchangeDataCollector;
 
-            sb.Append("模拟完成");
+            sb.Append('[')
+              .Append(SimulationDefine.GetSimulationName(collector.SimulationType))
+              .Append("]模拟完成");
 
             if (collector.IsParallel)
             {
                 sb.Append("(触发多线程优化)");
             }
 
+            float buildResultTime = mCodeTimer.ElapsedMilliseconds;
             sb.AppendLine("，模拟次数: ")
               .Append(collector.ExecSimulateStep)
               .Append('/')
               .Append(collector.TotalSimulateStep)
               .Append(", 模拟耗时: ")
               .Append(collector.TotalSimulateTime)
-              .Append("ms")
-              .Append(", 成功交换总次数: ")
+              .Append("ms, 数据处理耗时: ")
+              .Append(buildResultTime)
+              .Append("ms, 总耗时: ")
+              .Append(collector.TotalSimulateTime + buildResultTime)
+              .Append("ms, 成功交换总次数: ")
               .Append(collector.TotalSuccessExchangeStep)
               .AppendLine()
               .AppendLine();
@@ -286,7 +301,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                   .Append(") ")
                   .Append("总共经过了")
                   .Append(record.ExchangeStepIndex + 1)
-                  .AppendLine("次交换");
+                  .Append("次交换");
 
                 AppendResChanged(record.ResValueRecords);
                 sb.AppendLine();
@@ -309,7 +324,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                 }
 
                 sb.Append(") ")
-                  .Append("交换次数过多，省略了")
+                  .Append("省略了")
                   .Append(record.ExchangeStepIndex - collector.MaxExchangeRecord + 1)
                   .Append("次交换信息");
 
@@ -391,7 +406,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                 {
                     if (isEmpty)
                     {
-                        sb.Append('(');
+                        sb.Append(" (");
                     }
                     else
                     {
