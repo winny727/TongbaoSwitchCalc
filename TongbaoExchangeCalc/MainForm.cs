@@ -28,6 +28,7 @@ namespace TongbaoExchangeCalc
 
         private int mSelectedTongbaoSlotIndex = -1;
         private bool mCanRevertPlayerData = false;
+        private string mCurrentFilePath = string.Empty;
 
         private readonly List<Control> mSimulatingDisableControls = new List<Control>();
         private IconGridControl mIconGrid;
@@ -115,7 +116,7 @@ namespace TongbaoExchangeCalc
             mSimulatingDisableControls.AddRange(new Control[]
             {
                 tabPage1, tabPage2, tabPage3,
-                listViewTongbao, btnRandom, btnRandomEmpty, btnClear,
+                listViewTongbao, btnLoadBox, btnSaveBox, btnRandom, btnRandomEmpty, btnClear,
                 checkBoxOptimize, checkBoxAutoRevert, checkBoxEnableRecord,
                 btnExchange, btnReset,
             });
@@ -162,6 +163,9 @@ namespace TongbaoExchangeCalc
             comboBoxMultiSel.SelectedIndex = 0;
 
             checkBoxFortune.Checked = false;
+
+            label11.Enabled = checkBoxEnableRecord.Checked;
+            numMaxRecord.Enabled = checkBoxEnableRecord.Checked;
 
             panelLockedList.Controls.Clear();
             panelLockedList.Controls.Add(mIconGrid);
@@ -868,6 +872,26 @@ namespace TongbaoExchangeCalc
             }
 
             numMinHp.Enabled = simType != SimulationType.ExpectationTongbao;
+        }
+
+        private void btnLoadBox_Click(object sender, EventArgs e)
+        {
+            string path = Helper.LoadTongbaoBoxData(mPlayerData, mCurrentFilePath);
+            if (!string.IsNullOrEmpty(path))
+            {
+                mCurrentFilePath = path;
+                mCanRevertPlayerData = false;
+                UpdateAllTongbaoView();
+            }
+        }
+
+        private void btnSaveBox_Click(object sender, EventArgs e)
+        {
+            string path = Helper.SaveTongbaoBoxData(mPlayerData, mCurrentFilePath);
+            if (!string.IsNullOrEmpty(path))
+            {
+                mCurrentFilePath = path;
+            }
         }
     }
 }

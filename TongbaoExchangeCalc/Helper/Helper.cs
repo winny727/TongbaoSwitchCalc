@@ -471,6 +471,150 @@ namespace TongbaoExchangeCalc
             return result;
         }
 
+        public static string LoadTongbaoBoxData(PlayerData playerData, string defaultPath = null)
+        {
+            string path = string.IsNullOrEmpty(defaultPath)
+                ? Path.Combine(Application.StartupPath, "Save", "TongbaoBox.sav")
+                : defaultPath;
+
+            string dir = Path.GetDirectoryName(path);
+
+            if (!Directory.Exists(dir))
+            {
+                dir = Application.StartupPath;
+            }
+
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Title = "请选择要打开的文件",
+                Filter = "Save文件 (*.sav)|*.sav",
+                InitialDirectory = dir,
+            };
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string filePath = openFileDialog.FileName;
+                try
+                {
+                    string text = File.ReadAllText(filePath);
+                    playerData.ClearTongbao();
+                    string[] items = text.Split(',');
+                    for (int i = 0; i < items.Length; i++)
+                    {
+                        string item = items[i];
+                        string name = string.Empty;
+                        string randomEffName = string.Empty;
+                        string[] parts = item.Split('|');
+                        if (parts.Length > 0)
+                        {
+                            name = parts[0].Trim();
+                        }
+                        if (parts.Length > 1)
+                        {
+                            randomEffName = parts[1].Trim();
+                        }
+
+                        if (string.IsNullOrEmpty(name))
+                        {
+                            continue;
+                        }
+
+                        TongbaoConfig config = Helper.GetTongbaoConfigByName(name);
+                        if (config == null)
+                        {
+                            continue;
+                        }
+
+                        Tongbao tongbao = playerData.CreateTongbao(config.Id);
+                        if (!string.IsNullOrEmpty(randomEffName))
+                        {
+                            foreach (var define in Define.RandomEffDefines)
+                            {
+                                if (define.Name == randomEffName)
+                                {
+                                    tongbao.ApplyRandomEff(define);
+                                    break;
+                                }
+                            }
+                        }
+                        playerData.InsertTongbao(tongbao, i);
+                    }
+                    return filePath;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"文件读取失败: {ex.Message}\n{dir}", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+
+            return null;
+        }
+
+        public static string SaveTongbaoBoxData(PlayerData playerData, string defaultPath = null)
+        {
+            string path = string.IsNullOrEmpty(defaultPath)
+                ? Path.Combine(Application.StartupPath, "Save", "TongbaoBox.sav")
+                : defaultPath;
+
+            string dir = Path.GetDirectoryName(path);
+            try
+            {
+                if (!Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+            }
+            catch //(Exception ex)
+            {
+
+            }
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Title = "请选择文件保存路径",
+                Filter = "Save文件 (*.sav)|*.sav",
+                InitialDirectory = dir,
+                FileName = Path.GetFileName(path),
+            };
+
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string filePath = saveFileDialog.FileName;
+                try
+                {
+                    if (!Directory.Exists(dir))
+                    {
+                        Directory.CreateDirectory(dir);
+                    }
+
+                    string text = string.Empty;
+                    for (int i = 0; i < playerData.MaxTongbaoCount; i++)
+                    {
+                        Tongbao tongbao = playerData.GetTongbao(i);
+                        if (tongbao != null)
+                        {
+                            text += tongbao.Name;
+                            var randomEff = tongbao.RandomEff;
+                            if (randomEff != null)
+                            {
+                                text += "|" + randomEff.Name;
+                            }
+                        }
+                        text += ',';
+                    }
+
+                    File.WriteAllText(filePath, text);
+                    return filePath;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"文件保存失败: {ex.Message}\n{dir}", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+
+            return null;
+        }
+
         public static void Log(string msg)
         {
             System.Diagnostics.Debug.WriteLine(msg);

@@ -73,8 +73,6 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             var sb = OutputResultSB;
             var collector = mExchangeDataCollector;
 
-            using CodeTimer ct = CodeTimer.StartNew("BuildResult");
-
             ClearDataInternal();
             mAsyncProgress?.Report(0);
 
