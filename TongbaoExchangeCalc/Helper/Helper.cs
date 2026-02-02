@@ -569,6 +569,7 @@ namespace TongbaoExchangeCalc
 
             }
 
+            // 如果没啥别的复杂的东西要存就先不用json了
             SaveFileDialog saveFileDialog = new SaveFileDialog
             {
                 Title = "请选择文件保存路径",
@@ -593,6 +594,7 @@ namespace TongbaoExchangeCalc
                         Tongbao tongbao = playerData.GetTongbao(i);
                         if (tongbao != null)
                         {
+                            // 存名字避免Id修改
                             text += tongbao.Name;
                             var randomEff = tongbao.RandomEff;
                             if (randomEff != null)
