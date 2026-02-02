@@ -342,7 +342,7 @@ namespace TongbaoExchangeCalc
             return imageList;
         }
 
-        public static void SetupResNumberic(PlayerData playerData, NumericUpDown numeric, ResType type)
+        public static void SetupResNumberic(PlayerData playerData, NumericUpDown numeric, ResType type, Action updateViewCallback = null)
         {
             if (playerData == null || numeric == null)
             {
@@ -354,6 +354,7 @@ namespace TongbaoExchangeCalc
             {
                 playerData.AddResValue(type, (int)(numeric.Value - lastValue));
                 lastValue = numeric.Value;
+                updateViewCallback?.Invoke();
             }
 
             numeric.ValueChanged -= OnValueChanged;

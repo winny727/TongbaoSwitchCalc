@@ -29,11 +29,11 @@ namespace TongbaoExchangeCalc.DataModel
                 return;
             }
 
-            // TODO 临时处理 dlc2的先不存
-            if (config.DlcVersion >= 2)
-            {
-                return;
-            }
+            //// 临时处理 dlc2的先不存
+            //if (config.DlcVersion >= 2)
+            //{
+            //    return;
+            //}
 
             mTongbaoConfigDict[config.Id] = config;
             ExchangePool.SetupTongbaoConfig(config);

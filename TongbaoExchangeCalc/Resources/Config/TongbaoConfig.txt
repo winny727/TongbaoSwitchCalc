@@ -75,33 +75,33 @@ Id	Name	Description	Type	Rarity	DlcVersion	ImgPath	ExchangeInPool	ExchangeOutPoo
 6006	诛邪雷法	投出时，战斗中对随机一格化境降下落雷，对首个部署在该地块上的干员和周围敌人造成9次伤害。落雷结束后若该干员未被击倒，则战斗结束后成为伺烛客	Risk	3		rogue_5_copper_S_6$0.png	3	3					
 6007	商路难行	位于钱盒内时，当前节点获得纵向通路。投出时，源石锭-5	Risk	3		rogue_5_copper_S_7$0.png	3	3					
 6008	孜孜不倦	位于钱盒内时，每经过一个节点，获得2源石锭（下次投钱前变化为-大炎通宝）	Flower	3	1	rogue_5_copper_S_8$0.png	3	3					
-7001	争商机	投出时，源石锭-30。每投出一枚厉钱，源石锭+15。	Risk		2	rogue_5_copper_E_01.png							
-7002	诸灾有迹	投出时，使钱盒里未被投出的通宝变化为随机厉钱，回到钱盒时变化为大炎通宝	Risk		2	rogue_5_copper_E_02.png							
-7003	贵有衡	投出时，我方干员攻击力+10％。钱盒里每有一枚衡钱，我方干员攻击力额外+10％	Balance		2	rogue_5_copper_E_03.png							
-7004	得见繁花	回到钱盒时，使当前已投出的通宝变化为随机花钱	Flower		2	rogue_5_copper_E_04.png							
-7005	分久必合	投出时，使战斗中最后部署的干员攻击力+50％，攻击速度+50，生命值+50％，初始技力+10	Flower		2	rogue_5_copper_E_05.png							
-7006	兴水利	加入钱盒时，目标生命值-10。投出时，目标生命上限+3	Risk		2	rogue_5_copper_E_06.png					LifePoint	-10	
-7007	南武盛景	投出时，敌方单位攻击力+20％。携带期间每经过一个战斗节点，失去时可获得一个收藏品（最多获得5个）	Risk		2	rogue_5_copper_E_07.png							
-7008	百灶盛景	投出时，希望+1。携带期间每经过一个非战斗节点，失去时可获得一个收藏品（最多获得5个）	Flower		2	rogue_5_copper_E_08.png							
-7009	龙门盛景	投出时，源石锭+8。失去时，消耗至多60源石锭，每消耗12源石锭，获得一个随机收藏品	Flower		2	rogue_5_copper_E_09.png							
-7010	勾吴盛景	失去时，获得3个收藏品。每投出一次，使失去时获得的收藏品数量-1（最多减至0）	Risk	3	2	rogue_5_copper_E_10.png	0						
-7011	大荒盛景	每投出一次，失去时可获得一个收藏品（最多获得5个）	Flower		2	rogue_5_copper_E_11.png							
-7012	溯外道	投出时，我方攻击速度+80。每次交换通宝时，攻击速度加成效果-10（至多减少至0）	Balance		2	rogue_5_copper_E_12.png							
-7013	溯正道	投出时，我方攻击速度+10。每次交换通宝时，攻击速度加成效果+10（至多叠加至+80）	Balance		2	rogue_5_copper_E_13.png							
-7014	麟天师	投出时，目标生命值+2且每场战斗获得1点临时生命值	Flower		2	rogue_5_copper_E_14.png							
-7015	右迁	投出时，所有干员的部署费用-5	Flower		2	rogue_5_copper_E_15.png							
-7016	录武官	投出时，敌方单位每次受到伤害时，法术抗性-2	Flower		2	rogue_5_copper_E_16.png							
-7017	柳伥作	投出时，所有我方干员攻击力-35％，攻速+60	Risk		2	rogue_5_copper_E_17.png							
-7018	备用梁	投出时，在失与得交换收藏品时可获得额外收藏品	Flower		2	rogue_5_copper_E_18.png							
-7019	捕风(左)	投出时，干员部署方向朝左时，攻速+40	Balance	1	2	rogue_5_copper_E_19.png	0			5			
-7020	捕风(右)	投出时，干员部署方向朝右时，攻速+40	Balance	1	2	rogue_5_copper_E_20.png	0			5			
-7021	捕风(上)	投出时，干员部署方向朝上时，攻速+40	Balance	1	2	rogue_5_copper_E_21.png	0			5			
-7022	捕风(下)	投出时，干员部署方向朝下时，攻速+40	Balance	1	2	rogue_5_copper_E_22.png	0			5			
-7023	钱盒底板	加入钱盒时，源石锭+2。不会被投出	Balance	2	2	rogue_5_copper_E_23.png	0	0			OriginiumIngots	2	
-7024	锦囊秒购	投出时，目标生命值降至1。每失去2目标生命值，获得一个随机收藏品。回到钱盒时变为大炎通宝	Flower		2	rogue_5_copper_E_24.png							
-7025	左秉烛	投出时，目标生命值-2，我方干员攻击力+200。每额外投出一次，我方干员攻击力额外+100（最多叠加至+1000）	Risk		2	rogue_5_copper_E_25.png							
-7026	药食	投出时，我方干员生命值-45％，但部署时获得6层护盾	Risk		2	rogue_5_copper_E_26.png							
-7027	见灵光	位于钱盒中时，战斗不再获得指挥经验。投出时，指挥等级+1	Risk		2	rogue_5_copper_E_27.png							
-7028	烽火台	不会被投出。离开钱盒时，获得4目标生命值、4希望及4票券	Flower	2	2	rogue_5_copper_E_28.png	0						
-7029	孤芳自赏	投出时，敌人重量-1，所有干员技能结束时较大力度推开攻击范围内的目标	Risk		2	rogue_5_copper_E_29.png							
-7030	天命难违	投出时，敌人重量-1，所有干员技能开启时较大力度将目标拖拽至自己面前	Risk		2	rogue_5_copper_E_30.png							
+7001	争商机	投出时，源石锭-30。每投出一枚厉钱，源石锭+15。	Risk	2	2	rogue_5_copper_E_01.png	2	2					
+7002	诸灾有迹	投出时，使钱盒里未被投出的通宝变化为随机厉钱，回到钱盒时变化为大炎通宝	Risk	3	2	rogue_5_copper_E_02.png	3	3					
+7003	贵有衡	投出时，我方干员攻击力+10％。钱盒里每有一枚衡钱，我方干员攻击力额外+10％	Balance	2	2	rogue_5_copper_E_03.png	2	2					
+7004	得见繁花	回到钱盒时，使当前已投出的通宝变化为随机花钱	Flower	3	2	rogue_5_copper_E_04.png	3	3					
+7005	分久必合	投出时，使战斗中最后部署的干员攻击力+50％，攻击速度+50，生命值+50％，初始技力+10	Flower	3	2	rogue_5_copper_E_05.png	3	3					
+7006	兴水利	加入钱盒时，目标生命值-10。投出时，目标生命上限+3	Risk	2	2	rogue_5_copper_E_06.png	2	2			LifePoint	-10	
+7007	南武盛景	投出时，敌方单位攻击力+20％。携带期间每经过一个战斗节点，失去时可获得一个收藏品（最多获得5个）	Risk	3	2	rogue_5_copper_E_07.png	3	3					
+7008	百灶盛景	投出时，希望+1。携带期间每经过一个非战斗节点，失去时可获得一个收藏品（最多获得5个）	Flower	3	2	rogue_5_copper_E_08.png	3	3					
+7009	龙门盛景	投出时，源石锭+8。失去时，消耗至多60源石锭，每消耗12源石锭，获得一个随机收藏品	Flower	3	2	rogue_5_copper_E_09.png	3	3					
+7010	勾吴盛景	失去时，获得3个收藏品。每投出一次，使失去时获得的收藏品数量-1（最多减至0）	Risk	3	2	rogue_5_copper_E_10.png	0	3					
+7011	大荒盛景	每投出一次，失去时可获得一个收藏品（最多获得5个）	Flower	3	2	rogue_5_copper_E_11.png	3	3					
+7012	溯外道	投出时，我方攻击速度+80。每次交换通宝时，攻击速度加成效果-10（至多减少至0）	Balance	2	2	rogue_5_copper_E_12.png	2	2					
+7013	溯正道	投出时，我方攻击速度+10。每次交换通宝时，攻击速度加成效果+10（至多叠加至+80）	Balance	2	2	rogue_5_copper_E_13.png	2	2					
+7014	麟天师	投出时，目标生命值+2且每场战斗获得1点临时生命值	Flower	2	2	rogue_5_copper_E_14.png	2	2					
+7015	右迁	投出时，所有干员的部署费用-5	Flower	1	2	rogue_5_copper_E_15.png	1	1					
+7016	录武官	投出时，敌方单位每次受到伤害时，法术抗性-2	Flower	2	2	rogue_5_copper_E_16.png	2	2					
+7017	柳伥作	投出时，所有我方干员攻击力-35％，攻速+60	Risk	2	2	rogue_5_copper_E_17.png	2	2					
+7018	备用梁	投出时，在失与得交换收藏品时可获得额外收藏品	Flower	2	2	rogue_5_copper_E_18.png	2	2					
+7019	捕风(左)	投出时，干员部署方向朝左时，攻速+40	Balance	1	2	rogue_5_copper_E_19.png	0	1		5			
+7020	捕风(右)	投出时，干员部署方向朝右时，攻速+40	Balance	1	2	rogue_5_copper_E_20.png	0	1		5			
+7021	捕风(上)	投出时，干员部署方向朝上时，攻速+40	Balance	1	2	rogue_5_copper_E_21.png	0	1		5			
+7022	捕风(下)	投出时，干员部署方向朝下时，攻速+40	Balance	1	2	rogue_5_copper_E_22.png	0	1		5			
+7023	钱盒底板	加入钱盒时，源石锭+2。不会被投出	Balance	3	2	rogue_5_copper_E_23.png	0	3			OriginiumIngots	2	
+7024	锦囊秒购	投出时，目标生命值降至1。每失去2目标生命值，获得一个随机收藏品。回到钱盒时变为大炎通宝	Flower	3	2	rogue_5_copper_E_24.png	3	3					
+7025	左秉烛	投出时，目标生命值-2，我方干员攻击力+200。每额外投出一次，我方干员攻击力额外+100（最多叠加至+1000）	Risk	2	2	rogue_5_copper_E_25.png	2	2					
+7026	药食	投出时，我方干员生命值-45％，但部署时获得6层护盾	Risk	1	2	rogue_5_copper_E_26.png	1	1					
+7027	见灵光	位于钱盒中时，战斗不再获得指挥经验。投出时，指挥等级+1	Risk	2	2	rogue_5_copper_E_27.png	2	2					
+7028	烽火台	不会被投出。离开钱盒时，获得4目标生命值、4希望及4票券	Flower	2	2	rogue_5_copper_E_28.png	0	2					
+7029	孤芳自赏	投出时，敌人重量-1，所有干员技能结束时较大力度推开攻击范围内的目标	Risk	3	2	rogue_5_copper_E_29.png	3	3					
+7030	天命难违	投出时，敌人重量-1，所有干员技能开启时较大力度将目标拖拽至自己面前	Risk	3	2	rogue_5_copper_E_30.png	3	3					

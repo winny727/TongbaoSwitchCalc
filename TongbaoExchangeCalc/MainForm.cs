@@ -177,12 +177,12 @@ namespace TongbaoExchangeCalc
             mIconGrid.Click += iconGridControl_Click;
             UpdateLockedListView();
 
-            Helper.SetupResNumberic(mPlayerData, numHp, ResType.LifePoint);
-            Helper.SetupResNumberic(mPlayerData, numIngots, ResType.OriginiumIngots);
-            Helper.SetupResNumberic(mPlayerData, numCoupon, ResType.Coupon);
-            Helper.SetupResNumberic(mPlayerData, numCandle, ResType.Candles);
-            Helper.SetupResNumberic(mPlayerData, numShield, ResType.Shield);
-            Helper.SetupResNumberic(mPlayerData, numHope, ResType.Hope);
+            Helper.SetupResNumberic(mPlayerData, numHp, ResType.LifePoint, UpdateView);
+            Helper.SetupResNumberic(mPlayerData, numIngots, ResType.OriginiumIngots, UpdateView);
+            Helper.SetupResNumberic(mPlayerData, numCoupon, ResType.Coupon, UpdateView);
+            Helper.SetupResNumberic(mPlayerData, numCandle, ResType.Candles, UpdateView);
+            Helper.SetupResNumberic(mPlayerData, numShield, ResType.Shield, UpdateView);
+            Helper.SetupResNumberic(mPlayerData, numHope, ResType.Hope, UpdateView);
 
             InitTongbaoView();
             RuleTreeViewController.InitRuleTreeView();
