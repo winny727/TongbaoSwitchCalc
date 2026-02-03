@@ -228,7 +228,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
             {
                 SlotIndex = (sbyte)context.SlotIndex,
                 TongbaoId = (Int16)tongbaoId,
-                ExchangeStepResult = mLastExchangeStepResult,
+                ExchangeStepResult = result,
             };
 
             unsafe

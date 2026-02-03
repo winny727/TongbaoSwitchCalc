@@ -31,6 +31,32 @@ namespace TongbaoExchangeCalc.Impl.Simulation
         public int AfterTongbaoId;
         public ResValueRecord[] ResValueRecords;
         public ExchangeStepResult ExchangeStepResult;
+
+        public override readonly string ToString()
+        {
+            string result = string.Empty;
+            result += $"SimulationStepIndex: {SimulationStepIndex}";
+            result += $", ExchangeStepIndex: {ExchangeStepIndex}";
+            result += $", SlotIndex: {SlotIndex}";
+            result += $", BeforeTongbaoId: {BeforeTongbaoId}";
+            result += $", AfterTongbaoId: {AfterTongbaoId}";
+            result += $", ExchangeStepResult: {ExchangeStepResult}";
+            result += $", ResValueRecords: [";
+            for (int i = 0; i < ResValueRecords.Length; i++)
+            {
+                var record = ResValueRecords[i];
+                if (record.IsValueChanged)
+                {
+                    result += $"{{ ResType: {record.ResType}, BeforeValue: {record.BeforeValue}, AfterValue: {record.AfterValue}, ChangedValue: {record.ChangedValue} }}";
+                    if (i < ResValueRecords.Length - 1)
+                    {
+                        result += ", ";
+                    }
+                }
+            }
+            result += $"]";
+            return result;
+        }
     }
 
     public struct ResValueRecord
