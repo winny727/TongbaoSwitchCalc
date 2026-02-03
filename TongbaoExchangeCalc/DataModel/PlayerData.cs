@@ -228,7 +228,7 @@ namespace TongbaoExchangeCalc.DataModel
                 for (int i = 0; i < tongbao.ExtraResTypes.Count && i < tongbao.ExtraResCounts.Count; i++)
                 {
                     ResType type = tongbao.ExtraResTypes[i];
-                    int resCount = tongbao.ExtraResCounts[i];
+                    int resCount = tongbao.ExtraResCounts[i]; // 可以为负数
                     if (type != ResType.None)
                     {
                         AddResValue(type, resCount);
