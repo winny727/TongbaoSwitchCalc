@@ -54,18 +54,23 @@ namespace TongbaoExchangeCalc.Impl.View
                         return SpecificTongbaoId;
                     }
                 }
+                return -1; // 未找到指定ID
             }
             else if (TongbaoSelectMode == TongbaoSelectMode.Dialog)
             {
                 SelectorForm selectorForm = new SelectorForm(SelectMode.ExchangeTongbaoSelector);
-                selectorForm.SetDisplayIdList(tongbaoIds);
+                selectorForm.SetVisibleIdList(tongbaoIds);
                 if (selectorForm.ShowDialog() == DialogResult.OK)
                 {
                     return selectorForm.SelectedId;
                 }
+                else
+                {
+                    return -1; // 用户取消
+                }
             }
 
-            return tongbaoIds[0];
+            return -1;
         }
 
         public object Clone()

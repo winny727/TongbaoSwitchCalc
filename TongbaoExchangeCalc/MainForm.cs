@@ -445,7 +445,7 @@ namespace TongbaoExchangeCalc
                 }
 
                 mPrintDataCollector?.OnExchangeStepEnd(new SimulateContext(0, mPlayerData.ExchangeCount, slotIndex, mPlayerData), ExchangeStepResult.UnknownError);
-                MessageBox.Show("交换失败，请检查当前配置和状态。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("交换失败，没有可以交换的通宝。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
@@ -552,7 +552,6 @@ namespace TongbaoExchangeCalc
             UpdateAsyncSimulateView(false);
             GC.Collect();
 
-            //TODO
             //MessageBox.Show(mStatisticDataCollector.GetOutputResult(), "模拟期望", MessageBoxButtons.OK, MessageBoxIcon.Information);
             MessageBox.Show(mExchangeDataParser.StatisticResult, "模拟期望", MessageBoxButtons.OK, MessageBoxIcon.Information);
 

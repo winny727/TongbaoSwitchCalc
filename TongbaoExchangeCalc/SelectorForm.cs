@@ -24,13 +24,14 @@ namespace TongbaoExchangeCalc
             SelectMode == SelectMode.SingleSelectWithComboBox || 
             SelectMode == SelectMode.ExchangeTongbaoSelector;
         public bool IsMultiSelect => SelectMode == SelectMode.MultiSelect;
+        public bool CanSelectEmpty => SelectMode != SelectMode.ExchangeTongbaoSelector;
 
-        public int SelectedId => IsSelected ? SelectedIds[0] : GetFilterDefaultId();
+        public int SelectedId => IsSelected ? SelectedIds[0] : GetDefaultSelectedId();
         public List<int> SelectedIds { get; private set; } = new List<int>();
         public RandomEff SelectedRandomEff { get; private set; }
         public bool IsSelected => SelectedIds.Count > 0;
 
-        private readonly List<int> mDisplayIdList = new List<int>();
+        private IReadOnlyList<int> mVisibleIdList = null;
         private ListViewItem[] mListViewItems;
         private bool mRawSet = false;
 
@@ -43,7 +44,7 @@ namespace TongbaoExchangeCalc
 
         private int GetListViewItemId(ListViewItem item) => (item?.Tag is TongbaoConfig config) ? config.Id : -1;
 
-        private int GetFilterDefaultId()
+        private int GetDefaultSelectedId()
         {
             // 若当前为单选，且未选中任何项，则筛选时默认选中筛选后的第一个
             if (IsSingleSelect && !IsSelected && !string.IsNullOrEmpty(textBox1.Text))
@@ -53,6 +54,16 @@ namespace TongbaoExchangeCalc
                     return GetListViewItemId(listView1.Items[0]);
                 }
             }
+
+            // 若当前选择不能为空，且未选中任何项，则默认选中第一个可选项
+            if (!CanSelectEmpty && !IsSelected)
+            {
+                if (listView1.Items.Count > 0)
+                {
+                    return GetListViewItemId(listView1.Items[0]);
+                }
+            }
+
             return -1;
         }
 
@@ -76,13 +87,9 @@ namespace TongbaoExchangeCalc
             UpdateChecked();
         }
 
-        public void SetDisplayIdList(IReadOnlyList<int> displayIds)
+        public void SetVisibleIdList(IReadOnlyList<int> visibleIds)
         {
-            mDisplayIdList.Clear();
-            if (displayIds != null)
-            {
-                mDisplayIdList.AddRange(displayIds);
-            }
+            mVisibleIdList = visibleIds;
             UpdateListView();
         }
 
@@ -90,7 +97,6 @@ namespace TongbaoExchangeCalc
         {
             mRawSet = true;
             UpdateListView();
-            UpdateChecked();
             mRawSet = false;
         }
 
@@ -98,6 +104,8 @@ namespace TongbaoExchangeCalc
         {
             SelectedIds.Clear();
             SelectedRandomEff = null;
+
+            btnClear.Visible = CanSelectEmpty;
 
             comboBox1.Items.Clear();
             comboBox1.Visible = SelectMode == SelectMode.SingleSelectWithComboBox;
@@ -131,6 +139,30 @@ namespace TongbaoExchangeCalc
                 };
                 listViewItems.Add(listViewItem);
             }
+
+            // 按 衡-花-历-稀有度-DlcVersion-Id 排序
+            listViewItems.Sort((item1, item2) =>
+            {
+                TongbaoConfig config1 = (TongbaoConfig)item1.Tag;
+                TongbaoConfig config2 = (TongbaoConfig)item2.Tag;
+                if (config1.Type != config2.Type)
+                {
+                    return config1.Type.CompareTo(config2.Type);
+                }
+                else if (config1.Rarity != config2.Rarity)
+                {
+                    return config1.Rarity.CompareTo(config2.Rarity);
+                }
+                else if (config1.DlcVersion != config2.DlcVersion)
+                {
+                    return config1.DlcVersion.CompareTo(config2.DlcVersion);
+                }
+                else
+                {
+                    return config1.Id.CompareTo(config2.Id);
+                }
+            });
+
             mListViewItems = listViewItems.ToArray();
             listView1.SelectedItems.Clear();
 
@@ -150,9 +182,18 @@ namespace TongbaoExchangeCalc
             foreach (ListViewItem item in mListViewItems)
             {
                 int id = GetListViewItemId(item);
-                if (SelectMode == SelectMode.ExchangeTongbaoSelector)
+                if (mVisibleIdList != null)
                 {
-                    if (!mDisplayIdList.Contains(id))
+                    bool isContains = false;
+                    for (int i = 0; i < mVisibleIdList.Count; i++)
+                    {
+                        if (mVisibleIdList[i] == id)
+                        {
+                            isContains = true;
+                            break;
+                        }
+                    }
+                    if (!isContains)
                     {
                         continue;
                     }
@@ -168,16 +209,18 @@ namespace TongbaoExchangeCalc
 
                 listView1.Items.Add(item);
             }
+
+            UpdateChecked();
         }
 
         private void UpdateChecked()
         {
-            int filterDefaultId = GetFilterDefaultId();
+            int defaultSelectedId = GetDefaultSelectedId();
             foreach (ListViewItem item in listView1.Items)
             {
                 if (item == null) continue;
                 int id = GetListViewItemId(item);
-                item.Checked = SelectedIds.Contains(id) || id == filterDefaultId;
+                item.Checked = SelectedIds.Contains(id) || id == defaultSelectedId;
                 if (IsSingleSelect && item.Checked)
                 {
                     item.EnsureVisible();
