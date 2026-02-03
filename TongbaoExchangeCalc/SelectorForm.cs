@@ -25,12 +25,12 @@ namespace TongbaoExchangeCalc
             SelectMode == SelectMode.ExchangeTongbaoSelector;
         public bool IsMultiSelect => SelectMode == SelectMode.MultiSelect;
 
-        public int SelectedId { get; private set; }
+        public int SelectedId => IsSelected ? SelectedIds[0] : GetFilterDefaultId();
         public List<int> SelectedIds { get; private set; } = new List<int>();
         public RandomEff SelectedRandomEff { get; private set; }
         public bool IsSelected => SelectedIds.Count > 0;
 
-        private readonly List<int> mExchangeTongbaoIdList = new List<int>();
+        private readonly List<int> mDisplayIdList = new List<int>();
         private ListViewItem[] mListViewItems;
         private bool mRawSet = false;
 
@@ -42,6 +42,19 @@ namespace TongbaoExchangeCalc
         }
 
         private int GetListViewItemId(ListViewItem item) => (item?.Tag is TongbaoConfig config) ? config.Id : -1;
+
+        private int GetFilterDefaultId()
+        {
+            // 若当前为单选，且未选中任何项，则筛选时默认选中筛选后的第一个
+            if (IsSingleSelect && !IsSelected && !string.IsNullOrEmpty(textBox1.Text))
+            {
+                if (listView1.Items.Count > 0)
+                {
+                    return GetListViewItemId(listView1.Items[0]);
+                }
+            }
+            return -1;
+        }
 
         public void SetSelectedIds(IReadOnlyList<int> selectedIds)
         {
@@ -60,16 +73,15 @@ namespace TongbaoExchangeCalc
             {
                 SelectedIds.Add(selectedIds[0]);
             }
-            SelectedId = SelectedIds.Count > 0 ? SelectedIds[0] : -1;
             UpdateChecked();
         }
 
-        public void SetExchangeTongbaoIdList(IReadOnlyList<int> tongbaoIds)
+        public void SetDisplayIdList(IReadOnlyList<int> displayIds)
         {
-            mExchangeTongbaoIdList.Clear();
-            if (tongbaoIds != null)
+            mDisplayIdList.Clear();
+            if (displayIds != null)
             {
-                mExchangeTongbaoIdList.AddRange(tongbaoIds);
+                mDisplayIdList.AddRange(displayIds);
             }
             UpdateListView();
         }
@@ -84,7 +96,6 @@ namespace TongbaoExchangeCalc
 
         private void InitListView()
         {
-            SelectedId = -1;
             SelectedIds.Clear();
             SelectedRandomEff = null;
 
@@ -138,10 +149,10 @@ namespace TongbaoExchangeCalc
             listView1.Items.Clear();
             foreach (ListViewItem item in mListViewItems)
             {
-                int tongbaoId = GetListViewItemId(item);
+                int id = GetListViewItemId(item);
                 if (SelectMode == SelectMode.ExchangeTongbaoSelector)
                 {
-                    if (!mExchangeTongbaoIdList.Contains(tongbaoId))
+                    if (!mDisplayIdList.Contains(id))
                     {
                         continue;
                     }
@@ -161,11 +172,12 @@ namespace TongbaoExchangeCalc
 
         private void UpdateChecked()
         {
+            int filterDefaultId = GetFilterDefaultId();
             foreach (ListViewItem item in listView1.Items)
             {
                 if (item == null) continue;
                 int id = GetListViewItemId(item);
-                item.Checked = SelectedIds.Contains(id);
+                item.Checked = SelectedIds.Contains(id) || id == filterDefaultId;
                 if (IsSingleSelect && item.Checked)
                 {
                     item.EnsureVisible();
@@ -223,8 +235,6 @@ namespace TongbaoExchangeCalc
                 }
             }
             mRawSet = false;
-
-            SelectedId = SelectedIds.Count > 0 ? SelectedIds[0] : -1;
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -236,7 +246,6 @@ namespace TongbaoExchangeCalc
         private void btnClear_Click(object sender, EventArgs e)
         {
             SelectedIds.Clear();
-            SelectedId = -1;
             UpdateChecked();
         }
 

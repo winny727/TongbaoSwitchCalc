@@ -58,7 +58,7 @@ namespace TongbaoExchangeCalc.Impl.View
             else if (TongbaoSelectMode == TongbaoSelectMode.Dialog)
             {
                 SelectorForm selectorForm = new SelectorForm(SelectMode.ExchangeTongbaoSelector);
-                selectorForm.SetExchangeTongbaoIdList(tongbaoIds);
+                selectorForm.SetDisplayIdList(tongbaoIds);
                 if (selectorForm.ShowDialog() == DialogResult.OK)
                 {
                     return selectorForm.SelectedId;
