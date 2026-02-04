@@ -109,6 +109,7 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.RecordToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.panelRecordBox = new System.Windows.Forms.Panel();
             this.btnResetBox = new System.Windows.Forms.Button();
             this.btnRecordBox = new System.Windows.Forms.Button();
             this.btnSaveBox = new System.Windows.Forms.Button();
@@ -629,7 +630,7 @@
             // 
             this.btnRandom.Location = new System.Drawing.Point(6, 20);
             this.btnRandom.Name = "btnRandom";
-            this.btnRandom.Size = new System.Drawing.Size(120, 23);
+            this.btnRandom.Size = new System.Drawing.Size(75, 23);
             this.btnRandom.TabIndex = 17;
             this.btnRandom.Text = "全部随机";
             this.btnRandom.UseVisualStyleBackColor = true;
@@ -639,7 +640,7 @@
             // 
             this.btnClear.Location = new System.Drawing.Point(6, 78);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(120, 23);
+            this.btnClear.Size = new System.Drawing.Size(75, 23);
             this.btnClear.TabIndex = 18;
             this.btnClear.Text = "全部清除";
             this.btnClear.UseVisualStyleBackColor = true;
@@ -672,7 +673,7 @@
             // 
             this.btnRandomEmpty.Location = new System.Drawing.Point(6, 49);
             this.btnRandomEmpty.Name = "btnRandomEmpty";
-            this.btnRandomEmpty.Size = new System.Drawing.Size(120, 23);
+            this.btnRandomEmpty.Size = new System.Drawing.Size(75, 23);
             this.btnRandomEmpty.TabIndex = 21;
             this.btnRandomEmpty.Text = "空位随机";
             this.btnRandomEmpty.UseVisualStyleBackColor = true;
@@ -994,6 +995,7 @@
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.panelRecordBox);
             this.groupBox5.Controls.Add(this.btnResetBox);
             this.groupBox5.Controls.Add(this.btnRecordBox);
             this.groupBox5.Controls.Add(this.btnSaveBox);
@@ -1003,36 +1005,50 @@
             this.groupBox5.Controls.Add(this.btnRandomEmpty);
             this.groupBox5.Location = new System.Drawing.Point(308, 333);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(264, 151);
+            this.groupBox5.Size = new System.Drawing.Size(367, 151);
             this.groupBox5.TabIndex = 26;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "钱盒操作";
             // 
+            // panelRecordBox
+            // 
+            this.panelRecordBox.BackColor = System.Drawing.SystemColors.Window;
+            this.panelRecordBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelRecordBox.Location = new System.Drawing.Point(249, 20);
+            this.panelRecordBox.Name = "panelRecordBox";
+            this.panelRecordBox.Size = new System.Drawing.Size(92, 56);
+            this.panelRecordBox.TabIndex = 3;
+            this.panelRecordBox.Visible = false;
+            // 
             // btnResetBox
             // 
-            this.btnResetBox.Location = new System.Drawing.Point(132, 107);
+            this.btnResetBox.Location = new System.Drawing.Point(168, 49);
             this.btnResetBox.Name = "btnResetBox";
-            this.btnResetBox.Size = new System.Drawing.Size(120, 23);
+            this.btnResetBox.Size = new System.Drawing.Size(75, 23);
             this.btnResetBox.TabIndex = 25;
             this.btnResetBox.Text = "重置钱盒";
             this.btnResetBox.UseVisualStyleBackColor = true;
             this.btnResetBox.Click += new System.EventHandler(this.btnResetBox_Click);
+            this.btnResetBox.MouseEnter += new System.EventHandler(this.btnResetBox_MouseEnter);
+            this.btnResetBox.MouseLeave += new System.EventHandler(this.btnResetBox_MouseLeave);
             // 
             // btnRecordBox
             // 
-            this.btnRecordBox.Location = new System.Drawing.Point(132, 78);
+            this.btnRecordBox.Location = new System.Drawing.Point(168, 20);
             this.btnRecordBox.Name = "btnRecordBox";
-            this.btnRecordBox.Size = new System.Drawing.Size(120, 23);
+            this.btnRecordBox.Size = new System.Drawing.Size(75, 23);
             this.btnRecordBox.TabIndex = 24;
             this.btnRecordBox.Text = "记录钱盒";
             this.btnRecordBox.UseVisualStyleBackColor = true;
             this.btnRecordBox.Click += new System.EventHandler(this.btnRecordBox_Click);
+            this.btnRecordBox.MouseEnter += new System.EventHandler(this.btnRecordBox_MouseEnter);
+            this.btnRecordBox.MouseLeave += new System.EventHandler(this.btnRecordBox_MouseLeave);
             // 
             // btnSaveBox
             // 
-            this.btnSaveBox.Location = new System.Drawing.Point(132, 49);
+            this.btnSaveBox.Location = new System.Drawing.Point(87, 49);
             this.btnSaveBox.Name = "btnSaveBox";
-            this.btnSaveBox.Size = new System.Drawing.Size(120, 23);
+            this.btnSaveBox.Size = new System.Drawing.Size(75, 23);
             this.btnSaveBox.TabIndex = 23;
             this.btnSaveBox.Text = "保存钱盒";
             this.btnSaveBox.UseVisualStyleBackColor = true;
@@ -1040,9 +1056,9 @@
             // 
             // btnLoadBox
             // 
-            this.btnLoadBox.Location = new System.Drawing.Point(132, 20);
+            this.btnLoadBox.Location = new System.Drawing.Point(87, 20);
             this.btnLoadBox.Name = "btnLoadBox";
-            this.btnLoadBox.Size = new System.Drawing.Size(120, 23);
+            this.btnLoadBox.Size = new System.Drawing.Size(75, 23);
             this.btnLoadBox.TabIndex = 22;
             this.btnLoadBox.Text = "读取钱盒";
             this.btnLoadBox.UseVisualStyleBackColor = true;
@@ -1192,5 +1208,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem RecordBoxToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ResetBoxToolStripMenuItem;
+        private System.Windows.Forms.Panel panelRecordBox;
     }
 }

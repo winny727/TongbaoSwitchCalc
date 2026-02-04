@@ -21,7 +21,7 @@ namespace TongbaoExchangeCalc.View
                     return 1;
 
                 int full = CellSize + Spacing;
-                int columns = (availableWidth + Spacing) / full;
+                int columns = availableWidth / full;
                 return Math.Max(1, columns);
             }
         }
@@ -45,7 +45,15 @@ namespace TongbaoExchangeCalc.View
             for (int i = 0; i < mIcons.Count; i++)
             {
                 Rectangle rect = GetCellRect(i);
-                e.Graphics.DrawImage(mIcons[i], rect);
+                if (mIcons[i] != null)
+                {
+                    e.Graphics.DrawImage(mIcons[i], rect);
+                }
+                else
+                {
+                    using var brush = new SolidBrush(Color.Transparent);
+                    e.Graphics.FillRectangle(brush, rect);
+                }
             }
         }
 

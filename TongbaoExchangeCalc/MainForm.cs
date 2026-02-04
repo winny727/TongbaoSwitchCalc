@@ -31,7 +31,8 @@ namespace TongbaoExchangeCalc
         private string mCurrentFilePath = string.Empty;
 
         private readonly List<Control> mSimulatingDisableControls = new List<Control>();
-        private IconGridControl mIconGrid;
+        private IconGridControl mLockIconGrid;
+        private IconGridControl mBoxIconGrid;
         private RuleTreeViewController RuleTreeViewController;
         private bool mOutputResultChanged = false;
         private RecordForm mRecordForm;
@@ -122,7 +123,8 @@ namespace TongbaoExchangeCalc
                 btnExchange, btnReset, btnLoadBox, btnSaveBox, btnRecordBox, btnResetBox,
             });
 
-            mIconGrid = new IconGridControl();
+            mLockIconGrid = new IconGridControl();
+            mBoxIconGrid = new IconGridControl();
             RuleTreeViewController = new RuleTreeViewController(treeViewRule, mPlayerData);
             mRecordForm = new RecordForm(this);
             Helper.InitResources();
@@ -169,14 +171,22 @@ namespace TongbaoExchangeCalc
             numMaxRecord.Enabled = checkBoxEnableRecord.Checked;
 
             panelLockedList.Controls.Clear();
-            panelLockedList.Controls.Add(mIconGrid);
-            mIconGrid.CellSize = 22;
-            mIconGrid.Spacing = -4;
-            mIconGrid.Width = panelLockedList.Width;
-            mIconGrid.Height = panelLockedList.Height;
-            mIconGrid.Click -= iconGridControl_Click;
-            mIconGrid.Click += iconGridControl_Click;
+            panelLockedList.Controls.Add(mLockIconGrid);
+            mLockIconGrid.CellSize = 22;
+            mLockIconGrid.Spacing = -4;
+            mLockIconGrid.Width = panelLockedList.Width;
+            mLockIconGrid.Height = panelLockedList.Height;
+            mLockIconGrid.Click -= lockIconGridControl_Click;
+            mLockIconGrid.Click += lockIconGridControl_Click;
             UpdateLockedListView();
+
+            panelRecordBox.Controls.Clear();
+            panelRecordBox.Controls.Add(mBoxIconGrid);
+            mBoxIconGrid.CellSize = 22;
+            mBoxIconGrid.Spacing = -4;
+            mBoxIconGrid.Width = panelRecordBox.Width;
+            mBoxIconGrid.Height = panelRecordBox.Height;
+            UpdateRecordBoxView();
 
             Helper.SetupResNumeric(mPlayerData, numHp, ResType.LifePoint, UpdateView);
             Helper.SetupResNumeric(mPlayerData, numIngots, ResType.OriginiumIngots, UpdateView);
@@ -354,7 +364,18 @@ namespace TongbaoExchangeCalc
                 Image image = Helper.GetTongbaoImage(id);
                 mTempTongbaoImages.Add(image);
             }
-            mIconGrid.SetIcons(mTempTongbaoImages);
+            mLockIconGrid.SetIcons(mTempTongbaoImages);
+        }
+
+        private void UpdateRecordBoxView()
+        {
+            mTempTongbaoImages.Clear();
+            foreach (var tongbao in mTempRecordTongbaos)
+            {
+                Image image = tongbao != null ? Helper.GetTongbaoImage(tongbao.Id) : null;
+                mTempTongbaoImages.Add(image);
+            }
+            mBoxIconGrid.SetIcons(mTempTongbaoImages);
         }
 
         private void UpdateAsyncSimulateView(bool asyncSimulating)
@@ -899,7 +920,7 @@ namespace TongbaoExchangeCalc
             UpdateAllTongbaoView();
         }
 
-        private void iconGridControl_Click(object sender, EventArgs e)
+        private void lockIconGridControl_Click(object sender, EventArgs e)
         {
             SelectorForm selectorForm = new SelectorForm(SelectMode.MultiSelect);
             selectorForm.SetSelectedIds(mPlayerData.LockedTongbaoList);
@@ -964,6 +985,7 @@ namespace TongbaoExchangeCalc
                 clonedTongbao.ApplyRandomEff(tongbao.RandomEff);
                 mTempRecordTongbaos.Add(clonedTongbao);
             }
+            UpdateRecordBoxView();
         }
 
         private void btnResetBox_Click(object sender, EventArgs e)
@@ -984,6 +1006,35 @@ namespace TongbaoExchangeCalc
             }
             UpdateAllTongbaoView();
             UpdateView();
+        }
+
+        private void btnRecordBox_MouseEnter(object sender, EventArgs e)
+        {
+            mTempTongbaoImages.Clear();
+            for (int i = 0; i < mPlayerData.MaxTongbaoCount; i++)
+            {
+                Tongbao tongbao = mPlayerData.GetTongbao(i);
+                Image image = tongbao != null ? Helper.GetTongbaoImage(tongbao.Id) : null;
+                mTempTongbaoImages.Add(image);
+            }
+            mBoxIconGrid.SetIcons(mTempTongbaoImages);
+            panelRecordBox.Visible = true;
+        }
+
+        private void btnRecordBox_MouseLeave(object sender, EventArgs e)
+        {
+            panelRecordBox.Visible = false;
+        }
+
+        private void btnResetBox_MouseEnter(object sender, EventArgs e)
+        {
+            UpdateRecordBoxView();
+            panelRecordBox.Visible = true;
+        }
+
+        private void btnResetBox_MouseLeave(object sender, EventArgs e)
+        {
+            panelRecordBox.Visible = false;
         }
     }
 }
