@@ -178,12 +178,12 @@ namespace TongbaoExchangeCalc
             mIconGrid.Click += iconGridControl_Click;
             UpdateLockedListView();
 
-            Helper.SetupResNumberic(mPlayerData, numHp, ResType.LifePoint, UpdateView);
-            Helper.SetupResNumberic(mPlayerData, numIngots, ResType.OriginiumIngots, UpdateView);
-            Helper.SetupResNumberic(mPlayerData, numCoupon, ResType.Coupon, UpdateView);
-            Helper.SetupResNumberic(mPlayerData, numCandle, ResType.Candles, UpdateView);
-            Helper.SetupResNumberic(mPlayerData, numShield, ResType.Shield, UpdateView);
-            Helper.SetupResNumberic(mPlayerData, numHope, ResType.Hope, UpdateView);
+            Helper.SetupResNumeric(mPlayerData, numHp, ResType.LifePoint, UpdateView);
+            Helper.SetupResNumeric(mPlayerData, numIngots, ResType.OriginiumIngots, UpdateView);
+            Helper.SetupResNumeric(mPlayerData, numCoupon, ResType.Coupon, UpdateView);
+            Helper.SetupResNumeric(mPlayerData, numCandle, ResType.Candles, UpdateView);
+            Helper.SetupResNumeric(mPlayerData, numShield, ResType.Shield, UpdateView);
+            Helper.SetupResNumeric(mPlayerData, numHope, ResType.Hope, UpdateView);
 
             InitTongbaoView();
             RuleTreeViewController.InitRuleTreeView();
@@ -652,7 +652,7 @@ namespace TongbaoExchangeCalc
             }
         }
 
-        private void SetNumbericValue(NumericUpDown numeric, decimal value)
+        private void SetNumericValue(NumericUpDown numeric, decimal value)
         {
             if (numeric != null)
             {
@@ -752,6 +752,15 @@ namespace TongbaoExchangeCalc
             numMaxRecord.Enabled = checkBoxEnableRecord.Checked;
         }
 
+        private void scrollable_MouseWheel(object sender, MouseEventArgs e)
+        {
+            // 拦截鼠标滚轮事件，防止未聚焦时滚动
+            if (!((Control)sender).Focused)
+            {
+                ((HandledMouseEventArgs)e).Handled = true;
+            }
+        }
+
         // 选择通宝槽位
         private void listViewTongbao_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -845,12 +854,12 @@ namespace TongbaoExchangeCalc
             int shield = mPlayerData.GetResValue(ResType.Shield);
             int hope = mPlayerData.GetResValue(ResType.Hope);
 
-            SetNumbericValue(numHp, hp);
-            SetNumbericValue(numIngots, ingots);
-            SetNumbericValue(numCoupon, coupon);
-            SetNumbericValue(numCandle, candle);
-            SetNumbericValue(numShield, shield);
-            SetNumbericValue(numHope, hope);
+            SetNumericValue(numHp, hp);
+            SetNumericValue(numIngots, ingots);
+            SetNumericValue(numCoupon, coupon);
+            SetNumericValue(numCandle, candle);
+            SetNumericValue(numShield, shield);
+            SetNumericValue(numHope, hope);
         }
 
         private void btnRecord_Click(object sender, EventArgs e)

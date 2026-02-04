@@ -147,6 +147,7 @@
             this.comboBoxSquad.Size = new System.Drawing.Size(164, 20);
             this.comboBoxSquad.TabIndex = 0;
             this.comboBoxSquad.SelectedIndexChanged += new System.EventHandler(this.comboBoxSquad_SelectedIndexChanged);
+            this.comboBoxSquad.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.scrollable_MouseWheel);
             // 
             // label1
             // 
@@ -221,6 +222,7 @@
             0,
             0,
             0});
+            this.numSimCnt.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.scrollable_MouseWheel);
             // 
             // listViewTongbao
             // 
@@ -291,6 +293,7 @@
             this.numShield.Name = "numShield";
             this.numShield.Size = new System.Drawing.Size(60, 21);
             this.numShield.TabIndex = 7;
+            this.numShield.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.scrollable_MouseWheel);
             // 
             // label7
             // 
@@ -312,6 +315,7 @@
             this.numHope.Name = "numHope";
             this.numHope.Size = new System.Drawing.Size(60, 21);
             this.numHope.TabIndex = 6;
+            this.numHope.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.scrollable_MouseWheel);
             // 
             // label8
             // 
@@ -333,6 +337,7 @@
             this.numCandle.Name = "numCandle";
             this.numCandle.Size = new System.Drawing.Size(60, 21);
             this.numCandle.TabIndex = 5;
+            this.numCandle.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.scrollable_MouseWheel);
             // 
             // label5
             // 
@@ -354,6 +359,7 @@
             this.numCoupon.Name = "numCoupon";
             this.numCoupon.Size = new System.Drawing.Size(60, 21);
             this.numCoupon.TabIndex = 4;
+            this.numCoupon.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.scrollable_MouseWheel);
             // 
             // label4
             // 
@@ -375,6 +381,7 @@
             this.numIngots.Name = "numIngots";
             this.numIngots.Size = new System.Drawing.Size(60, 21);
             this.numIngots.TabIndex = 3;
+            this.numIngots.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.scrollable_MouseWheel);
             // 
             // label3
             // 
@@ -406,6 +413,7 @@
             0,
             0,
             0});
+            this.numHp.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.scrollable_MouseWheel);
             // 
             // lblRes
             // 
@@ -499,6 +507,7 @@
             this.comboBoxMultiSel.Name = "comboBoxMultiSel";
             this.comboBoxMultiSel.Size = new System.Drawing.Size(156, 20);
             this.comboBoxMultiSel.TabIndex = 11;
+            this.comboBoxMultiSel.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.scrollable_MouseWheel);
             // 
             // label9
             // 
@@ -530,6 +539,7 @@
             0,
             0,
             0});
+            this.numMinHp.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.scrollable_MouseWheel);
             // 
             // comboBoxSimMode
             // 
@@ -540,6 +550,7 @@
             this.comboBoxSimMode.Size = new System.Drawing.Size(156, 20);
             this.comboBoxSimMode.TabIndex = 8;
             this.comboBoxSimMode.SelectedIndexChanged += new System.EventHandler(this.comboBoxSimMode_SelectedIndexChanged);
+            this.comboBoxSimMode.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.scrollable_MouseWheel);
             // 
             // label10
             // 
@@ -566,6 +577,7 @@
             0,
             0,
             0});
+            this.numMaxRecord.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.scrollable_MouseWheel);
             // 
             // label11
             // 
