@@ -77,19 +77,37 @@
             this.btnRandomEmpty = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.btnDown = new System.Windows.Forms.Button();
             this.btnUp = new System.Windows.Forms.Button();
             this.btnRemove = new System.Windows.Forms.Button();
             this.btnAdd = new System.Windows.Forms.Button();
             this.treeViewRule = new System.Windows.Forms.TreeView();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.FileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.LoadBoxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SaveBoxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.OperationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ExchangeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SimulationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ResetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.BoxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.RandomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.RandomEmptyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ClearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.RecordToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.btnLoadBox = new System.Windows.Forms.Button();
             this.btnSaveBox = new System.Windows.Forms.Button();
+            this.btnLoadBox = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numSimCnt)).BeginInit();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numShield)).BeginInit();
@@ -104,11 +122,14 @@
             this.statusStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
-            this.groupBox6.SuspendLayout();
-            this.tabPage3.SuspendLayout();
             this.groupBox4.SuspendLayout();
+            this.tabPage2.SuspendLayout();
+            this.panel2.SuspendLayout();
+            this.groupBox7.SuspendLayout();
+            this.groupBox6.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -155,7 +176,7 @@
             // 
             this.panelLockedList.BackColor = System.Drawing.SystemColors.Window;
             this.panelLockedList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelLockedList.Location = new System.Drawing.Point(15, 83);
+            this.panelLockedList.Location = new System.Drawing.Point(20, 83);
             this.panelLockedList.Name = "panelLockedList";
             this.panelLockedList.Size = new System.Drawing.Size(202, 36);
             this.panelLockedList.TabIndex = 2;
@@ -201,7 +222,7 @@
             this.listViewTongbao.GridLines = true;
             this.listViewTongbao.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.listViewTongbao.HideSelection = false;
-            this.listViewTongbao.Location = new System.Drawing.Point(268, 12);
+            this.listViewTongbao.Location = new System.Drawing.Point(308, 27);
             this.listViewTongbao.MultiSelect = false;
             this.listViewTongbao.Name = "listViewTongbao";
             this.listViewTongbao.Scrollable = false;
@@ -227,9 +248,9 @@
             this.groupBox2.Controls.Add(this.numIngots);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.numHp);
-            this.groupBox2.Location = new System.Drawing.Point(6, 162);
+            this.groupBox2.Location = new System.Drawing.Point(3, 134);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(230, 150);
+            this.groupBox2.Size = new System.Drawing.Size(253, 125);
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "初始资源设置";
@@ -386,32 +407,32 @@
             this.lblRes.Font = new System.Drawing.Font("微软雅黑", 9F);
             this.lblRes.Location = new System.Drawing.Point(6, 17);
             this.lblRes.Name = "lblRes";
-            this.lblRes.Size = new System.Drawing.Size(144, 126);
+            this.lblRes.Size = new System.Drawing.Size(241, 126);
             this.lblRes.TabIndex = 7;
             this.lblRes.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblCurrent
             // 
-            this.lblCurrent.Font = new System.Drawing.Font("微软雅黑", 9F);
-            this.lblCurrent.Location = new System.Drawing.Point(6, 17);
+            this.lblCurrent.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lblCurrent.Location = new System.Drawing.Point(612, 252);
             this.lblCurrent.Name = "lblCurrent";
-            this.lblCurrent.Size = new System.Drawing.Size(184, 64);
+            this.lblCurrent.Size = new System.Drawing.Size(180, 60);
             this.lblCurrent.TabIndex = 8;
-            this.lblCurrent.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblCurrent.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // btnExchange
             // 
-            this.btnExchange.Location = new System.Drawing.Point(641, 336);
+            this.btnExchange.Location = new System.Drawing.Point(681, 351);
             this.btnExchange.Name = "btnExchange";
             this.btnExchange.Size = new System.Drawing.Size(120, 23);
             this.btnExchange.TabIndex = 11;
-            this.btnExchange.Text = "交换";
+            this.btnExchange.Text = "交换选中通宝";
             this.btnExchange.UseVisualStyleBackColor = true;
             this.btnExchange.Click += new System.EventHandler(this.btnExchange_Click);
             // 
             // btnSimulation
             // 
-            this.btnSimulation.Location = new System.Drawing.Point(641, 365);
+            this.btnSimulation.Location = new System.Drawing.Point(681, 380);
             this.btnSimulation.Name = "btnSimulation";
             this.btnSimulation.Size = new System.Drawing.Size(120, 23);
             this.btnSimulation.TabIndex = 12;
@@ -421,7 +442,7 @@
             // 
             // btnReset
             // 
-            this.btnReset.Location = new System.Drawing.Point(641, 394);
+            this.btnReset.Location = new System.Drawing.Point(681, 409);
             this.btnReset.Name = "btnReset";
             this.btnReset.Size = new System.Drawing.Size(120, 23);
             this.btnReset.TabIndex = 13;
@@ -431,7 +452,7 @@
             // 
             // btnRecord
             // 
-            this.btnRecord.Location = new System.Drawing.Point(641, 423);
+            this.btnRecord.Location = new System.Drawing.Point(681, 438);
             this.btnRecord.Name = "btnRecord";
             this.btnRecord.Size = new System.Drawing.Size(120, 23);
             this.btnRecord.TabIndex = 14;
@@ -449,12 +470,12 @@
             this.groupBox3.Controls.Add(this.comboBoxSimMode);
             this.groupBox3.Controls.Add(this.numSimCnt);
             this.groupBox3.Controls.Add(this.label10);
-            this.groupBox3.Location = new System.Drawing.Point(6, 6);
+            this.groupBox3.Location = new System.Drawing.Point(3, 3);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(230, 150);
+            this.groupBox3.Size = new System.Drawing.Size(253, 126);
             this.groupBox3.TabIndex = 5;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "基础模拟设置";
+            this.groupBox3.Text = "基础设置";
             // 
             // label13
             // 
@@ -589,9 +610,9 @@
             // 
             // btnRandom
             // 
-            this.btnRandom.Location = new System.Drawing.Point(677, 218);
+            this.btnRandom.Location = new System.Drawing.Point(6, 20);
             this.btnRandom.Name = "btnRandom";
-            this.btnRandom.Size = new System.Drawing.Size(75, 23);
+            this.btnRandom.Size = new System.Drawing.Size(120, 23);
             this.btnRandom.TabIndex = 17;
             this.btnRandom.Text = "全部随机";
             this.btnRandom.UseVisualStyleBackColor = true;
@@ -599,9 +620,9 @@
             // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(677, 276);
+            this.btnClear.Location = new System.Drawing.Point(6, 78);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(75, 23);
+            this.btnClear.Size = new System.Drawing.Size(120, 23);
             this.btnClear.TabIndex = 18;
             this.btnClear.Text = "全部清除";
             this.btnClear.UseVisualStyleBackColor = true;
@@ -612,9 +633,9 @@
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1,
             this.toolStripProgressBar1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 467);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 487);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(779, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(819, 22);
             this.statusStrip1.TabIndex = 20;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -632,9 +653,9 @@
             // 
             // btnRandomEmpty
             // 
-            this.btnRandomEmpty.Location = new System.Drawing.Point(677, 247);
+            this.btnRandomEmpty.Location = new System.Drawing.Point(6, 49);
             this.btnRandomEmpty.Name = "btnRandomEmpty";
-            this.btnRandomEmpty.Size = new System.Drawing.Size(75, 23);
+            this.btnRandomEmpty.Size = new System.Drawing.Size(120, 23);
             this.btnRandomEmpty.TabIndex = 21;
             this.btnRandomEmpty.Text = "空位随机";
             this.btnRandomEmpty.UseVisualStyleBackColor = true;
@@ -644,24 +665,34 @@
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Location = new System.Drawing.Point(12, 12);
+            this.tabControl1.Location = new System.Drawing.Point(12, 27);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(250, 452);
+            this.tabControl1.Size = new System.Drawing.Size(290, 457);
             this.tabControl1.TabIndex = 22;
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.groupBox1);
-            this.tabPage1.Controls.Add(this.groupBox2);
+            this.tabPage1.Controls.Add(this.panel1);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(242, 426);
+            this.tabPage1.Size = new System.Drawing.Size(282, 431);
             this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "局内设置";
+            this.tabPage1.Text = "玩家数据";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // panel1
+            // 
+            this.panel1.AutoScroll = true;
+            this.panel1.Controls.Add(this.groupBox1);
+            this.panel1.Controls.Add(this.groupBox2);
+            this.panel1.Controls.Add(this.groupBox4);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(3, 3);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(276, 425);
+            this.panel1.TabIndex = 15;
             // 
             // groupBox1
             // 
@@ -670,24 +701,108 @@
             this.groupBox1.Controls.Add(this.comboBoxSquad);
             this.groupBox1.Controls.Add(this.checkBoxFortune);
             this.groupBox1.Controls.Add(this.panelLockedList);
-            this.groupBox1.Location = new System.Drawing.Point(6, 6);
+            this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(230, 150);
+            this.groupBox1.Size = new System.Drawing.Size(253, 125);
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "基础局内设置";
             // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.lblRes);
+            this.groupBox4.Location = new System.Drawing.Point(3, 265);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(253, 146);
+            this.groupBox4.TabIndex = 10;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "当前实时资源";
+            // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.groupBox6);
-            this.tabPage2.Controls.Add(this.groupBox3);
+            this.tabPage2.Controls.Add(this.panel2);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(242, 426);
+            this.tabPage2.Size = new System.Drawing.Size(282, 431);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "模拟设置";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // panel2
+            // 
+            this.panel2.AutoScroll = true;
+            this.panel2.Controls.Add(this.groupBox7);
+            this.panel2.Controls.Add(this.groupBox6);
+            this.panel2.Controls.Add(this.groupBox3);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(3, 3);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(276, 425);
+            this.panel2.TabIndex = 14;
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.btnDown);
+            this.groupBox7.Controls.Add(this.btnUp);
+            this.groupBox7.Controls.Add(this.btnRemove);
+            this.groupBox7.Controls.Add(this.btnAdd);
+            this.groupBox7.Controls.Add(this.treeViewRule);
+            this.groupBox7.Location = new System.Drawing.Point(3, 266);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(253, 400);
+            this.groupBox7.TabIndex = 22;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "自定义模拟策略";
+            // 
+            // btnDown
+            // 
+            this.btnDown.Font = new System.Drawing.Font("宋体", 9F);
+            this.btnDown.Location = new System.Drawing.Point(224, 20);
+            this.btnDown.Name = "btnDown";
+            this.btnDown.Size = new System.Drawing.Size(23, 23);
+            this.btnDown.TabIndex = 14;
+            this.btnDown.Text = "↓";
+            this.btnDown.UseVisualStyleBackColor = true;
+            // 
+            // btnUp
+            // 
+            this.btnUp.Font = new System.Drawing.Font("宋体", 9F);
+            this.btnUp.Location = new System.Drawing.Point(195, 20);
+            this.btnUp.Name = "btnUp";
+            this.btnUp.Size = new System.Drawing.Size(23, 23);
+            this.btnUp.TabIndex = 13;
+            this.btnUp.Text = "↑";
+            this.btnUp.UseVisualStyleBackColor = true;
+            // 
+            // btnRemove
+            // 
+            this.btnRemove.Font = new System.Drawing.Font("宋体", 12F);
+            this.btnRemove.Location = new System.Drawing.Point(35, 20);
+            this.btnRemove.Name = "btnRemove";
+            this.btnRemove.Size = new System.Drawing.Size(23, 23);
+            this.btnRemove.TabIndex = 12;
+            this.btnRemove.Text = "-";
+            this.btnRemove.UseVisualStyleBackColor = true;
+            // 
+            // btnAdd
+            // 
+            this.btnAdd.Font = new System.Drawing.Font("宋体", 12F);
+            this.btnAdd.Location = new System.Drawing.Point(6, 20);
+            this.btnAdd.Name = "btnAdd";
+            this.btnAdd.Size = new System.Drawing.Size(23, 23);
+            this.btnAdd.TabIndex = 11;
+            this.btnAdd.Text = "+";
+            this.btnAdd.UseVisualStyleBackColor = true;
+            // 
+            // treeViewRule
+            // 
+            this.treeViewRule.CheckBoxes = true;
+            this.treeViewRule.Location = new System.Drawing.Point(6, 49);
+            this.treeViewRule.Name = "treeViewRule";
+            this.treeViewRule.ShowNodeToolTips = true;
+            this.treeViewRule.Size = new System.Drawing.Size(241, 345);
+            this.treeViewRule.TabIndex = 10;
             // 
             // groupBox6
             // 
@@ -696,131 +811,192 @@
             this.groupBox6.Controls.Add(this.checkBoxEnableRecord);
             this.groupBox6.Controls.Add(this.checkBoxAutoRevert);
             this.groupBox6.Controls.Add(this.label11);
-            this.groupBox6.Location = new System.Drawing.Point(6, 162);
+            this.groupBox6.Location = new System.Drawing.Point(3, 135);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(230, 150);
+            this.groupBox6.Size = new System.Drawing.Size(253, 125);
             this.groupBox6.TabIndex = 13;
             this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "高级模拟设置";
+            this.groupBox6.Text = "高级设置";
             // 
-            // tabPage3
+            // menuStrip1
             // 
-            this.tabPage3.Controls.Add(this.btnDown);
-            this.tabPage3.Controls.Add(this.btnUp);
-            this.tabPage3.Controls.Add(this.btnRemove);
-            this.tabPage3.Controls.Add(this.btnAdd);
-            this.tabPage3.Controls.Add(this.treeViewRule);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(242, 426);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "自定义模拟策略";
-            this.tabPage3.UseVisualStyleBackColor = true;
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.FileToolStripMenuItem,
+            this.EditToolStripMenuItem,
+            this.OperationToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(819, 25);
+            this.menuStrip1.TabIndex = 25;
+            this.menuStrip1.Text = "menuStrip1";
             // 
-            // btnDown
+            // FileToolStripMenuItem
             // 
-            this.btnDown.Font = new System.Drawing.Font("宋体", 9F);
-            this.btnDown.Location = new System.Drawing.Point(216, 4);
-            this.btnDown.Name = "btnDown";
-            this.btnDown.Size = new System.Drawing.Size(23, 23);
-            this.btnDown.TabIndex = 9;
-            this.btnDown.Text = "↓";
-            this.btnDown.UseVisualStyleBackColor = true;
+            this.FileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.LoadBoxToolStripMenuItem,
+            this.SaveBoxToolStripMenuItem});
+            this.FileToolStripMenuItem.Name = "FileToolStripMenuItem";
+            this.FileToolStripMenuItem.Size = new System.Drawing.Size(58, 21);
+            this.FileToolStripMenuItem.Text = "文件(&F)";
             // 
-            // btnUp
+            // LoadBoxToolStripMenuItem
             // 
-            this.btnUp.Font = new System.Drawing.Font("宋体", 9F);
-            this.btnUp.Location = new System.Drawing.Point(187, 4);
-            this.btnUp.Name = "btnUp";
-            this.btnUp.Size = new System.Drawing.Size(23, 23);
-            this.btnUp.TabIndex = 8;
-            this.btnUp.Text = "↑";
-            this.btnUp.UseVisualStyleBackColor = true;
+            this.LoadBoxToolStripMenuItem.Name = "LoadBoxToolStripMenuItem";
+            this.LoadBoxToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.LoadBoxToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.LoadBoxToolStripMenuItem.Text = "打开钱盒(&O)";
+            this.LoadBoxToolStripMenuItem.Click += new System.EventHandler(this.btnLoadBox_Click);
             // 
-            // btnRemove
+            // SaveBoxToolStripMenuItem
             // 
-            this.btnRemove.Font = new System.Drawing.Font("宋体", 12F);
-            this.btnRemove.Location = new System.Drawing.Point(32, 4);
-            this.btnRemove.Name = "btnRemove";
-            this.btnRemove.Size = new System.Drawing.Size(23, 23);
-            this.btnRemove.TabIndex = 7;
-            this.btnRemove.Text = "-";
-            this.btnRemove.UseVisualStyleBackColor = true;
+            this.SaveBoxToolStripMenuItem.Name = "SaveBoxToolStripMenuItem";
+            this.SaveBoxToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.SaveBoxToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.SaveBoxToolStripMenuItem.Text = "保存钱盒(&S)";
+            this.SaveBoxToolStripMenuItem.Click += new System.EventHandler(this.btnSaveBox_Click);
             // 
-            // btnAdd
+            // EditToolStripMenuItem
             // 
-            this.btnAdd.Font = new System.Drawing.Font("宋体", 12F);
-            this.btnAdd.Location = new System.Drawing.Point(3, 4);
-            this.btnAdd.Name = "btnAdd";
-            this.btnAdd.Size = new System.Drawing.Size(23, 23);
-            this.btnAdd.TabIndex = 6;
-            this.btnAdd.Text = "+";
-            this.btnAdd.UseVisualStyleBackColor = true;
+            this.EditToolStripMenuItem.Name = "EditToolStripMenuItem";
+            this.EditToolStripMenuItem.Size = new System.Drawing.Size(59, 21);
+            this.EditToolStripMenuItem.Text = "编辑(&E)";
             // 
-            // treeViewRule
+            // OperationToolStripMenuItem
             // 
-            this.treeViewRule.CheckBoxes = true;
-            this.treeViewRule.Location = new System.Drawing.Point(3, 33);
-            this.treeViewRule.Name = "treeViewRule";
-            this.treeViewRule.ShowNodeToolTips = true;
-            this.treeViewRule.Size = new System.Drawing.Size(236, 390);
-            this.treeViewRule.TabIndex = 5;
+            this.OperationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ExchangeToolStripMenuItem,
+            this.SimulationToolStripMenuItem,
+            this.ResetToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.BoxToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.RecordToolStripMenuItem});
+            this.OperationToolStripMenuItem.Name = "OperationToolStripMenuItem";
+            this.OperationToolStripMenuItem.Size = new System.Drawing.Size(62, 21);
+            this.OperationToolStripMenuItem.Text = "操作(&O)";
             // 
-            // groupBox4
+            // ExchangeToolStripMenuItem
             // 
-            this.groupBox4.Controls.Add(this.lblRes);
-            this.groupBox4.Location = new System.Drawing.Point(268, 318);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(156, 146);
-            this.groupBox4.TabIndex = 10;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "当前实时资源";
+            this.ExchangeToolStripMenuItem.Name = "ExchangeToolStripMenuItem";
+            this.ExchangeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.E)));
+            this.ExchangeToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+            this.ExchangeToolStripMenuItem.Text = "交换选中通宝(E)";
+            this.ExchangeToolStripMenuItem.Click += new System.EventHandler(this.btnExchange_Click);
+            // 
+            // SimulationToolStripMenuItem
+            // 
+            this.SimulationToolStripMenuItem.Name = "SimulationToolStripMenuItem";
+            this.SimulationToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.S)));
+            this.SimulationToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+            this.SimulationToolStripMenuItem.Text = "开始模拟(S)";
+            this.SimulationToolStripMenuItem.Click += new System.EventHandler(this.btnSimulation_Click);
+            // 
+            // ResetToolStripMenuItem
+            // 
+            this.ResetToolStripMenuItem.Name = "ResetToolStripMenuItem";
+            this.ResetToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.R)));
+            this.ResetToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+            this.ResetToolStripMenuItem.Text = "重置初始资源(R)";
+            this.ResetToolStripMenuItem.Click += new System.EventHandler(this.btnReset_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(234, 6);
+            // 
+            // BoxToolStripMenuItem
+            // 
+            this.BoxToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.RandomToolStripMenuItem,
+            this.RandomEmptyToolStripMenuItem,
+            this.ClearToolStripMenuItem});
+            this.BoxToolStripMenuItem.Name = "BoxToolStripMenuItem";
+            this.BoxToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+            this.BoxToolStripMenuItem.Text = "钱盒(&B)";
+            // 
+            // RandomToolStripMenuItem
+            // 
+            this.RandomToolStripMenuItem.Name = "RandomToolStripMenuItem";
+            this.RandomToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.RandomToolStripMenuItem.Text = "随机全部通宝(&F)";
+            this.RandomToolStripMenuItem.Click += new System.EventHandler(this.btnRandom_Click);
+            // 
+            // RandomEmptyToolStripMenuItem
+            // 
+            this.RandomEmptyToolStripMenuItem.Name = "RandomEmptyToolStripMenuItem";
+            this.RandomEmptyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.RandomEmptyToolStripMenuItem.Text = "随机填充空槽位(&R)";
+            this.RandomEmptyToolStripMenuItem.Click += new System.EventHandler(this.btnRandomEmpty_Click);
+            // 
+            // ClearToolStripMenuItem
+            // 
+            this.ClearToolStripMenuItem.Name = "ClearToolStripMenuItem";
+            this.ClearToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.ClearToolStripMenuItem.Text = "清除全部通宝(&C)";
+            this.ClearToolStripMenuItem.Click += new System.EventHandler(this.btnClear_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(234, 6);
+            // 
+            // RecordToolStripMenuItem
+            // 
+            this.RecordToolStripMenuItem.Name = "RecordToolStripMenuItem";
+            this.RecordToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.O)));
+            this.RecordToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+            this.RecordToolStripMenuItem.Text = "查看交换记录(&O)";
+            this.RecordToolStripMenuItem.Click += new System.EventHandler(this.btnRecord_Click);
             // 
             // groupBox5
             // 
-            this.groupBox5.Controls.Add(this.lblCurrent);
-            this.groupBox5.Location = new System.Drawing.Point(430, 318);
+            this.groupBox5.Controls.Add(this.btnSaveBox);
+            this.groupBox5.Controls.Add(this.btnRandom);
+            this.groupBox5.Controls.Add(this.btnClear);
+            this.groupBox5.Controls.Add(this.btnLoadBox);
+            this.groupBox5.Controls.Add(this.btnRandomEmpty);
+            this.groupBox5.Location = new System.Drawing.Point(308, 333);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(196, 146);
-            this.groupBox5.TabIndex = 11;
+            this.groupBox5.Size = new System.Drawing.Size(264, 151);
+            this.groupBox5.TabIndex = 26;
             this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "当前交换信息";
-            // 
-            // btnLoadBox
-            // 
-            this.btnLoadBox.Location = new System.Drawing.Point(596, 247);
-            this.btnLoadBox.Name = "btnLoadBox";
-            this.btnLoadBox.Size = new System.Drawing.Size(75, 23);
-            this.btnLoadBox.TabIndex = 23;
-            this.btnLoadBox.Text = "读取钱盒";
-            this.btnLoadBox.UseVisualStyleBackColor = true;
-            this.btnLoadBox.Click += new System.EventHandler(this.btnLoadBox_Click);
+            this.groupBox5.Text = "钱盒操作";
             // 
             // btnSaveBox
             // 
-            this.btnSaveBox.Location = new System.Drawing.Point(596, 276);
+            this.btnSaveBox.Location = new System.Drawing.Point(132, 49);
             this.btnSaveBox.Name = "btnSaveBox";
-            this.btnSaveBox.Size = new System.Drawing.Size(75, 23);
-            this.btnSaveBox.TabIndex = 24;
+            this.btnSaveBox.Size = new System.Drawing.Size(120, 23);
+            this.btnSaveBox.TabIndex = 23;
             this.btnSaveBox.Text = "保存钱盒";
             this.btnSaveBox.UseVisualStyleBackColor = true;
             this.btnSaveBox.Click += new System.EventHandler(this.btnSaveBox_Click);
+            // 
+            // btnLoadBox
+            // 
+            this.btnLoadBox.Location = new System.Drawing.Point(132, 20);
+            this.btnLoadBox.Name = "btnLoadBox";
+            this.btnLoadBox.Size = new System.Drawing.Size(120, 23);
+            this.btnLoadBox.TabIndex = 22;
+            this.btnLoadBox.Text = "读取钱盒";
+            this.btnLoadBox.UseVisualStyleBackColor = true;
+            this.btnLoadBox.Click += new System.EventHandler(this.btnLoadBox_Click);
             // 
             // MainForm
             // 
             this.AcceptButton = this.btnExchange;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(779, 489);
-            this.Controls.Add(this.btnSaveBox);
-            this.Controls.Add(this.btnLoadBox);
+            this.ClientSize = new System.Drawing.Size(819, 509);
             this.Controls.Add(this.groupBox5);
-            this.Controls.Add(this.groupBox4);
+            this.Controls.Add(this.lblCurrent);
             this.Controls.Add(this.tabControl1);
-            this.Controls.Add(this.btnRandomEmpty);
             this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.btnClear);
-            this.Controls.Add(this.btnRandom);
+            this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.btnRecord);
             this.Controls.Add(this.btnExchange);
             this.Controls.Add(this.btnReset);
@@ -829,6 +1005,7 @@
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -850,13 +1027,17 @@
             this.statusStrip1.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
+            this.groupBox7.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
-            this.tabPage3.ResumeLayout(false);
-            this.groupBox4.ResumeLayout(false);
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -914,17 +1095,35 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.Button btnDown;
         private System.Windows.Forms.Button btnUp;
         private System.Windows.Forms.Button btnRemove;
         private System.Windows.Forms.Button btnAdd;
         private System.Windows.Forms.TreeView treeViewRule;
-        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem FileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem LoadBoxToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem SaveBoxToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem EditToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem OperationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ExchangeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem SimulationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ResetToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem RecordToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem BoxToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem RandomToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem RandomEmptyToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ClearToolStripMenuItem;
         private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.Button btnLoadBox;
         private System.Windows.Forms.Button btnSaveBox;
+        private System.Windows.Forms.Button btnLoadBox;
     }
 }

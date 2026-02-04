@@ -115,8 +115,8 @@ namespace TongbaoExchangeCalc
         {
             mSimulatingDisableControls.AddRange(new Control[]
             {
-                tabPage1, tabPage2, tabPage3,
-                listViewTongbao, btnLoadBox, btnSaveBox, btnRandom, btnRandomEmpty, btnClear,
+                tabPage1, tabPage2,
+                listViewTongbao, btnRandom, btnRandomEmpty, btnClear,
                 checkBoxOptimize, checkBoxAutoRevert, checkBoxEnableRecord,
                 btnExchange, btnReset,
             });
@@ -308,8 +308,10 @@ namespace TongbaoExchangeCalc
             AppendResValue(ResType.LifePoint, numHp).AppendLine();
             AppendResValue(ResType.OriginiumIngots, numIngots).AppendLine();
             AppendResValue(ResType.Coupon, numCoupon).AppendLine();
-            AppendResValue(ResType.Candles, numCandle).AppendLine();
-            AppendResValue(ResType.PrimalFarmingCandles, null).AppendLine();
+
+            AppendResValue(ResType.Candles, numCandle).Append("    [");
+            AppendResValue(ResType.PrimalFarmingCandles, null).Append(']').AppendLine();
+
             AppendResValue(ResType.Shield, numShield).AppendLine();
             AppendResValue(ResType.Hope, numHope);
 
@@ -321,18 +323,18 @@ namespace TongbaoExchangeCalc
 
             if (tongbao == null)
             {
-                sb.AppendLine("当前选中通宝: (无)");
+                sb.AppendLine("选中通宝: (无)");
             }
             else
             {
-                sb.Append("当前选中通宝:[")
+                sb.Append("选中通宝: [")
                   .Append(slotIndex + 1)
-                  .Append(']');
+                  .Append("] ");
                 Helper.AppendTongbaoFullName(sb, tongbao.Id);
                 sb.AppendLine();
             }
 
-            sb.Append("当前交换次数: ")
+            sb.Append("交换次数: ")
               .Append(mPlayerData.ExchangeCount)
               .AppendLine();
 
