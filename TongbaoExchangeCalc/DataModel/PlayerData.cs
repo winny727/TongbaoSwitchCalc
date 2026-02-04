@@ -217,6 +217,7 @@ namespace TongbaoExchangeCalc.DataModel
 
             if (tongbao == null)
             {
+                RemoveTongbaoAt(slotIndex);
                 return;
             }
 

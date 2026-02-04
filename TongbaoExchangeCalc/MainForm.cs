@@ -39,6 +39,7 @@ namespace TongbaoExchangeCalc
 
         private readonly List<Image> mTempTongbaoImages = new List<Image>();
         private readonly Dictionary<ResType, int> mTempResValues = new Dictionary<ResType, int>();
+        private readonly List<Tongbao> mTempRecordTongbaos = new List<Tongbao>();
 
         protected override CreateParams CreateParams
         {
@@ -118,7 +119,7 @@ namespace TongbaoExchangeCalc
                 tabPage1, tabPage2,
                 listViewTongbao, btnRandom, btnRandomEmpty, btnClear,
                 checkBoxOptimize, checkBoxAutoRevert, checkBoxEnableRecord,
-                btnExchange, btnReset,
+                btnExchange, btnReset, btnLoadBox, btnSaveBox, btnRecordBox, btnResetBox,
             });
 
             mIconGrid = new IconGridControl();
@@ -591,15 +592,50 @@ namespace TongbaoExchangeCalc
 
         private void SetRandomTongbao(int slotIndex)
         {
-            // 测试，随机添加不重复通宝
+            // 测试，随机添加不重复/不互斥通宝
             var list = new List<int>();
             foreach (var item in TongbaoConfig.GetAllTongbaoConfigs())
             {
                 int tongbaoId = item.Key;
-                if (!mPlayerData.IsTongbaoExist(tongbaoId))
+                TongbaoConfig config = item.Value;
+
+                // 排除钱盒里的
+                if (mPlayerData.IsTongbaoExist(tongbaoId))
                 {
-                    list.Add(item.Key);
+                    continue;
                 }
+
+                // 排除钱盒里的互斥通宝
+                if (config.MutexGroup > 0)
+                {
+                    bool isMutexExist = false;
+                    var mutexTongbaoIds = ExchangePool.GetMutexTongbaoIds(config.MutexGroup);
+                    for (int j = 0; j < mutexTongbaoIds.Count; j++)
+                    {
+                        int mutexTongbaoId = mutexTongbaoIds[j];
+                        if (mutexTongbaoId == tongbaoId)
+                        {
+                            continue;
+                        }
+                        if (mPlayerData.IsTongbaoExist(mutexTongbaoId))
+                        {
+                            isMutexExist = true;
+                            break;
+                        }
+                    }
+                    if (isMutexExist)
+                    {
+                        continue;
+                    }
+                }
+
+                // 排除商店锁定的
+                if (mPlayerData.IsTongbaoLocked(tongbaoId))
+                {
+                    continue;
+                }
+
+                list.Add(tongbaoId);
             }
 
             int targetId = -1;
@@ -884,6 +920,7 @@ namespace TongbaoExchangeCalc
                 mCurrentFilePath = path;
                 mCanRevertPlayerData = false;
                 UpdateAllTongbaoView();
+                UpdateView();
             }
         }
 
@@ -894,6 +931,49 @@ namespace TongbaoExchangeCalc
             {
                 mCurrentFilePath = path;
             }
+        }
+
+        private void btnRecordBox_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < mTempRecordTongbaos.Count; i++)
+            {
+                mPlayerData.DestroyTongbao(mTempRecordTongbaos[i]);
+            }
+            mTempRecordTongbaos.Clear();
+            for (int i = 0; i < mPlayerData.MaxTongbaoCount; i++)
+            {
+                Tongbao tongbao = mPlayerData.GetTongbao(i);
+                if (tongbao == null)
+                {
+                    mTempRecordTongbaos.Add(null);
+                    continue;
+                }
+
+                // mTempRecordTongbaos中记录的通宝由MainForm管理销毁
+                Tongbao clonedTongbao = mPlayerData.CreateTongbao(tongbao.Id);
+                clonedTongbao.ApplyRandomEff(tongbao.RandomEff);
+                mTempRecordTongbaos.Add(clonedTongbao);
+            }
+        }
+
+        private void btnResetBox_Click(object sender, EventArgs e)
+        {
+            mCanRevertPlayerData = false;
+            mPlayerData.ClearTongbao();
+            for (int i = 0; i < mTempRecordTongbaos.Count; i++)
+            {
+                Tongbao tongbao = mTempRecordTongbaos[i];
+                if (tongbao != null)
+                {
+                    // Insert到PlayerData里的通宝由PlayerData管理销毁
+                    // 要复制一份再Insert，不然PlayerData会把mTempRecordTongbaos里的通宝销毁
+                    Tongbao clonedTongbao = mPlayerData.CreateTongbao(tongbao.Id);
+                    clonedTongbao.ApplyRandomEff(tongbao.RandomEff);
+                    mPlayerData.InsertTongbao(clonedTongbao, i);
+                }
+            }
+            UpdateAllTongbaoView();
+            UpdateView();
         }
     }
 }

@@ -103,9 +103,14 @@
             this.RandomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.RandomEmptyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ClearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.RecordBoxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ResetBoxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.RecordToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.btnResetBox = new System.Windows.Forms.Button();
+            this.btnRecordBox = new System.Windows.Forms.Button();
             this.btnSaveBox = new System.Windows.Forms.Button();
             this.btnLoadBox = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numSimCnt)).BeginInit();
@@ -912,7 +917,10 @@
             this.BoxToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.RandomToolStripMenuItem,
             this.RandomEmptyToolStripMenuItem,
-            this.ClearToolStripMenuItem});
+            this.ClearToolStripMenuItem,
+            this.toolStripSeparator3,
+            this.RecordBoxToolStripMenuItem,
+            this.ResetBoxToolStripMenuItem});
             this.BoxToolStripMenuItem.Name = "BoxToolStripMenuItem";
             this.BoxToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
             this.BoxToolStripMenuItem.Text = "钱盒(&B)";
@@ -920,23 +928,43 @@
             // RandomToolStripMenuItem
             // 
             this.RandomToolStripMenuItem.Name = "RandomToolStripMenuItem";
-            this.RandomToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.RandomToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.RandomToolStripMenuItem.Text = "随机全部通宝(&F)";
             this.RandomToolStripMenuItem.Click += new System.EventHandler(this.btnRandom_Click);
             // 
             // RandomEmptyToolStripMenuItem
             // 
             this.RandomEmptyToolStripMenuItem.Name = "RandomEmptyToolStripMenuItem";
-            this.RandomEmptyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.RandomEmptyToolStripMenuItem.Text = "随机填充空槽位(&R)";
+            this.RandomEmptyToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.RandomEmptyToolStripMenuItem.Text = "随机填充空槽位(&E)";
             this.RandomEmptyToolStripMenuItem.Click += new System.EventHandler(this.btnRandomEmpty_Click);
             // 
             // ClearToolStripMenuItem
             // 
             this.ClearToolStripMenuItem.Name = "ClearToolStripMenuItem";
-            this.ClearToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.ClearToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.ClearToolStripMenuItem.Text = "清除全部通宝(&C)";
             this.ClearToolStripMenuItem.Click += new System.EventHandler(this.btnClear_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(182, 6);
+            // 
+            // RecordBoxToolStripMenuItem
+            // 
+            this.RecordBoxToolStripMenuItem.Name = "RecordBoxToolStripMenuItem";
+            this.RecordBoxToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.RecordBoxToolStripMenuItem.Text = "记录钱盒(&R)";
+            this.RecordBoxToolStripMenuItem.Click += new System.EventHandler(this.btnRecordBox_Click);
+            // 
+            // ResetBoxToolStripMenuItem
+            // 
+            this.ResetBoxToolStripMenuItem.Name = "ResetBoxToolStripMenuItem";
+            this.ResetBoxToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.T)));
+            this.ResetBoxToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
+            this.ResetBoxToolStripMenuItem.Text = "重置钱盒(&U)";
+            this.ResetBoxToolStripMenuItem.Click += new System.EventHandler(this.btnResetBox_Click);
             // 
             // toolStripSeparator2
             // 
@@ -954,6 +982,8 @@
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.btnResetBox);
+            this.groupBox5.Controls.Add(this.btnRecordBox);
             this.groupBox5.Controls.Add(this.btnSaveBox);
             this.groupBox5.Controls.Add(this.btnRandom);
             this.groupBox5.Controls.Add(this.btnClear);
@@ -965,6 +995,26 @@
             this.groupBox5.TabIndex = 26;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "钱盒操作";
+            // 
+            // btnResetBox
+            // 
+            this.btnResetBox.Location = new System.Drawing.Point(132, 107);
+            this.btnResetBox.Name = "btnResetBox";
+            this.btnResetBox.Size = new System.Drawing.Size(120, 23);
+            this.btnResetBox.TabIndex = 25;
+            this.btnResetBox.Text = "重置钱盒";
+            this.btnResetBox.UseVisualStyleBackColor = true;
+            this.btnResetBox.Click += new System.EventHandler(this.btnResetBox_Click);
+            // 
+            // btnRecordBox
+            // 
+            this.btnRecordBox.Location = new System.Drawing.Point(132, 78);
+            this.btnRecordBox.Name = "btnRecordBox";
+            this.btnRecordBox.Size = new System.Drawing.Size(120, 23);
+            this.btnRecordBox.TabIndex = 24;
+            this.btnRecordBox.Text = "记录钱盒";
+            this.btnRecordBox.UseVisualStyleBackColor = true;
+            this.btnRecordBox.Click += new System.EventHandler(this.btnRecordBox_Click);
             // 
             // btnSaveBox
             // 
@@ -1125,5 +1175,10 @@
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.Button btnSaveBox;
         private System.Windows.Forms.Button btnLoadBox;
+        private System.Windows.Forms.Button btnResetBox;
+        private System.Windows.Forms.Button btnRecordBox;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem RecordBoxToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ResetBoxToolStripMenuItem;
     }
 }
