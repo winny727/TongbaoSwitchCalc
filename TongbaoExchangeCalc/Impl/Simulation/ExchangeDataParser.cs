@@ -12,10 +12,10 @@ namespace TongbaoExchangeCalc.Impl.Simulation
     {
         private struct SlotExchangeData
         {
-            public ExchangeCount ExchangeCount;
-            public Dictionary<int, SlotTongbaoData> SlotTongbaoDatas;
+            internal ExchangeCount ExchangeCount;
+            internal Dictionary<int, SlotTongbaoData> SlotTongbaoDatas;
 
-            public static SlotExchangeData Create()
+            internal static SlotExchangeData Create()
             {
                 return new SlotExchangeData
                 {
@@ -27,34 +27,34 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
         private struct ExchangeCount
         {
-            private readonly string Type;
-            public int SimulationStepCount;
-            public int MinExchangeCount;
-            public int MaxExchangeCount;
-            public int TotalExchangeCount;
+            private readonly string mType;
+            internal int SimulationStepCount;
+            internal int MinExchangeCount;
+            internal int MaxExchangeCount;
+            internal int TotalExchangeCount;
 
             private static readonly Dictionary<string, int> mTotalExchangeCountSum = new Dictionary<string, int>();
 
             private ExchangeCount(string type)
             {
-                Type = type;
+                mType = type;
                 SimulationStepCount = 0;
                 MinExchangeCount = -1;
                 MaxExchangeCount = -1;
                 TotalExchangeCount = 0;
             }
 
-            public static ExchangeCount Create(string type)
+            internal static ExchangeCount Create(string type)
             {
                 return new ExchangeCount(type);
             }
 
-            public static void ClearTotalExchangeCountSum()
+            internal static void ClearTotalExchangeCountSum()
             {
                 mTotalExchangeCountSum.Clear();
             }
 
-            public void AddExchangeCount(int exchangeCount)
+            internal void AddExchangeCount(int exchangeCount)
             {
                 SimulationStepCount++;
                 if (MinExchangeCount < 0 || exchangeCount < MinExchangeCount)
@@ -67,14 +67,14 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                 }
                 TotalExchangeCount += exchangeCount;
 
-                if (!mTotalExchangeCountSum.ContainsKey(Type))
+                if (!mTotalExchangeCountSum.ContainsKey(mType))
                 {
-                    mTotalExchangeCountSum.Add(Type, 0);
+                    mTotalExchangeCountSum.Add(mType, 0);
                 }
-                mTotalExchangeCountSum[Type] += exchangeCount;
+                mTotalExchangeCountSum[mType] += exchangeCount;
             }
 
-            public void MergeExchangeCount(ExchangeCount other)
+            internal void MergeExchangeCount(ExchangeCount other)
             {
                 SimulationStepCount += other.SimulationStepCount;
                 if (MinExchangeCount < 0 || other.MinExchangeCount < MinExchangeCount)
@@ -88,7 +88,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                 TotalExchangeCount += other.TotalExchangeCount;
             }
 
-            public readonly StringBuilder AppendExchangeCount(StringBuilder sb)
+            internal readonly StringBuilder AppendExchangeCount(StringBuilder sb)
             {
                 if (sb == null)
                 {
@@ -98,7 +98,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                 sb.Append("总交换次数: ")
                   .Append(TotalExchangeCount);
 
-                if (mTotalExchangeCountSum.TryGetValue(Type, out int totalExchangedCountSum))
+                if (mTotalExchangeCountSum.TryGetValue(mType, out int totalExchangedCountSum))
                 {
                     float percent = TotalExchangeCount * 100f / totalExchangedCountSum;
                     sb.Append('/')
@@ -130,10 +130,10 @@ namespace TongbaoExchangeCalc.Impl.Simulation
 
         private struct SlotTongbaoData
         {
-            public int TotalCount; // 通宝在这个槽位的总出现次数
-            public ExchangeCount ExchangeCount; // 交换出该通宝的交换次数
+            internal int TotalCount; // 通宝在这个槽位的总出现次数
+            internal ExchangeCount ExchangeCount; // 交换出该通宝的交换次数
 
-            public static SlotTongbaoData Create(int slotIndex)
+            internal static SlotTongbaoData Create(int slotIndex)
             {
                 return new SlotTongbaoData
                 {
@@ -142,7 +142,7 @@ namespace TongbaoExchangeCalc.Impl.Simulation
                 };
             }
 
-            public static string GetExchangeCountKey(int slotIndex)
+            internal static string GetExchangeCountKey(int slotIndex)
             {
                 return $"Slot{slotIndex}Tongbao";
             }
