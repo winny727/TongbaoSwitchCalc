@@ -41,8 +41,8 @@ Id	Name	Description	Type	Rarity	DlcVersion	ImgPath	ExchangeInPool	ExchangeOutPoo
 2030	生材百相	投出时，战斗开始时打乱所有干员的攻击力	Risk	2	1	rogue_5_copper_F_30$0.png	2	2					
 2031	重铠	投出时，所有我方干员防御力+50%，生命+50%，但部署费用+5	Balance	1	1	rogue_5_copper_F_31$0.png	1	1					
 2032	火机	投出时，所有我方干员攻击力+30%，但再部署时间+30%	Risk	1	1	rogue_5_copper_F_32$0.png	1	1					
-3001	岁醒天时	投出时，除部署在化境上的我方单位外，所有其他我方单位和敌方单位每秒受到100点真实伤害	Risk		1	rogue_5_copper_P_01$0.png	0	0					
-3002	无皎之昧	投出时，战斗中刮起随机方向的沙尘暴，位于沙尘暴中的我方单位攻击力降低60％。所有我方单位攻击速度+80	Risk		1	rogue_5_copper_P_02$0.png	0	0					
+3001	岁醒天时	投出时，除部署在化境上的我方单位外，所有其他我方单位和敌方单位每秒受到100点真实伤害	Risk	0	1	rogue_5_copper_P_01$0.png	0	0					
+3002	无皎之昧	投出时，战斗中刮起随机方向的沙尘暴，位于沙尘暴中的我方单位攻击力降低60％。所有我方单位攻击速度+80	Risk	0	1	rogue_5_copper_P_02$0.png	0	0					
 4001	庆丰收	加入钱盒时，立即获得目标生命上限+2，投出时，安全的角落出现额外选项	Balance	2		rogue_5_copper_R_01$0.png	2	2			LifePoint	2	
 4002	塞上月	投出时，立即获得护盾值+1，每次战斗后目标生命-1，护盾值+1	Balance	2		rogue_5_copper_R_02$0.png	2	2					
 4003	聚力则强	投出时，进入战斗后获得一个特殊的战术道具	Flower	3		rogue_5_copper_R_03$0.png	3	3					
