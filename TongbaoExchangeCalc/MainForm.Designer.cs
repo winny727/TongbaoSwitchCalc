@@ -115,6 +115,8 @@
             this.btnSaveBox = new System.Windows.Forms.Button();
             this.btnLoadBox = new System.Windows.Forms.Button();
             this.checkBoxLogExchange = new System.Windows.Forms.CheckBox();
+            this.UndoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.RedoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.numSimCnt)).BeginInit();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numShield)).BeginInit();
@@ -877,6 +879,9 @@
             // 
             // EditToolStripMenuItem
             // 
+            this.EditToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.UndoToolStripMenuItem,
+            this.RedoToolStripMenuItem});
             this.EditToolStripMenuItem.Name = "EditToolStripMenuItem";
             this.EditToolStripMenuItem.Size = new System.Drawing.Size(59, 21);
             this.EditToolStripMenuItem.Text = "编辑(&E)";
@@ -1078,6 +1083,22 @@
             this.checkBoxLogExchange.Text = "输出详细交换记录";
             this.checkBoxLogExchange.UseVisualStyleBackColor = true;
             // 
+            // UndoToolStripMenuItem
+            // 
+            this.UndoToolStripMenuItem.Name = "UndoToolStripMenuItem";
+            this.UndoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
+            this.UndoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.UndoToolStripMenuItem.Text = "撤销(&U)";
+            this.UndoToolStripMenuItem.Click += new System.EventHandler(this.UndoToolStripMenuItem_Click);
+            // 
+            // RedoToolStripMenuItem
+            // 
+            this.RedoToolStripMenuItem.Name = "RedoToolStripMenuItem";
+            this.RedoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
+            this.RedoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.RedoToolStripMenuItem.Text = "重做(&R)";
+            this.RedoToolStripMenuItem.Click += new System.EventHandler(this.RedoToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AcceptButton = this.btnExchange;
@@ -1224,5 +1245,7 @@
         private System.Windows.Forms.ToolStripMenuItem ResetBoxToolStripMenuItem;
         private System.Windows.Forms.Panel panelRecordBox;
         private System.Windows.Forms.CheckBox checkBoxLogExchange;
+        private System.Windows.Forms.ToolStripMenuItem UndoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem RedoToolStripMenuItem;
     }
 }

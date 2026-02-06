@@ -9,6 +9,8 @@ using TongbaoExchangeCalc.DataModel.Simulation;
 using TongbaoExchangeCalc.Impl;
 using TongbaoExchangeCalc.Impl.Simulation;
 using TongbaoExchangeCalc.Impl.View;
+using TongbaoExchangeCalc.Undo;
+using TongbaoExchangeCalc.Undo.Commands;
 using TongbaoExchangeCalc.View;
 
 namespace TongbaoExchangeCalc
@@ -115,6 +117,7 @@ namespace TongbaoExchangeCalc
 
         private void InitView()
         {
+            mSimulatingDisableControls.Clear();
             mSimulatingDisableControls.AddRange(new Control[]
             {
                 tabPage1, tabPage2,
@@ -356,6 +359,31 @@ namespace TongbaoExchangeCalc
             sb.Clear();
         }
 
+        private void UpdatePlayerDataView()
+        {
+            foreach (var item in comboBoxSquad.Items)
+            {
+                if (item is ComboBoxItem<SquadType> squadItem && squadItem.Value == mPlayerData.SquadType)
+                {
+                    comboBoxSquad.SelectedItem = squadItem;
+                    break;
+                }
+            }
+            checkBoxFortune.Checked = mPlayerData.HasSpecialCondition(SpecialConditionFlag.Collectible_Fortune);
+            UpdateLockedListView();
+
+            if (mPlayerData.MaxTongbaoCount != listViewTongbao.Items.Count)
+            {
+                InitTongbaoSlot();
+            }
+            else
+            {
+                UpdateAllTongbaoView();
+            }
+
+            UpdateView();
+        }
+
         private void UpdateLockedListView()
         {
             mTempTongbaoImages.Clear();
@@ -444,7 +472,9 @@ namespace TongbaoExchangeCalc
             int slotIndex = mSelectedTongbaoSlotIndex;
             mPrintDataCollector?.OnExchangeStepBegin(new SimulateContext(0, mPlayerData.ExchangeCount, slotIndex, mPlayerData));
             mPlayerData.CheckResValue = !force;
-            if (!mPlayerData.ExchangeTongbao(slotIndex))
+
+            //if (!mPlayerData.ExchangeTongbao(slotIndex))
+            if (!UndoCommandMgr.Instance.ExecuteCommand<ExchangeTongbaoCommand>(mPlayerData, slotIndex))
             {
                 Tongbao tongbao = mPlayerData.GetTongbao(slotIndex);
                 if (tongbao == null)
@@ -1041,6 +1071,18 @@ namespace TongbaoExchangeCalc
         private void btnResetBox_MouseLeave(object sender, EventArgs e)
         {
             panelRecordBox.Visible = false;
+        }
+
+        private void UndoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            UndoCommandMgr.Instance.Undo();
+            UpdatePlayerDataView();
+        }
+
+        private void RedoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            UndoCommandMgr.Instance.Redo();
+            UpdatePlayerDataView();
         }
     }
 }
