@@ -7,7 +7,11 @@ namespace TongbaoExchangeCalc.Undo.Commands
 {
     public class CommandBase
     {
+#if DEBUG
         public static bool DebugMode { get; set; } = true;
+#else
+        public static bool DebugMode { get; set; } = false;
+#endif
         public bool ShowDebugMessage { get; set; } = true;
         protected string mDebugInfo;
 
@@ -473,12 +477,14 @@ namespace TongbaoExchangeCalc.Undo.Commands
 
     public class ToggleRuleEnabledCommand : CommandBase, IUndoCommand
     {
+        private readonly UniqueRuleCollection mCollection;
         private readonly SimulationRule mRule;
         private readonly bool mBeforeChecked;
         private readonly bool mAfterChecked;
 
-        public ToggleRuleEnabledCommand(SimulationRule rule, bool beforeChecked, bool afterChecked)
+        public ToggleRuleEnabledCommand(UniqueRuleCollection collection, SimulationRule rule, bool beforeChecked, bool afterChecked)
         {
+            mCollection = collection;
             mRule = rule;
             mBeforeChecked = beforeChecked;
             mAfterChecked = afterChecked;
@@ -492,6 +498,7 @@ namespace TongbaoExchangeCalc.Undo.Commands
             }
 
             mRule.Enabled = mAfterChecked;
+            mCollection.SetDirty();
             DebugMessage($"ToggleRuleEnabledCommand Execute SetEnabled({mBeforeChecked}->{mAfterChecked}): {mRule.GetRuleString()}");
             return true;
         }
@@ -499,12 +506,14 @@ namespace TongbaoExchangeCalc.Undo.Commands
         public void Undo()
         {
             mRule.Enabled = mBeforeChecked;
+            mCollection.SetDirty();
             DebugMessage($"ToggleRuleEnabledCommand Undo SetEnabled({mAfterChecked}->{mBeforeChecked}): {mRule.GetRuleString()}");
         }
 
         public void Redo()
         {
             mRule.Enabled = mAfterChecked;
+            mCollection.SetDirty();
             DebugMessage($"ToggleRuleEnabledCommand Redo SetEnabled({mBeforeChecked}->{mAfterChecked}): {mRule.GetRuleString()}");
         }
     }

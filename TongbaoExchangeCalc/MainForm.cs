@@ -212,8 +212,10 @@ namespace TongbaoExchangeCalc
             Helper.SetupResNumeric(mPlayerData, numShield, ResType.Shield, UpdateView);
             Helper.SetupResNumeric(mPlayerData, numHope, ResType.Hope, UpdateView);
 
-            UndoHelper.SetupComboBoxUndo(comboBoxSquad);
-            UndoHelper.SetupCheckBoxUndo(checkBoxFortune);
+            // PlayerData相关的由PlayerDataCommand管理，由UpdateUndoView更新
+            //UndoHelper.SetupComboBoxUndo(comboBoxSquad);
+            //UndoHelper.SetupCheckBoxUndo(checkBoxFortune);
+
             UndoHelper.SetupNumericUndo(numHp);
             UndoHelper.SetupNumericUndo(numIngots);
             UndoHelper.SetupNumericUndo(numCoupon);
@@ -395,7 +397,7 @@ namespace TongbaoExchangeCalc
             sb.Clear();
         }
 
-        private void UpdatePlayerDataView()
+        private void UpdateUndoView()
         {
             foreach (var item in comboBoxSquad.Items)
             {
@@ -832,6 +834,7 @@ namespace TongbaoExchangeCalc
 
         private void comboBoxSquad_SelectedIndexChanged(object sender, EventArgs e)
         {
+            using var collector = CollectScopeUserCommand(setPlayerData: true, setCanRevert: true);
             mCanRevertPlayerData = false;
             if (comboBoxSquad.SelectedItem is ComboBoxItem<SquadType> item)
             {
@@ -842,6 +845,7 @@ namespace TongbaoExchangeCalc
 
         private void checkBoxFortune_CheckedChanged(object sender, EventArgs e)
         {
+            using var collector = CollectScopeUserCommand(setPlayerData: true);
             mPlayerData.SetSpecialCondition(SpecialConditionFlag.Collectible_Fortune, checkBoxFortune.Checked);
         }
 
@@ -1134,13 +1138,13 @@ namespace TongbaoExchangeCalc
         private void UndoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             UndoCommandMgr.Instance.Undo();
-            UpdatePlayerDataView();
+            UpdateUndoView();
         }
 
         private void RedoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             UndoCommandMgr.Instance.Redo();
-            UpdatePlayerDataView();
+            UpdateUndoView();
         }
     }
 }

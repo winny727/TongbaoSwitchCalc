@@ -63,6 +63,11 @@ namespace TongbaoExchangeCalc.Impl.View
                 {
                     if (treeNode.Tag is UniqueRuleCollection collection)
                     {
+                        if (!collection.Dirty)
+                        {
+                            continue;
+                        }
+
                         for (int i = 0; i < collection.Count; i++)
                         {
                             SimulationRule rule = collection[i];
@@ -86,6 +91,7 @@ namespace TongbaoExchangeCalc.Impl.View
                         {
                             treeNode.Nodes.RemoveAt(i);
                         }
+                        collection.ClearDirty();
                     }
                 }
             }
@@ -280,7 +286,9 @@ namespace TongbaoExchangeCalc.Impl.View
 
             if (e.Node?.Tag is SimulationRule rule)
             {
-                UndoCommandMgr.Instance.ExecuteCommand<ToggleRuleEnabledCommand>(rule, rule.Enabled, e.Node.Checked);
+                // 注意这里SetEnabled的情况需要对collection SetDirty
+                var collection = GetRuleCollection(rule);
+                UndoCommandMgr.Instance.ExecuteCommand<ToggleRuleEnabledCommand>(collection, rule, rule.Enabled, e.Node.Checked);
             }
         }
 

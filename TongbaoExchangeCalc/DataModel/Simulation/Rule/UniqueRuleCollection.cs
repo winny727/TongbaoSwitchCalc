@@ -12,6 +12,7 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
         }
 
         public SimulationRuleType Type { get; private set; }
+        public bool Dirty { get; private set; } = false;
 
         private readonly List<SimulationRule> mItems = new List<SimulationRule>();
         public IReadOnlyList<SimulationRule> Items => mItems;
@@ -41,6 +42,7 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
             if (IsUniqueRule(item))
             {
                 mItems.Add(item);
+                Dirty = true;
                 return true;
             }
             return false;
@@ -51,6 +53,7 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
             if (IsUniqueRule(item))
             {
                 mItems.Insert(index, item);
+                Dirty = true;
                 return true;
             }
             return false;
@@ -68,16 +71,23 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
 
         public bool Remove(SimulationRule item)
         {
-            return mItems.Remove(item);
+            bool result = mItems.Remove(item);
+            Dirty |= result;
+            return result;
         }
 
         public void RemoveAt(int index)
         {
-            mItems.RemoveAt(index);
+            if (index >= 0 && index < mItems.Count)
+            {
+                mItems.RemoveAt(index);
+                Dirty = true;
+            }
         }
 
         public void Clear()
         {
+            Dirty |= mItems.Count > 0;
             mItems.Clear();
         }
 
@@ -87,9 +97,20 @@ namespace TongbaoExchangeCalc.DataModel.Simulation
             {
                 mItems.Remove(item);
                 mItems.Insert(index, item);
+                Dirty = true;
                 return true;
             }
             return false;
+        }
+
+        public void SetDirty()
+        {
+            Dirty = true;
+        }
+
+        public void ClearDirty()
+        {
+            Dirty = false;
         }
 
         public IEnumerator<SimulationRule> GetEnumerator()
