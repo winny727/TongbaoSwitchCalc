@@ -1,11 +1,14 @@
-﻿using TongbaoExchangeCalc.DataModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
-using System.Windows.Forms;
 using System.IO;
+using System.Text;
+using System.Windows.Forms;
+using TongbaoExchangeCalc.DataModel;
 using TongbaoExchangeCalc.DataModel.Simulation;
+using TongbaoExchangeCalc.Undo;
+using TongbaoExchangeCalc.Undo.Commands;
+using TongbaoExchangeCalc.View;
 
 namespace TongbaoExchangeCalc
 {
@@ -342,11 +345,66 @@ namespace TongbaoExchangeCalc
             return imageList;
         }
 
-        public static void SetupResNumeric(PlayerData playerData, NumericUpDown numeric, ResType type, Action updateViewCallback = null)
+        public static void SetupComboBox(ComboBox comboBox, Action addItem)
+        {
+            if (comboBox == null)
+            {
+                return;
+            }
+
+            comboBox.DisplayMember = "Key";
+            comboBox.ValueMember = "Value";
+            comboBox.Items.Clear();
+            addItem?.Invoke();
+            if (comboBox.Items.Count > 0)
+            {
+                comboBox.SelectedIndex = 0;
+            }
+        }
+
+        public static void SetupEnumComboBox<T>(ComboBox comboBox, Func<T, string> keyGetter) where T : Enum
+        {
+            if (comboBox == null || keyGetter == null)
+            {
+                return;
+            }
+
+            SetupComboBox(comboBox, () =>
+            {
+                foreach (T type in Enum.GetValues(typeof(T)))
+                {
+                    string key = keyGetter(type);
+                    comboBox.Items.Add(new ComboBoxItem<T>(key, type));
+                }
+            });
+        }
+
+        public static void SetupIconGridControl(Panel parent, IconGridControl iconGrid)
+        {
+            if (parent == null || iconGrid == null)
+            {
+                return;
+            }
+
+            parent.Controls.Clear();
+            parent.Controls.Add(iconGrid);
+            iconGrid.CellSize = 22;
+            iconGrid.Spacing = -4;
+            iconGrid.Width = parent.Width;
+            iconGrid.Height = parent.Height;
+        }
+
+        private static readonly Dictionary<Control, EventHandler> mHandlers = new Dictionary<Control, EventHandler>();
+        public static void SetupResNumeric(PlayerData playerData, NumericUpDown numeric, ResType type, Action onValueChanged = null)
         {
             if (playerData == null || numeric == null)
             {
                 return;
+            }
+
+            if (mHandlers.TryGetValue(numeric, out var oldHandler))
+            {
+                numeric.ValueChanged -= oldHandler;
             }
 
             decimal lastValue = numeric.Value;
@@ -354,11 +412,12 @@ namespace TongbaoExchangeCalc
             {
                 playerData.AddResValue(type, (int)(numeric.Value - lastValue));
                 lastValue = numeric.Value;
-                updateViewCallback?.Invoke();
+                onValueChanged?.Invoke();
             }
 
-            numeric.ValueChanged -= OnValueChanged;
-            numeric.ValueChanged += OnValueChanged;
+            EventHandler handler = OnValueChanged;
+            numeric.ValueChanged += handler;
+            mHandlers[numeric] = handler;
         }
 
         public static string GetTongbaoToolTip(PlayerData playerData, Tongbao tongbao)
@@ -520,7 +579,7 @@ namespace TongbaoExchangeCalc
                             continue;
                         }
 
-                        TongbaoConfig config = Helper.GetTongbaoConfigByName(name);
+                        TongbaoConfig config = GetTongbaoConfigByName(name);
                         if (config == null)
                         {
                             continue;

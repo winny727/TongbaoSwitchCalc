@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using TongbaoExchangeCalc.DataModel;
 using TongbaoExchangeCalc.DataModel.Simulation;
+using TongbaoExchangeCalc.Undo;
+using TongbaoExchangeCalc.Undo.Commands;
 
 
 namespace TongbaoExchangeCalc.Impl.View
@@ -156,7 +158,7 @@ namespace TongbaoExchangeCalc.Impl.View
                 if (customRuleForm.ShowDialog() == DialogResult.OK)
                 {
                     SimulationRule newRule = SimulationDefine.CreateSimulationRule(collection.Type, customRuleForm.SelectedParams);
-                    if (collection.Insert(index, newRule))
+                    if (UndoCommandMgr.Instance.ExecuteCommand<AddRuleCommand>(collection, newRule, index))
                     {
                         UpdateRuleTreeView();
                         selectedNode.TreeView.SelectedNode = parentNode.Nodes[index];
@@ -181,7 +183,7 @@ namespace TongbaoExchangeCalc.Impl.View
                 if (customRuleForm.ShowDialog() == DialogResult.OK)
                 {
                     SimulationRule newRule = SimulationDefine.CreateSimulationRule(collection.Type, customRuleForm.SelectedParams);
-                    if (collection.Add(newRule))
+                    if (UndoCommandMgr.Instance.ExecuteCommand<AddRuleCommand>(collection, newRule))
                     {
                         UpdateRuleTreeView();
                         selectedNode.TreeView.SelectedNode = selectedNode.Nodes[collection.Count - 1];
@@ -206,7 +208,7 @@ namespace TongbaoExchangeCalc.Impl.View
                 TreeNode parentNode = selectedNode.Parent;
                 var collection = GetRuleCollection(rule);
                 int index = collection.IndexOf(rule);
-                collection.RemoveAt(index);
+                UndoCommandMgr.Instance.ExecuteCommand<RemoveRuleCommand>(collection, rule, index);
                 UpdateRuleTreeView();
                 if (index < parentNode.Nodes.Count)
                 {
@@ -227,7 +229,7 @@ namespace TongbaoExchangeCalc.Impl.View
                 TreeNode parentNode = selectedNode.Parent;
                 var collection = GetRuleCollection(rule);
                 int index = collection.IndexOf(rule);
-                if (collection.MoveToIndex(rule, index - 1))
+                if (UndoCommandMgr.Instance.ExecuteCommand<MoveRuleCommand>(collection, rule, index, index - 1))
                 {
                     UpdateRuleTreeView();
                     selectedNode.TreeView.SelectedNode = parentNode.Nodes[index - 1];
@@ -247,7 +249,7 @@ namespace TongbaoExchangeCalc.Impl.View
                 TreeNode parentNode = selectedNode.Parent;
                 var collection = GetRuleCollection(rule);
                 int index = collection.IndexOf(rule);
-                if (collection.MoveToIndex(rule, index + 1))
+                if (UndoCommandMgr.Instance.ExecuteCommand<MoveRuleCommand>(collection, rule, index, index + 1))
                 {
                     UpdateRuleTreeView();
                     selectedNode.TreeView.SelectedNode = parentNode.Nodes[index + 1];
@@ -266,8 +268,7 @@ namespace TongbaoExchangeCalc.Impl.View
                 return;
             }
 
-            e.Node.Checked = !e.Node.Checked;
-            mRuleTreeView.Invalidate();
+            mRuleTreeView.Refresh();
         }
 
         private void OnRuleAfterCheck(object sender, TreeViewEventArgs e)
@@ -279,7 +280,7 @@ namespace TongbaoExchangeCalc.Impl.View
 
             if (e.Node?.Tag is SimulationRule rule)
             {
-                rule.Enabled = e.Node.Checked;
+                UndoCommandMgr.Instance.ExecuteCommand<ToggleRuleEnabledCommand>(rule, rule.Enabled, e.Node.Checked);
             }
         }
 
@@ -297,15 +298,13 @@ namespace TongbaoExchangeCalc.Impl.View
                 if (customRuleForm.ShowDialog() == DialogResult.OK)
                 {
                     SimulationRule newRule = SimulationDefine.CreateSimulationRule(rule.Type, customRuleForm.SelectedParams);
-                    collection.RemoveAt(index);
-                    if (collection.Insert(index, newRule))
+                    if (UndoCommandMgr.Instance.ExecuteCommand<ReplaceRuleCommand>(collection, rule, newRule, index))
                     {
                         UpdateRuleTreeView();
                     }
                     else
                     {
-                        collection.Insert(index, rule); // 还原
-                        UpdateRuleTreeView();
+                        UpdateRuleTreeView(); // 先刷新再弹窗
                         MessageBox.Show("自定义规则修改失败，已存在相同规则", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }

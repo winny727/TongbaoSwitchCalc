@@ -28,14 +28,14 @@ namespace TongbaoExchangeCalc
         //private StatisticDataCollector mStatisticDataCollector;
         //private CompositeDataCollector mCompositeDataCollector;
 
-        private int mSelectedTongbaoSlotIndex = -1;
-        private bool mCanRevertPlayerData = false;
+        private int mSelectedSlotIndex = -1;
+        private bool mCanRevertPlayerData = false; // 标记模拟后需要重置PlayerData
         private string mCurrentFilePath = string.Empty;
 
         private readonly List<Control> mSimulatingDisableControls = new List<Control>();
         private IconGridControl mLockIconGrid;
         private IconGridControl mBoxIconGrid;
-        private RuleTreeViewController RuleTreeViewController;
+        private RuleTreeViewController mRuleTreeViewController;
         private bool mOutputResultChanged = false;
         private RecordForm mRecordForm;
         private readonly StringBuilder mTempStringBuilder = new StringBuilder();
@@ -43,6 +43,48 @@ namespace TongbaoExchangeCalc
         private readonly List<Image> mTempTongbaoImages = new List<Image>();
         private readonly Dictionary<ResType, int> mTempResValues = new Dictionary<ResType, int>();
         private readonly List<Tongbao> mTempRecordTongbaos = new List<Tongbao>();
+
+        #region Undo/Redo UserCommand Collector
+        private readonly struct ScopeUserCommandCollector : IDisposable
+        {
+            private readonly ScopePlayerDataCommand mSetPlayerDataCommand;
+            private readonly ScopeOnSetValueCommand<bool> mSetCanRevertPlayerDataCommand;
+            private readonly ScopeOnSetValueCommand<string> mSetCurrentFilePath;
+
+            public ScopeUserCommandCollector(
+                ScopePlayerDataCommand setPlayerDataCommand,
+                ScopeOnSetValueCommand<bool> setCanRevertPlayerDataCommand,
+                ScopeOnSetValueCommand<string> setCurrentFilePath
+                )
+            {
+                mSetPlayerDataCommand = setPlayerDataCommand;
+                mSetCanRevertPlayerDataCommand = setCanRevertPlayerDataCommand;
+                mSetCurrentFilePath = setCurrentFilePath;
+            }
+
+            public void Dispose()
+            {
+                UndoCommandMgr.Instance.BeginMerge();
+                mSetPlayerDataCommand?.Dispose();
+                mSetCanRevertPlayerDataCommand?.Dispose();
+                mSetCurrentFilePath?.Dispose();
+                UndoCommandMgr.Instance.EndMerge();
+            }
+        }
+
+        private ScopeUserCommandCollector CollectScopeUserCommand(
+            bool setPlayerData = false,
+            bool setCanRevert = false,
+            bool setFilePath = false)
+        {
+            return new ScopeUserCommandCollector
+            (
+                setPlayerData ? new ScopePlayerDataCommand(mPlayerData) : null,
+                setCanRevert ? new ScopeOnSetValueCommand<bool>(() => mCanRevertPlayerData, value => mCanRevertPlayerData = value, "mCanRevertPlayerData") : null,
+                setFilePath ? new ScopeOnSetValueCommand<string>(() => mCurrentFilePath, value => mCurrentFilePath = value, "mCurrentFilePath") : null
+            );
+        }
+        #endregion
 
         protected override CreateParams CreateParams
         {
@@ -128,67 +170,39 @@ namespace TongbaoExchangeCalc
 
             mLockIconGrid = new IconGridControl();
             mBoxIconGrid = new IconGridControl();
-            RuleTreeViewController = new RuleTreeViewController(treeViewRule, mPlayerData);
+            mRuleTreeViewController = new RuleTreeViewController(treeViewRule, mPlayerData);
             mRecordForm = new RecordForm(this);
             Helper.InitResources();
 
-            comboBoxSquad.DisplayMember = "Key";
-            comboBoxSquad.ValueMember = "Value";
-            comboBoxSquad.Items.Clear();
-            foreach (SquadType type in Enum.GetValues(typeof(SquadType)))
-            {
-                string key = Define.GetSquadName(type);
-                comboBoxSquad.Items.Add(new ComboBoxItem<SquadType>(key, type));
-            }
-            comboBoxSquad.SelectedIndex = 0;
+            Helper.SetupEnumComboBox<SquadType>(comboBoxSquad, (type) => Define.GetSquadName(type));
+            Helper.SetupEnumComboBox<SimulationType>(comboBoxSimType, (type) => SimulationDefine.GetSimulationName(type));
 
-            comboBoxSimMode.DisplayMember = "Key";
-            comboBoxSimMode.ValueMember = "Value";
-            comboBoxSimMode.Items.Clear();
-            foreach (SimulationType type in Enum.GetValues(typeof(SimulationType)))
+            Helper.SetupComboBox(comboBoxMultiSel, () =>
             {
-                string key = SimulationDefine.GetSimulationName(type);
-                comboBoxSimMode.Items.Add(new ComboBoxItem<SimulationType>(key, type));
-            }
-            comboBoxSimMode.SelectedIndex = 0;
-
-            comboBoxMultiSel.DisplayMember = "Key";
-            comboBoxMultiSel.ValueMember = "Value";
-            comboBoxMultiSel.Items.Clear();
-            comboBoxMultiSel.Items.Add(new ComboBoxItem<TongbaoSelectMode>("默认", TongbaoSelectMode.Default));
-            comboBoxMultiSel.Items.Add(new ComboBoxItem<TongbaoSelectMode>("随机", TongbaoSelectMode.Random));
-            foreach (var id in Helper.GetUpgradeSelectTongbaoIds())
-            {
-                TongbaoConfig config = TongbaoConfig.GetTongbaoConfigById(id);
-                if (config != null)
+                comboBoxMultiSel.Items.Add(new ComboBoxItem<TongbaoSelectMode>("默认", TongbaoSelectMode.Default));
+                comboBoxMultiSel.Items.Add(new ComboBoxItem<TongbaoSelectMode>("随机", TongbaoSelectMode.Random));
+                foreach (var id in Helper.GetUpgradeSelectTongbaoIds())
                 {
-                    string name = Helper.GetTongbaoFullName(id);
-                    comboBoxMultiSel.Items.Add(new ComboBoxItem<TongbaoSelectMode>(name, TongbaoSelectMode.Specific, config));
+                    TongbaoConfig config = TongbaoConfig.GetTongbaoConfigById(id);
+                    if (config != null)
+                    {
+                        string name = Helper.GetTongbaoFullName(id);
+                        comboBoxMultiSel.Items.Add(new ComboBoxItem<TongbaoSelectMode>(name, TongbaoSelectMode.Specific, config));
+                    }
                 }
-            }
-            comboBoxMultiSel.SelectedIndex = 0;
+            });
 
             checkBoxFortune.Checked = false;
 
-            label11.Enabled = checkBoxEnableRecord.Checked;
+            label11.Enabled = checkBoxEnableRecord.Checked; // N次交换后省略记录
             numMaxRecord.Enabled = checkBoxEnableRecord.Checked;
 
-            panelLockedList.Controls.Clear();
-            panelLockedList.Controls.Add(mLockIconGrid);
-            mLockIconGrid.CellSize = 22;
-            mLockIconGrid.Spacing = -4;
-            mLockIconGrid.Width = panelLockedList.Width;
-            mLockIconGrid.Height = panelLockedList.Height;
+            Helper.SetupIconGridControl(panelLockedList, mLockIconGrid);
             mLockIconGrid.Click -= lockIconGridControl_Click;
             mLockIconGrid.Click += lockIconGridControl_Click;
             UpdateLockedListView();
 
-            panelRecordBox.Controls.Clear();
-            panelRecordBox.Controls.Add(mBoxIconGrid);
-            mBoxIconGrid.CellSize = 22;
-            mBoxIconGrid.Spacing = -4;
-            mBoxIconGrid.Width = panelRecordBox.Width;
-            mBoxIconGrid.Height = panelRecordBox.Height;
+            Helper.SetupIconGridControl(panelRecordBox, mBoxIconGrid);
             UpdateRecordBoxView();
 
             Helper.SetupResNumeric(mPlayerData, numHp, ResType.LifePoint, UpdateView);
@@ -198,11 +212,33 @@ namespace TongbaoExchangeCalc
             Helper.SetupResNumeric(mPlayerData, numShield, ResType.Shield, UpdateView);
             Helper.SetupResNumeric(mPlayerData, numHope, ResType.Hope, UpdateView);
 
+            UndoHelper.SetupComboBoxUndo(comboBoxSquad);
+            UndoHelper.SetupCheckBoxUndo(checkBoxFortune);
+            UndoHelper.SetupNumericUndo(numHp);
+            UndoHelper.SetupNumericUndo(numIngots);
+            UndoHelper.SetupNumericUndo(numCoupon);
+            UndoHelper.SetupNumericUndo(numCandle);
+            UndoHelper.SetupNumericUndo(numShield);
+            UndoHelper.SetupNumericUndo(numHope);
+            UndoHelper.SetupComboBoxUndo(comboBoxSimType);
+            UndoHelper.SetupNumericUndo(numSimCnt);
+            UndoHelper.SetupNumericUndo(numMinHp);
+            UndoHelper.SetupComboBoxUndo(comboBoxMultiSel);
+            UndoHelper.SetupCheckBoxUndo(checkBoxOptimize);
+            UndoHelper.SetupCheckBoxUndo(checkBoxAutoRevert);
+            UndoHelper.SetupCheckBoxUndo(checkBoxLogExchange);
+            UndoHelper.SetupCheckBoxUndo(checkBoxEnableRecord);
+            UndoHelper.SetupNumericUndo(numMaxRecord);
+
             InitTongbaoView();
-            RuleTreeViewController.InitRuleTreeView();
-            RuleTreeViewController.BindButtons(btnAdd, btnRemove, btnUp, btnDown);
+            mRuleTreeViewController.InitRuleTreeView();
+            mRuleTreeViewController.BindButtons(btnAdd, btnRemove, btnUp, btnDown);
 
             mRecordForm.SetClearCallback(ClearRecord);
+
+            UndoCommandMgr.Instance.OnCommandChanged -= UpdateUndoState;
+            UndoCommandMgr.Instance.OnCommandChanged += UpdateUndoState;
+            UpdateUndoState();
         }
 
         private void InitTongbaoView()
@@ -332,7 +368,7 @@ namespace TongbaoExchangeCalc
             lblRes.Text = sb.ToString();
             sb.Clear();
 
-            int slotIndex = mSelectedTongbaoSlotIndex;
+            int slotIndex = mSelectedSlotIndex;
             Tongbao tongbao = mPlayerData.GetTongbao(slotIndex);
 
             if (tongbao == null)
@@ -382,6 +418,7 @@ namespace TongbaoExchangeCalc
             }
 
             UpdateView();
+            mRuleTreeViewController.UpdateRuleTreeView();
         }
 
         private void UpdateLockedListView()
@@ -415,6 +452,12 @@ namespace TongbaoExchangeCalc
             }
             btnSimulation.Text = asyncSimulating ? "停止模拟" : "开始模拟";
             toolStripProgressBar1.Visible = asyncSimulating;
+        }
+
+        private void UpdateUndoState()
+        {
+            UndoToolStripMenuItem.Enabled = UndoCommandMgr.Instance.CanUndo;
+            RedoToolStripMenuItem.Enabled = UndoCommandMgr.Instance.CanRedo;
         }
 
         private void OnSelectNewRandomTongbao(int id, int slotIndex)
@@ -454,7 +497,7 @@ namespace TongbaoExchangeCalc
 
         private void SelectTongbaoSlot(int slotIndex)
         {
-            mSelectedTongbaoSlotIndex = slotIndex;
+            mSelectedSlotIndex = slotIndex;
             UpdateView();
         }
 
@@ -469,12 +512,11 @@ namespace TongbaoExchangeCalc
             mPrintDataCollector.RecordEachExchange = true; //单次交换固定打印
             mPrintDataCollector.InitSimulateStep(0);
             mTongbaoSelector.TongbaoSelectMode = TongbaoSelectMode.Dialog; //弹窗询问
-            int slotIndex = mSelectedTongbaoSlotIndex;
+            int slotIndex = mSelectedSlotIndex;
             mPrintDataCollector?.OnExchangeStepBegin(new SimulateContext(0, mPlayerData.ExchangeCount, slotIndex, mPlayerData));
             mPlayerData.CheckResValue = !force;
 
-            //if (!mPlayerData.ExchangeTongbao(slotIndex))
-            if (!UndoCommandMgr.Instance.ExecuteCommand<ExchangeTongbaoCommand>(mPlayerData, slotIndex))
+            if (!mPlayerData.ExchangeTongbao(slotIndex))
             {
                 Tongbao tongbao = mPlayerData.GetTongbao(slotIndex);
                 if (tongbao == null)
@@ -572,9 +614,9 @@ namespace TongbaoExchangeCalc
                 SimulationType = type,
                 TotalSimulationCount = (int)numSimCnt.Value,
                 MinimumLifePoint = (int)numMinHp.Value,
-                //ExchangeSlotIndex = mSelectedTongbaoSlotIndex,
+                //ExchangeSlotIndex = mSelectedSlotIndex,
                 ExchangeSlotIndex = -1,
-                RuleController = RuleTreeViewController,
+                RuleController = mRuleTreeViewController,
                 UseMultiThreadOptimize = checkBoxOptimize.Checked,
             };
 
@@ -845,6 +887,7 @@ namespace TongbaoExchangeCalc
                 }
                 if (selectorForm.ShowDialog() == DialogResult.OK)
                 {
+                    using var collector = CollectScopeUserCommand(setPlayerData: true, setCanRevert: true);
                     if (selectorForm.SelectedRandomEff != null)
                     {
                         if (selectorForm.SelectedRandomEff.ResType == ResType.None)
@@ -869,10 +912,11 @@ namespace TongbaoExchangeCalc
 
         private void btnExchange_Click(object sender, EventArgs e)
         {
+            using var collector = CollectScopeUserCommand(setPlayerData: true, setCanRevert: true);
             ExchangeOnce();
         }
 
-        private void btnSimulation_Click(object sender, EventArgs e)
+        private async void btnSimulation_Click(object sender, EventArgs e)
         {
             if (mSimulationController.IsAsyncSimulating)
             {
@@ -886,16 +930,20 @@ namespace TongbaoExchangeCalc
                 return;
             }
 
+            using var collector = CollectScopeUserCommand(setPlayerData: true, setCanRevert: true);
+
             SimulationType simType = default;
-            if (comboBoxSimMode.SelectedItem is ComboBoxItem<SimulationType> item)
+            if (comboBoxSimType.SelectedItem is ComboBoxItem<SimulationType> item)
             {
                 simType = item.Value;
             }
-            _ = ExchangeSimulate(simType);
+
+            await ExchangeSimulate(simType);
         }
 
         private void btnReset_Click(object sender, EventArgs e)
         {
+            using var collector = CollectScopeUserCommand(setPlayerData: true, setCanRevert: true);
             ResetPlayerData();
             //ClearRecord();
             UpdateAllTongbaoView();
@@ -911,12 +959,14 @@ namespace TongbaoExchangeCalc
             int shield = mPlayerData.GetResValue(ResType.Shield);
             int hope = mPlayerData.GetResValue(ResType.Hope);
 
+            UndoCommandMgr.Instance.BeginMerge();
             SetNumericValue(numHp, hp);
             SetNumericValue(numIngots, ingots);
             SetNumericValue(numCoupon, coupon);
             SetNumericValue(numCandle, candle);
             SetNumericValue(numShield, shield);
             SetNumericValue(numHope, hope);
+            UndoCommandMgr.Instance.EndMerge();
         }
 
         private void btnRecord_Click(object sender, EventArgs e)
@@ -932,6 +982,7 @@ namespace TongbaoExchangeCalc
 
         private void btnRandom_Click(object sender, EventArgs e)
         {
+            using var collector = CollectScopeUserCommand(setPlayerData: true, setCanRevert: true);
             for (int i = 0; i < mPlayerData.MaxTongbaoCount; i++)
             {
                 SetRandomTongbao(i);
@@ -940,6 +991,7 @@ namespace TongbaoExchangeCalc
 
         private void btnRandomEmpty_Click(object sender, EventArgs e)
         {
+            using var collector = CollectScopeUserCommand(setPlayerData: true, setCanRevert: true);
             for (int i = 0; i < mPlayerData.MaxTongbaoCount; i++)
             {
                 if (mPlayerData.GetTongbao(i) == null)
@@ -951,6 +1003,7 @@ namespace TongbaoExchangeCalc
 
         private void btnClear_Click(object sender, EventArgs e)
         {
+            using var collector = CollectScopeUserCommand(setPlayerData: true, setCanRevert: true);
             mCanRevertPlayerData = false;
             mPlayerData.ClearTongbao();
             UpdateAllTongbaoView();
@@ -962,16 +1015,17 @@ namespace TongbaoExchangeCalc
             selectorForm.SetSelectedIds(mPlayerData.LockedTongbaoList);
             if (selectorForm.ShowDialog() == DialogResult.OK)
             {
+                using var collector = CollectScopeUserCommand(setPlayerData: true);
                 mPlayerData.LockedTongbaoList.Clear();
                 mPlayerData.LockedTongbaoList.AddRange(selectorForm.SelectedIds);
                 UpdateLockedListView();
             }
         }
 
-        private void comboBoxSimMode_SelectedIndexChanged(object sender, EventArgs e)
+        private void comboBoxSimType_SelectedIndexChanged(object sender, EventArgs e)
         {
             SimulationType simType = default;
-            if (comboBoxSimMode.SelectedItem is ComboBoxItem<SimulationType> item)
+            if (comboBoxSimType.SelectedItem is ComboBoxItem<SimulationType> item)
             {
                 simType = item.Value;
             }
@@ -981,6 +1035,8 @@ namespace TongbaoExchangeCalc
 
         private void btnLoadBox_Click(object sender, EventArgs e)
         {
+            using var collector = CollectScopeUserCommand(setPlayerData: true, setCanRevert: true, setFilePath: true);
+
             string path = Helper.LoadTongbaoBoxData(mPlayerData, mCurrentFilePath);
             if (!string.IsNullOrEmpty(path))
             {
@@ -996,6 +1052,7 @@ namespace TongbaoExchangeCalc
             string path = Helper.SaveTongbaoBoxData(mPlayerData, mCurrentFilePath);
             if (!string.IsNullOrEmpty(path))
             {
+                using var collector = CollectScopeUserCommand(setFilePath: true);
                 mCurrentFilePath = path;
             }
         }
@@ -1026,6 +1083,7 @@ namespace TongbaoExchangeCalc
 
         private void btnResetBox_Click(object sender, EventArgs e)
         {
+            using var collector = CollectScopeUserCommand(setPlayerData: true, setCanRevert: true);
             mCanRevertPlayerData = false;
             mPlayerData.ClearTongbao();
             for (int i = 0; i < mTempRecordTongbaos.Count; i++)

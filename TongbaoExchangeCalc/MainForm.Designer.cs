@@ -62,7 +62,7 @@
             this.comboBoxMultiSel = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
             this.numMinHp = new System.Windows.Forms.NumericUpDown();
-            this.comboBoxSimMode = new System.Windows.Forms.ComboBox();
+            this.comboBoxSimType = new System.Windows.Forms.ComboBox();
             this.label10 = new System.Windows.Forms.Label();
             this.numMaxRecord = new System.Windows.Forms.NumericUpDown();
             this.label11 = new System.Windows.Forms.Label();
@@ -89,11 +89,14 @@
             this.btnAdd = new System.Windows.Forms.Button();
             this.treeViewRule = new System.Windows.Forms.TreeView();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.checkBoxLogExchange = new System.Windows.Forms.CheckBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.FileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.LoadBoxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SaveBoxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EditToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.UndoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.RedoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.OperationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ExchangeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SimulationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -107,16 +110,14 @@
             this.RecordBoxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ResetBoxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.RecordToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.panelRecordBox = new System.Windows.Forms.Panel();
             this.btnResetBox = new System.Windows.Forms.Button();
             this.btnRecordBox = new System.Windows.Forms.Button();
             this.btnSaveBox = new System.Windows.Forms.Button();
             this.btnLoadBox = new System.Windows.Forms.Button();
-            this.checkBoxLogExchange = new System.Windows.Forms.CheckBox();
-            this.UndoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.RedoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.RecordToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.numSimCnt)).BeginInit();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numShield)).BeginInit();
@@ -484,7 +485,7 @@
             this.groupBox3.Controls.Add(this.label9);
             this.groupBox3.Controls.Add(this.numMinHp);
             this.groupBox3.Controls.Add(this.label2);
-            this.groupBox3.Controls.Add(this.comboBoxSimMode);
+            this.groupBox3.Controls.Add(this.comboBoxSimType);
             this.groupBox3.Controls.Add(this.numSimCnt);
             this.groupBox3.Controls.Add(this.label10);
             this.groupBox3.Location = new System.Drawing.Point(3, 3);
@@ -545,16 +546,16 @@
             0});
             this.numMinHp.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.scrollable_MouseWheel);
             // 
-            // comboBoxSimMode
+            // comboBoxSimType
             // 
-            this.comboBoxSimMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxSimMode.FormattingEnabled = true;
-            this.comboBoxSimMode.Location = new System.Drawing.Point(65, 19);
-            this.comboBoxSimMode.Name = "comboBoxSimMode";
-            this.comboBoxSimMode.Size = new System.Drawing.Size(156, 20);
-            this.comboBoxSimMode.TabIndex = 8;
-            this.comboBoxSimMode.SelectedIndexChanged += new System.EventHandler(this.comboBoxSimMode_SelectedIndexChanged);
-            this.comboBoxSimMode.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.scrollable_MouseWheel);
+            this.comboBoxSimType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxSimType.FormattingEnabled = true;
+            this.comboBoxSimType.Location = new System.Drawing.Point(65, 19);
+            this.comboBoxSimType.Name = "comboBoxSimType";
+            this.comboBoxSimType.Size = new System.Drawing.Size(156, 20);
+            this.comboBoxSimType.TabIndex = 8;
+            this.comboBoxSimType.SelectedIndexChanged += new System.EventHandler(this.comboBoxSimType_SelectedIndexChanged);
+            this.comboBoxSimType.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.scrollable_MouseWheel);
             // 
             // label10
             // 
@@ -840,12 +841,25 @@
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "高级设置";
             // 
+            // checkBoxLogExchange
+            // 
+            this.checkBoxLogExchange.AutoSize = true;
+            this.checkBoxLogExchange.Checked = true;
+            this.checkBoxLogExchange.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxLogExchange.Location = new System.Drawing.Point(9, 64);
+            this.checkBoxLogExchange.Name = "checkBoxLogExchange";
+            this.checkBoxLogExchange.Size = new System.Drawing.Size(120, 16);
+            this.checkBoxLogExchange.TabIndex = 22;
+            this.checkBoxLogExchange.Text = "输出详细交换记录";
+            this.checkBoxLogExchange.UseVisualStyleBackColor = true;
+            // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.FileToolStripMenuItem,
             this.EditToolStripMenuItem,
-            this.OperationToolStripMenuItem});
+            this.OperationToolStripMenuItem,
+            this.ViewToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(819, 25);
@@ -886,6 +900,22 @@
             this.EditToolStripMenuItem.Size = new System.Drawing.Size(59, 21);
             this.EditToolStripMenuItem.Text = "编辑(&E)";
             // 
+            // UndoToolStripMenuItem
+            // 
+            this.UndoToolStripMenuItem.Name = "UndoToolStripMenuItem";
+            this.UndoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
+            this.UndoToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.UndoToolStripMenuItem.Text = "撤销(&U)";
+            this.UndoToolStripMenuItem.Click += new System.EventHandler(this.UndoToolStripMenuItem_Click);
+            // 
+            // RedoToolStripMenuItem
+            // 
+            this.RedoToolStripMenuItem.Name = "RedoToolStripMenuItem";
+            this.RedoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
+            this.RedoToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.RedoToolStripMenuItem.Text = "重做(&R)";
+            this.RedoToolStripMenuItem.Click += new System.EventHandler(this.RedoToolStripMenuItem_Click);
+            // 
             // OperationToolStripMenuItem
             // 
             this.OperationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -894,8 +924,7 @@
             this.ResetToolStripMenuItem,
             this.toolStripSeparator1,
             this.BoxToolStripMenuItem,
-            this.toolStripSeparator2,
-            this.RecordToolStripMenuItem});
+            this.toolStripSeparator2});
             this.OperationToolStripMenuItem.Name = "OperationToolStripMenuItem";
             this.OperationToolStripMenuItem.Size = new System.Drawing.Size(62, 21);
             this.OperationToolStripMenuItem.Text = "操作(&O)";
@@ -905,7 +934,7 @@
             this.ExchangeToolStripMenuItem.Name = "ExchangeToolStripMenuItem";
             this.ExchangeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
             | System.Windows.Forms.Keys.E)));
-            this.ExchangeToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+            this.ExchangeToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
             this.ExchangeToolStripMenuItem.Text = "交换选中通宝(E)";
             this.ExchangeToolStripMenuItem.Click += new System.EventHandler(this.btnExchange_Click);
             // 
@@ -914,7 +943,7 @@
             this.SimulationToolStripMenuItem.Name = "SimulationToolStripMenuItem";
             this.SimulationToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
             | System.Windows.Forms.Keys.S)));
-            this.SimulationToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+            this.SimulationToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
             this.SimulationToolStripMenuItem.Text = "开始模拟(S)";
             this.SimulationToolStripMenuItem.Click += new System.EventHandler(this.btnSimulation_Click);
             // 
@@ -923,14 +952,14 @@
             this.ResetToolStripMenuItem.Name = "ResetToolStripMenuItem";
             this.ResetToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
             | System.Windows.Forms.Keys.R)));
-            this.ResetToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+            this.ResetToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
             this.ResetToolStripMenuItem.Text = "重置初始资源(R)";
             this.ResetToolStripMenuItem.Click += new System.EventHandler(this.btnReset_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(234, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(230, 6);
             // 
             // BoxToolStripMenuItem
             // 
@@ -942,7 +971,7 @@
             this.RecordBoxToolStripMenuItem,
             this.ResetBoxToolStripMenuItem});
             this.BoxToolStripMenuItem.Name = "BoxToolStripMenuItem";
-            this.BoxToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+            this.BoxToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
             this.BoxToolStripMenuItem.Text = "钱盒(&B)";
             // 
             // RandomToolStripMenuItem
@@ -989,16 +1018,7 @@
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(234, 6);
-            // 
-            // RecordToolStripMenuItem
-            // 
-            this.RecordToolStripMenuItem.Name = "RecordToolStripMenuItem";
-            this.RecordToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
-            | System.Windows.Forms.Keys.O)));
-            this.RecordToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
-            this.RecordToolStripMenuItem.Text = "查看交换记录(&O)";
-            this.RecordToolStripMenuItem.Click += new System.EventHandler(this.btnRecord_Click);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(230, 6);
             // 
             // groupBox5
             // 
@@ -1071,33 +1091,22 @@
             this.btnLoadBox.UseVisualStyleBackColor = true;
             this.btnLoadBox.Click += new System.EventHandler(this.btnLoadBox_Click);
             // 
-            // checkBoxLogExchange
+            // ViewToolStripMenuItem
             // 
-            this.checkBoxLogExchange.AutoSize = true;
-            this.checkBoxLogExchange.Checked = true;
-            this.checkBoxLogExchange.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxLogExchange.Location = new System.Drawing.Point(9, 64);
-            this.checkBoxLogExchange.Name = "checkBoxLogExchange";
-            this.checkBoxLogExchange.Size = new System.Drawing.Size(120, 16);
-            this.checkBoxLogExchange.TabIndex = 22;
-            this.checkBoxLogExchange.Text = "输出详细交换记录";
-            this.checkBoxLogExchange.UseVisualStyleBackColor = true;
+            this.ViewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.RecordToolStripMenuItem});
+            this.ViewToolStripMenuItem.Name = "ViewToolStripMenuItem";
+            this.ViewToolStripMenuItem.Size = new System.Drawing.Size(60, 21);
+            this.ViewToolStripMenuItem.Text = "查看(&V)";
             // 
-            // UndoToolStripMenuItem
+            // RecordToolStripMenuItem
             // 
-            this.UndoToolStripMenuItem.Name = "UndoToolStripMenuItem";
-            this.UndoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.UndoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.UndoToolStripMenuItem.Text = "撤销(&U)";
-            this.UndoToolStripMenuItem.Click += new System.EventHandler(this.UndoToolStripMenuItem_Click);
-            // 
-            // RedoToolStripMenuItem
-            // 
-            this.RedoToolStripMenuItem.Name = "RedoToolStripMenuItem";
-            this.RedoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.RedoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.RedoToolStripMenuItem.Text = "重做(&R)";
-            this.RedoToolStripMenuItem.Click += new System.EventHandler(this.RedoToolStripMenuItem_Click);
+            this.RecordToolStripMenuItem.Name = "RecordToolStripMenuItem";
+            this.RecordToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.O)));
+            this.RecordToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
+            this.RecordToolStripMenuItem.Text = "查看交换记录(&O)";
+            this.RecordToolStripMenuItem.Click += new System.EventHandler(this.btnRecord_Click);
             // 
             // MainForm
             // 
@@ -1185,7 +1194,7 @@
         private System.Windows.Forms.Button btnReset;
         private System.Windows.Forms.Button btnRecord;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.ComboBox comboBoxSimMode;
+        private System.Windows.Forms.ComboBox comboBoxSimType;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.NumericUpDown numMinHp;
@@ -1228,7 +1237,6 @@
         private System.Windows.Forms.ToolStripMenuItem ExchangeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem SimulationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ResetToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem RecordToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem BoxToolStripMenuItem;
@@ -1247,5 +1255,7 @@
         private System.Windows.Forms.CheckBox checkBoxLogExchange;
         private System.Windows.Forms.ToolStripMenuItem UndoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem RedoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ViewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem RecordToolStripMenuItem;
     }
 }

@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace TongbaoExchangeCalc.View
 {
-    class IconGridControl : Panel
+    public class IconGridControl : Panel
     {
         private readonly List<Image> mIcons = new List<Image>();
 

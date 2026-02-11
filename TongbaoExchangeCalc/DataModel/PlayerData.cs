@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TongbaoExchangeCalc.DataModel
 {
-    public class PlayerData
+    public class PlayerData : IEquatable<PlayerData>
     {
         public ITongbaoSelector TongbaoSelector { get; private set; }
         public IRandomGenerator Random { get; private set; }
@@ -17,7 +17,7 @@ namespace TongbaoExchangeCalc.DataModel
         public SquadType SquadType { get; private set; } // 分队类型
         public int ExchangeCount { get; set; } // 已交换次数
         public SpecialConditionFlag SpecialConditionFlag { get; set; } // 特殊条件，如福祸相依（交换后的通宝如果是厉钱，则获得票券+1）
-        public List<int> LockedTongbaoList { get; private set; } = new List<int>(); // 商店锁定的通宝ID列表
+        public List<int> LockedTongbaoList { get; } = new List<int>(); // 商店锁定的通宝ID列表
         public int MaxTongbaoCount => mSquadDefine.MaxTongbaoCount;
         public int NextExchangeCostLifePoint => mSquadDefine.GetCostLifePoint(ExchangeCount);
         public bool HasEnoughExchangeLife => GetResValue(ResType.LifePoint) > NextExchangeCostLifePoint;
@@ -132,6 +132,67 @@ namespace TongbaoExchangeCalc.DataModel
                     }
                 }
             }
+        }
+
+        public bool Equals(PlayerData other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+            if (SquadType != other.SquadType ||
+                mSquadDefine != other.mSquadDefine ||
+                CheckResValue != other.CheckResValue || 
+                ExchangeCount != other.ExchangeCount ||
+                SpecialConditionFlag != other.SpecialConditionFlag)
+            {
+                return false;
+            }
+            if (LockedTongbaoList.Count != other.LockedTongbaoList.Count)
+            {
+                return false;
+            }
+            for (int i = 0; i < LockedTongbaoList.Count; i++)
+            {
+                if (LockedTongbaoList[i] != other.LockedTongbaoList[i])
+                {
+                    return false;
+                }
+            }
+            if (mResValues.Count != other.mResValues.Count)
+            {
+                return false;
+            }
+            foreach (var item in mResValues)
+            {
+                if (!other.mResValues.TryGetValue(item.Key, out var otherValue) || otherValue != item.Value)
+                {
+                    return false;
+                }
+            }
+            if (TongbaoBox.Length != other.TongbaoBox.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < TongbaoBox.Length; i++)
+            {
+                Tongbao tongbao = TongbaoBox[i];
+                Tongbao otherTongbao = other.TongbaoBox[i];
+                if ((tongbao == null) != (otherTongbao == null))
+                {
+                    return false;
+                }
+                if (tongbao != null)
+                {
+                    if (tongbao.Id != otherTongbao.Id ||
+                        tongbao.RandomEff?.ResType != otherTongbao.RandomEff?.ResType ||
+                        tongbao.RandomEff?.ResCount != otherTongbao.RandomEff?.ResCount)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
         // 不传IRandomGenerator则不生成随机品相效果
