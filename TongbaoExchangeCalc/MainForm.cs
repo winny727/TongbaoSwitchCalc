@@ -238,9 +238,9 @@ namespace TongbaoExchangeCalc
 
             mRecordForm.SetClearCallback(ClearRecord);
 
-            UndoCommandMgr.Instance.OnCommandChanged -= UpdateUndoState;
-            UndoCommandMgr.Instance.OnCommandChanged += UpdateUndoState;
-            UpdateUndoState();
+            UndoCommandMgr.Instance.OnCommandChanged -= UpdateUndoMenuState;
+            UndoCommandMgr.Instance.OnCommandChanged += UpdateUndoMenuState;
+            UpdateUndoMenuState();
         }
 
         private void InitTongbaoView()
@@ -459,7 +459,7 @@ namespace TongbaoExchangeCalc
             toolStripProgressBar1.Visible = asyncSimulating;
         }
 
-        private void UpdateUndoState()
+        private void UpdateUndoMenuState()
         {
             UndoToolStripMenuItem.Enabled = UndoCommandMgr.Instance.CanUndo;
             RedoToolStripMenuItem.Enabled = UndoCommandMgr.Instance.CanRedo;
